@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<!--[if IE 9 ]><html class="ie9"><![endif]-->
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+        <meta name="format-detection" content="telephone=no">
+        <meta charset="UTF-8">
+
+        <meta name="description" content="Violate Responsive Admin Template">
+        <meta name="keywords" content="Super Admin, Admin, Template, Bootstrap">
+
+        <title>广东圆梦实业发展有限公司</title>
+
+        <!-- CSS -->
+        <link href="css/bootstrap.min.css" rel="stylesheet">
+        <link href="css/animate.min.css" rel="stylesheet">
+        <link href="css/font-awesome.min.css" rel="stylesheet">
+        <link href="css/form.css" rel="stylesheet">
+        <link href="css/calendar.css" rel="stylesheet">
+        <link href="css/style.css" rel="stylesheet">
+        <link href="css/icons.css" rel="stylesheet">
+        <link href="css/generics.css" rel="stylesheet">
+        <link rel="icon" href="img/bitbug_favicon.ico" type="image/x-icon" />
+        <!-- select css -->
+        <link rel="stylesheet" type="text/css" href="js/lbs/selsect/select.zmr.css" />
+        <script type="text/javascript" src="js/config/config.js"></script>
+    </head>
+    <body id="skin-cloth">
+
+        <header id="header" class="media">
+            <a href="" id="menu-toggle"></a>
+            <a class="logo pull-left" href="index.html">咖啡蜗后台管理系统</a>
+
+            <div class="media-body">
+                <div class="media" id="top-menu">
+                    <div id="time" class="pull-right">
+                        <span id="hours"></span>
+                        :
+                        <span id="min"></span>
+                        :
+                        <span id="sec"></span>
+                    </div>
+
+                    <div class="media-body" style="line-height:39px;">
+                        <!-- <input type="text" class="main-search"> -->
+                        广东圆梦实业发展有限公司
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="clearfix"></div>
+
+        <section id="main" class="p-relative" role="main">
+
+            <!-- Sidebar -->
+            <aside id="sidebar">
+
+                <!-- Sidbar Widgets -->
+                <div class="side-widgets overflow">
+                    <!-- Profile Menu -->
+                    <div class="text-center s-widget m-b-25 dropdown" id="profile-menu">
+                        <a href="" data-toggle="dropdown">
+                            <img class="profile-pic animated" src="img/1516775224.jpg" alt="">
+                        </a>
+                        <ul class="dropdown-menu profile-menu">
+                        </ul>
+                        <h4 class="m-0" id="usAdministration">Admin</h4>
+                        <span id="Administration"></span>
+                    </div>
+
+                    <!-- Calendar -->
+                    <div class="s-widget m-b-25">
+                        <div id="sidebar-calendar"></div>
+                    </div>
+
+                </div>
+
+                <!-- Side Menu -->
+                <ul class="list-unstyled side-menu" id="J_menuatch">
+
+                </ul>
+
+            </aside>
+
+            <!-- Content -->
+            <section id="content" class="container">
+				<div class="ibox-content">
+                <!-- Table Striped -->
+                <div class="block-area" id="tableStriped">
+                    <h3 class="block-title" style="font-size:14px;">详情</h3>
+                    <form id="dateForm" class="form-horizontal m-t" method="post" role="form">
+                    	<div class="form-group">
+                            <label class="col-sm-2 control-label">选择操作类型</label>
+                            <div class="col-sm-8">
+                                <select name="c-select" class="col-sm-12" style="background: rgba(0, 0, 0, 0.05);border: 1px solid rgba(255, 255, 255, 0.3);padding: 10px 0;">
+                                	<option value="no">选择执行操作</option>
+                                	<option value='{"id":"#status","val":"1"}'>审核用户</option>
+                                	<option value='{"id":"#secc","val":"2"}'>账号状态</option>
+                                	<option value='{"id":"#shopname","val":"3"}'>绑定后台用户</option>
+                                	<option value='{"id":"#searchName","val":"4"}'>绑定微信用户</option>
+                                	<option value='{"id":"#bindMachine","val":"5"}'>绑定机器</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">用户名</label>
+                            <div class="col-sm-8">
+                                <input class="form-control" id="name" name="name" type="text" value="" disabled="disabled"> <!-- onkeyup="J_Modified(this.value,'^[a-zA-Z]+$')" -->
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">手机号码</label>
+                            <div class="col-sm-8">
+                                <input class="form-control" id="phone" name="phone" type="text" value=""  disabled="disabled"> <!-- onkeyup="J_Modified(this.value,'^[a-zA-Z]+$')" -->
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">身份证号码</label>
+                            <div class="col-sm-8">
+                                <input class="form-control" id="idcar" name="idcar" type="text" value=""  disabled="disabled"> <!-- onkeyup="J_Modified(this.value,'^[a-zA-Z]+$')" -->
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">身份证正/反面</label>
+                            <div class="col-sm-8">
+                                <img src="" alt="" id="zcarphoto" style="max-width: 200px;" />
+                                <img src="" alt="" id="fcarphoto" style="max-width: 200px;"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">审核状态</label>
+                            <div class="col-sm-8">
+                                <select name="status" disabled="disabled" id="status" class="col-sm-12" style="background: rgba(0, 0, 0, 0.05);border: 1px solid rgba(255, 255, 255, 0.3);padding: 10px 0;">
+                                	<option value="0">未审核</option>
+                                	<option value="1">审核通过</option>
+                                	<option value="2">审核不通过</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">账号状态</label>
+                            <div class="col-sm-8">
+                            	<select name="secc" disabled="disabled" id="secc" class="col-sm-12" style="background: rgba(0, 0, 0, 0.05);border: 1px solid rgba(255, 255, 255, 0.3);padding: 10px 0;">
+                                	<option value="-1">未激活</option>
+                                	<option value="0">冻结</option>
+                                	<option value="1">正常</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">绑定后台用户</label>
+                            <div class="col-sm-8">
+                            	<select id="shopname" disabled="disabled" name="shopname" class="col-sm-12 clearfix" value="2" style="width: 300px;height:34px;background:none;border:1px solid rgba(255, 255, 255, 0.3);">
+									
+                               </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">微信昵称</label>
+                            <div class="col-sm-8">
+                                <input class="form-control" id="searchName" name="wxname" type="text" value="" style="width: 300px;" disabled="disabled"> 
+                            </div>
+                        </div>
+                        <div class="form-group">
+                              <label class="col-sm-2 control-label"></label>
+                              <div class="col-sm-8">
+                                  <select id="userId" class="col-sm-12 clearfix" value="2" style="width: 300px;height:34px;background:none;border:1px solid rgba(255, 255, 255, 0.3);">
+
+                                  </select>
+                              </div>
+                          </div>
+                          <input type="hidden" name="userId" value="">
+                          
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">绑定机器</label>
+                            <div class="col-sm-8">
+                                <input class="form-control" id="bindMachine" name="bindMachine" type="text" value="" disabled="disabled"> 
+                            </div>
+                        </div>
+                        
+                        <div class="form-group clearfix">
+                            <div class="col-sm-5"></div>
+                            <div class="block-title" style="font-size:12px;text-align:center;margin-right:10px;width:112px;margin-top:30px;cursor:pointer;" onclick="jzm.AddEnitmanageMaintainer('e')">
+                                <a href="javascript:void(0)">确定</a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                </div>
+            </section>
+            <br/><br/>
+        </section>
+
+        <!-- Javascript Libraries -->
+        <!-- jQuery -->
+        <script src="js/jquery.min.js"></script> <!-- jQuery Library -->
+
+        <!-- Bootstrap -->
+        <script src="js/bootstrap.min.js"></script>
+
+        <!-- UX -->
+        <script src="js/scroll.min.js"></script> <!-- Custom Scrollbar -->
+
+        <!-- Other -->
+        <script src="js/calendar.min.js"></script> <!-- Calendar -->
+        <script type="text/javascript" src="js/lbs/messageInfo.js"></script>
+
+        <!-- select -->
+        <script type="text/javascript" src="js/lbs/selsect/select.zmr.js"></script>
+        <!-- All JS functions -->
+        <script src="js/functions.js"></script>
+        <script type="text/javascript">
+        	jzm.showaddwx();
+        </script>
+    </body>
+</html>
