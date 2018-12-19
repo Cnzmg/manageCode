@@ -19,8 +19,7 @@
             min-width: 320px;
             overflow: hidden;
             margin: 0 auto;
-            background: url(../images/qrcode.png) no-repeat #fff100;
-            background-size: 100%;
+            background:  #fff100;
             position: relative;
         }
         div{
@@ -42,20 +41,24 @@
             display: none;
             position:absolute;
             z-index: 99;
-            height: 172px;
-            line-height: 172px;
+            /* height: 172px; */
+            /* line-height: 172px; */
+            height: 0;
             color: #fff;
         }
     </style>
 </head>
 <body>
+	<img id="c" src="../images/qrcode.png" width="100%" alt="" />
     <div class="w10"> 
         <img src="" alt="this is img" id="img" />
         <div id="module">重新获取</div>
     </div>
     <script src="http://www.jq22.com/jquery/jquery-3.3.1.js"></script>
-    <script language="javascript" type="text/javascript" src="https://res.wx.qq.com/open/js/jweixin-1.1.0.js"></script>
-    <script src="../javascripts/wx_base.js?v=201811202241"></script>
-    <script>config.init();</script>
+  	<script language="javascript" type="text/javascript" src="https://res.wx.qq.com/open/js/jweixin-1.1.0.js"></script>
+    <script src="../javascripts/QrCodeBase.js?t=2018-12-06*13"></script>
+    <script type="text/javascript">
+    	config.init({secter:config.getQrcode.getQueryString('secter')}); 
+    </script>
 </body>
 </html>
