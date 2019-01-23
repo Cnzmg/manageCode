@@ -2,6 +2,7 @@ ym.init = {
 	plugin:{
 		fn:function(){},
 		bool:false,
+		loading:`<div class="k-ball7a"></div><div class="k-ball7b"></div><div class="k-ball7c"></div><div class="k-ball7d"></div>`,
 		ui:function(){
 			return this.arguments;
 		}
@@ -35,7 +36,7 @@ ym.init = {
 		}
 		return m;
 	},
-	error:function(){
+	ERROR:function(){
 		var code = {};
 		if( typeof arguments[0] === 'function' ){
 			code = {
@@ -49,5 +50,29 @@ ym.init = {
 			}
 		}
 		return code;
+	},
+	LOADING:function(){
+		switch(typeof arguments[0]){
+			case 'object':
+				jQuery(arguments[0].tap).html(`<div class="k-ball-holder" style="${arguments[0].style}">${ym.init.plugin.loading}<div style="margin-left:60%;">${arguments[0].select}</div></div>`);  //改变提交的方式
+				break;
+			default:
+				console.log(2);
+		}
+	},
+	MBOX:function(){
+		if(arguments[0].redom){
+			jQuery(arguments[0].redom).html(arguments[0].resetdom.inner);
+			jQuery(arguments[0].resetdom.tag).html(arguments[0].resetdom.inner);
+		}
+		var dom = `<div class="module">${arguments[0].msg}</div>`;
+		jQuery('body').append(dom);
+		jQuery('.module').css({
+			'marginLeft':'-' + jQuery('.module').width() + 'px',
+			'marginTop':'-' + jQuery('.module').height() * 2 + 'px',
+		})
+		setTimeout(function(){
+			jQuery('.module').remove();
+		},arguments[0].dely);
 	}
 }

@@ -64,7 +64,72 @@ body{
 	margin-left: 23%;
 }
 .coffeeLogin{
+	position: relative;
 	width: 40%;
 	margin: 5% 30%;
 	height: 30px;
+	text-align: center;
+}
+
+
+/*loading active*/
+
+.k-ball7a {
+	border: 0;
+	margin: 0;
+	width: 8px;
+	height: 8px;
+	position: absolute;
+	border-radius: 50% !important;
+	animation: k-loading 2s ease infinite;
+	background: #19A68C;
+	animation-delay: -1.5s
+}
+
+.k-ball7b {
+	border: 0;
+	margin: 0;
+	width: 8px;
+	height: 8px;
+	position: absolute;
+	border-radius: 50% !important;
+	animation: k-loading 2s ease infinite;
+	background: #F63D3A;
+	animation-delay: -1s
+}
+
+.k-ball7c {
+	border: 0;
+	margin: 0;
+	width: 8px;
+	height: 8px;
+	position: absolute;
+	border-radius: 50% !important;
+	animation: k-loading 2s ease infinite;
+	background: #FDA543;
+	animation-delay: -0.5s
+}
+
+.k-ball7d {
+	border: 0;
+	margin: 0;
+	width: 8px;
+	height: 8px;
+	position: absolute;
+	border-radius: 50% !important;
+	animation: k-loading 2s ease infinite;
+	background: #193B48
+} 
+
+/*module*/ 
+.module{
+	max-width: 400px;
+	padding: 2% 3%;
+	text-align: center;
+	color: #fff;
+	border-radius: 10px;
+	background: rgba(0,0,0,0.5);
+	position: absolute;
+	top: 50%;
+	left: 50%;
 }

@@ -20,15 +20,33 @@ document.onkeydown = function(event){
         };
 };
 login.onclick = function(e){
-    login.innerHTML = "正在登录···";
+	ym.init.LOADING({
+		tap:login,
+		select:'正在登录',
+		style:`position:absolute;top:${login.offsetHeight / 6}px;left:${login.offsetWidth / 4}px;`
+	});
     if (!user.value){
-            alert("请输入用户名！");
-            login.innerHTML = "登录";
+    		ym.init.MBOX({
+    			msg:'请输入用户名！',
+    			dely:3000,
+    			redom:'.coffeeLogin',
+    			resetdom:{
+    				inner:'登录',
+    				tag:user
+    			}
+    		});
             return false;
         };
     if (!pwd.value){
-            alert("请输入密码！");
-            login.innerHTML = "登录";
+            ym.init.MBOX({
+    			msg:'请输入密码！',
+    			dely:3000,
+    			redom:'.coffeeLogin',
+    			resetdom:{
+    				inner:'登录',
+    				tag:user
+    			}
+    		});
             return false;
         };
     jzm.paraMessage('loadAjaxdata',{url:"admin_login",xmldata:"adminName="+user.value +"&adminPwd="+pwd.value,callbackfn:function(reg){
