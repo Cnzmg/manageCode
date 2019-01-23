@@ -1,0 +1,23 @@
+/*login*/
+@media (min-width: 1200px) {
+	.login-form .login-input span{
+		width: 35px;
+	}
+}
+@media (min-width: 992px) {
+	.login-form .login-input span{
+		width: 35px;
+	}
+}
+@media (min-width: 768px) {
+	.login-form .login-input span{
+		width: 35px;
+	}
+}
+@media (max-width: 768px) {
+	.login{
+		position: absolute;
+		top: 0;
+		left: 0;
+	}
+}

@@ -1,0 +1,70 @@
+html,body{
+	height: 100%;
+	background: rgb(42, 45, 53);
+}
+body{
+	min-width: 320px;
+	overflow: hidden;
+}
+/** login **/
+.login{
+	position: absolute;
+	top: 18%;
+	left: 33%;
+	background: rgba(0,0,0,0.5);
+	padding:30px;
+	box-sizing: border-box;
+}
+.login-img{
+	width: 25%;
+	height: 25%;
+	text-align: center;
+	margin: 0 auto;
+}
+.login-img img{
+	width: 100%;
+}
+.login-form{
+	color: #fff;
+}
+.login-form h2{
+	text-align: center;
+	font-size: 1.8rem;
+}
+.login-form .login-input{
+	overflow: hidden;
+	width: 80%;
+	margin: 30px auto;
+}
+.login-form input[type=text],.login-form input[type=password]{
+	width: 84%;
+	border: 0;
+	border-bottom: 1px solid #fff;
+	background: none;
+	line-height: 40px;
+	font-size: 1.6rem;
+	float: right;
+}
+.login-form .login-input span{
+	margin-top: 10px;
+	display: inline-block;
+	width:35px;
+	height: 2.6rem;
+	background: url(/manageCode/src/public/images/icons/land-icon.png) no-repeat;
+	background-size: 100%;
+	float: left;
+}
+.login-form .login-input span{
+	background-position:0 -31px;
+}
+.login-form .login-pwd span{
+	background-position:0 0;
+}
+.login-remeber{
+	margin-left: 23%;
+}
+.coffeeLogin{
+	width: 40%;
+	margin: 5% 30%;
+	height: 30px;
+}
