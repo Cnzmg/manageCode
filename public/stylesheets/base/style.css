@@ -12,7 +12,7 @@ body{
 	top: 18%;
 	left: 33%;
 	background: rgba(0,0,0,0.5);
-	padding:30px;
+	padding:20px 0;
 	box-sizing: border-box;
 }
 .login-img{
@@ -61,7 +61,12 @@ body{
 	background-position:0 0;
 }
 .login-remeber{
-	margin-left: 23%;
+	margin-left: 16%;
+}
+.login-qecode,.login-qecode:hover{
+	cursor: pointer;
+	text-decoration: none;
+	float: right;
 }
 .coffeeLogin{
 	position: relative;
@@ -69,8 +74,12 @@ body{
 	margin: 5% 30%;
 	height: 30px;
 	text-align: center;
+	background: #FFF100;
 }
-
+.login-item{
+	width: 80%;
+	margin: 0 auto;
+}
 
 /*loading active*/
 
@@ -123,12 +132,11 @@ body{
 
 /*module*/ 
 .module{
-	max-width: 400px;
-	padding: 2% 3%;
+	padding: 2% 6%;
 	text-align: center;
 	color: #fff;
 	border-radius: 10px;
-	background: rgba(0,0,0,0.5);
+	background: rgba(0,0,0,0.8);
 	position: absolute;
 	top: 50%;
 	left: 50%;

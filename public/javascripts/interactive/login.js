@@ -2,8 +2,8 @@ var user = document.getElementById("user"),pwd =document.getElementById("pwd"),l
 window.onload = function(){
     localStorage.removeItem("token");
     if(localStorage.getItem("remember")){
-            user.value = jzm.uncompileStr(JSON.parse(localStorage.getItem("remember")).name);
-            pwd.value = jzm.uncompileStr(JSON.parse(localStorage.getItem("remember")).pwd);
+            user.value = ym.init.COMPILESTR.decrypt(JSON.parse(localStorage.getItem("remember")).name);
+            pwd.value = ym.init.COMPILESTR.decrypt(JSON.parse(localStorage.getItem("remember")).pwd);
             $("#remember").attr("checked",true);
             $("label[for='remember']").children('div').addClass('checked');
         };
@@ -44,29 +44,44 @@ login.onclick = function(e){
     			redom:'.coffeeLogin',
     			resetdom:{
     				inner:'登录',
-    				tag:user
+    				tag:pwd
     			}
     		});
             return false;
-        };
-    jzm.paraMessage('loadAjaxdata',{url:"admin_login",xmldata:"adminName="+user.value +"&adminPwd="+pwd.value,callbackfn:function(reg){
-      if (reg.statusCode.status == 2000){
-              localStorage.setItem("token",JSON.stringify({uname:jzm.compileStr(reg.id.toString()),utoken:jzm.compileStr(reg.token)}));
+      };
+//    {adminName:user.value,adminPwd:pwd.value}   'adminName=' + user.value +"&adminPwd=" + pwd.value
+    ym.init.XML('POST',JSON.parse(localStorage.getItem('_e')).URLS.Development_Server_ + "admin_login",false,`adminName=${user.value}&adminPwd=${pwd.value}`,function(_e){
+      if (_e.statusCode.status == 2000){
+              localStorage.setItem("token",JSON.stringify({uname:ym.init.COMPILESTR.encryption(_e.id.toString()),utoken:ym.init.COMPILESTR.encryption(_e.token)}));
               if($("#remember").is(":checked"))
                   {
-                      localStorage.setItem("remember",JSON.stringify({name:jzm.compileStr(user.value),pwd:jzm.compileStr(pwd.value)}));
+                      localStorage.setItem("remember",JSON.stringify({name:ym.init.COMPILESTR.encryption(user.value),pwd:ym.init.COMPILESTR.encryption(pwd.value)}));
                   }
               else
                   {
                       localStorage.removeItem("remember");
                   };
-              jzm.paraMessage('rangelider');
-              window.location.href = "./index.html?v=" + jzm.randomNum();
+//              ym.init.paraMessage('rangelider');
+				ym.init.XML(
+					'POST',
+					JSON.parse(localStorage.getItem('_e')).URLS.Development_Server_ + "index_info",
+					false,
+					"id="+ ym.init.COMPILESTR.decrypt(JSON.parse(localStorage.getItem("token")).uname) +"&token="+ ym.init.COMPILESTR.decrypt(JSON.parse(localStorage.getItem("token")).utoken) + "&url=/manage/index.html",
+					function(res) {
+						ym.init._COLUMN.varel(res.adminInfo.roleInfo.permissionInfoList);
+				});
+//              window.location.href = "./index.html?d=#" + ym.init.GETRANDOM();
           }
-      else
-          {
-              alert(reg.statusCode.msg);
-              login.innerHTML = "登录";
+      else{
+              ym.init.MBOX({
+              	msg:_e.statusCode.msg,
+              	dely:3000,
+              	redom:'.coffeeLogin',
+    			resetdom:{
+    				inner:'登录',
+    				tag:login
+    			}
+              });
           };
-    },type:"POST",trcny:true})
+    })
 };
