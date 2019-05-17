@@ -53,6 +53,67 @@
 				ace: 'ace'
 			});
 		</script>
+		
+		
+		<script type="text/javascript">
+			var str = 
+			[
+				{
+					name:'cnzmg1----',
+					age:'18-------',
+					tt:{
+						tap:'123------',
+						al:'879------'
+					}
+				},
+				{
+					name:'cnzmg1----',
+					age:'18-------',
+					tt:{
+						tap:'123------',
+						al:'879------'
+					}
+				},
+				{
+					name:'cnzmg1----',
+					age:'18-------',
+					tt:{
+						tap:'123------',
+						al:'879------'
+					}
+				},
+				{
+					name:'cnzmg1----',
+					age:'18-------',
+					tt:{
+						tap:'123------',
+						al:'879------'
+					}
+				},
+				{
+					name:'cnzmg1----',
+					age:'18-------',
+					tt:{
+						tap:'123------',
+						al:'879------'
+					}
+				}
+			]
+			for(let i = 0; i < str.length; i++){
+				for(let key in str[i]){
+					if(typeof str[i][key] == 'object'){
+						for(let o in str[i][key]){
+							document.write(str[i][key][o]);
+						}
+					}else{
+						document.write(str[i][key]);
+					}
+					if(key === "tt"){
+						document.write('<br />');
+					}
+				}
+			}
+		</script>
 	</body>
 
 </html>

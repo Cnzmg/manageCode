@@ -13,9 +13,9 @@ var config = {
         clsid:'d27cdb6e-ae6d-11cf-96b8-444553540000',
         m:'2c7f05249a69e73bbb2c5324c3bc3e39,794c7640f72836c41c0c943b21bd3da5',
         Magnification:{
-        	top:0.68,
+        	top:0.69,
         	left:0.28,
-        	iwidth:0.427,
+        	iwidth:0.44,
         	iheight:0.24
         },
         SharedCoffee:function(){
@@ -72,7 +72,7 @@ var config = {
     setQrcode:function(e){  //二维码失效
         var parages = this.parages;
         jQuery.ajax({
-            url: parages.httpUpdataInline + '?v=' + config.reoutes(),
+            url: parages.httpUpdataInlocal + '?v=' + config.reoutes(),
             type:'GET',
             dataType:'json',
             data:{type:3,verify:config.parages.m.split(',')[0],secret:e}
@@ -107,7 +107,7 @@ var config = {
         parages = this.parages;
         config.parages.SharedCoffee();
         jQuery.ajax({
-            url:parages.httpUpdataInline + '?v=' + config.reoutes(),
+            url:parages.httpUpdataInlocal + '?v=' + config.reoutes(),
             type:'GET',
             dataType:'json',
             data:{type:1,verify:config.getQrcode.getQueryString('secter')}
