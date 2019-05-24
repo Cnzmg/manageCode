@@ -6,6 +6,24 @@ body{
 	min-width: 320px;
 	overflow: hidden;
 }
+
+/* icons */
+.icon_user {
+	width: 3rem; 
+	height: 3rem;
+    vertical-align: -0.15rem;
+    fill: currentColor;
+    overflow: hidden;
+ }
+ .icon_pwd {
+	width: 2.6rem; 
+	height: 2.6rem;
+    vertical-align: -0.15rem;
+    fill: currentColor;
+    overflow: hidden;
+ }
+
+
 /** login **/
 .login{
 	position: absolute;
@@ -16,8 +34,8 @@ body{
 	box-sizing: border-box;
 }
 .login-img{
-	width: 25%;
-	height: 25%;
+	width: 12%;
+	height: 12%;
 	text-align: center;
 	margin: 0 auto;
 }
@@ -35,9 +53,10 @@ body{
 	overflow: hidden;
 	width: 80%;
 	margin: 30px auto;
+	position: relative;
 }
 .login-form input[type=text],.login-form input[type=password]{
-	width: 84%;
+	width: 90%;
 	border: 0;
 	border-bottom: 1px solid #fff;
 	background: none;
@@ -48,20 +67,15 @@ body{
 .login-form .login-input span{
 	margin-top: 10px;
 	display: inline-block;
-	width:35px;
 	height: 2.6rem;
-	background: url(/manageCode/src/public/images/icons/land-icon.png) no-repeat;
 	background-size: 100%;
 	float: left;
-}
-.login-form .login-input span{
-	background-position:0 -31px;
-}
-.login-form .login-pwd span{
-	background-position:0 0;
+	position: absolute;
+	top: 0;
+	left: 0;
 }
 .login-remeber{
-	margin-left: 16%;
+	margin-left: 4%;
 }
 .login-qecode,.login-qecode:hover{
 	cursor: pointer;

