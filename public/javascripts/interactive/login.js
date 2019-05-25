@@ -1,107 +1,85 @@
-var user = document.getElementById("user"),pwd =document.getElementById("pwd"),login = document.getElementById("coffeeLogin");
-document.addEventListener('DOMContentLoaded', function(){
-    localStorage.removeItem("token");
-    if(localStorage.getItem("remember")){
-            user.value = ym.init.COMPILESTR.decrypt(JSON.parse(localStorage.getItem("remember")).name);
-            pwd.value = ym.init.COMPILESTR.decrypt(JSON.parse(localStorage.getItem("remember")).pwd);
-            $("#remember").attr("checked",true);
-            $("label[for='remember']").children('div').addClass('checked');
-        };
-    //box position
-    ym().css('box-login',{
-    	'left':window.innerWidth/2 - 250,
-    	'top':window.innerHeight/2 - 185
-	});
-	
-	new Vue({
-		el: '#app',
-		data:function(){
-			return {
-				remember: true
-			}
-		}
-	})
+let vue = new Vue({
+    el: '#app',
+    data: () => {
+        return {
+            remember: false,  //记住缓存
+            user:{
+                name: '',  //用户
+                pwd: ''		//密码
+            },
+            loading: false
+        }
+    },
+    created:function(){
+        const user = document.getElementById("user"),pwd =document.getElementById("pwd"),itself = this;
+        document.addEventListener('DOMContentLoaded', function(){
+            localStorage.removeItem("token");
+            //box position
+                ym().css('box-login',{
+                    'left':window.innerWidth/2 - 250,
+                    'top':window.innerHeight/2 - 185
+            });
+
+            if(localStorage.getItem('remember')){  //历史账号回显
+                itself.remember = true;
+                itself.user.name = ym.init.COMPILESTR.decrypt(JSON.parse(localStorage.getItem('remember')).name);
+                itself.user.pwd = ym.init.COMPILESTR.decrypt(JSON.parse(localStorage.getItem('remember')).pwd);
+            }
+        
+            document.onkeydown = function(event){  //键盘回车出发
+                event = event ? event : (window.event ? window.event : null);
+                if (event.keyCode == 13){
+                        itself.login();
+                    };
+            };
+    });
+    },
+    methods:{
+        Error(err){
+            this.$message.error('错了哦，' + err);
+        },
+        checked_change(){
+            if(this.remember == true){
+                localStorage.setItem("remember",JSON.stringify({name:ym.init.COMPILESTR.encryption(user.value),pwd:ym.init.COMPILESTR.encryption(pwd.value)}));
+            }
+        },
+        login(){
+            const itself = this;
+            itself.loading = true;
+            ym.init.XML({
+                method:'POST',
+                uri:JSON.parse(localStorage.getItem('_e')).URLS.Development_Server_ + "admin_login",
+                async:false,
+                xmldata:{
+                    adminName: user.value,
+                    adminPwd: pwd.value
+                },
+                done:function(_e){
+                    if (_e.statusCode.status == 2000){
+                        if(!itself.remember) localStorage.removeItem('remember');
+                        localStorage.setItem("token",JSON.stringify({uname:ym.init.COMPILESTR.encryption(_e.id.toString()),utoken:ym.init.COMPILESTR.encryption(_e.token)}));
+                        ym.init.XML({
+                            method:'POST',
+                            uri:JSON.parse(localStorage.getItem('_e')).URLS.Development_Server_ + "index_info",
+                            async:false,
+                            xmldata:{id: ym.init.COMPILESTR.decrypt(JSON.parse(localStorage.getItem("token")).uname),token:ym.init.COMPILESTR.decrypt(JSON.parse(localStorage.getItem("token")).utoken),url:"/manage/index.html"},
+                            done:function(res) {
+                                ym.init._COLUMN.varel(res.adminInfo.roleInfo.permissionInfoList,'tr');
+                        }});
+                     setTimeout(()=> {
+                        location.href = "./views/common/index.htm?hash:" + ym.init.GETRANDOM(8);
+                     }, 500);
+                    }
+                else{
+                        itself.Error(_e.statusCode.msg);
+                        setTimeout(()=> {
+                            itself.loading = false;
+                        },500)
+                    };
+            }})
+        }
+    }
 });
-document.onkeydown = function(event){
-    event = event ? event : (window.event ? window.event : null);
-    if (event.keyCode == 13){
-            login.onclick();
-        };
-};
-login.onclick = function(e){
-	ym.init.LOADING({
-		tap:login,
-		select:'正在登录',
-		style:`position:absolute;top:${login.offsetHeight / 6}px;left:${login.offsetWidth / 4}px;`
-	});
-    if (!user.value){
-    		ym.init.MBOX({
-    			msg:'请输入用户名！',
-    			dely:3000,
-    			redom:'.coffeeLogin',
-    			resetdom:{
-    				inner:'登录',
-    				tag:user
-    			}
-    		});
-            return false;
-        };
-    if (!pwd.value){
-            ym.init.MBOX({
-    			msg:'请输入密码！',
-    			dely:3000,
-    			redom:'.coffeeLogin',
-    			resetdom:{
-    				inner:'登录',
-    				tag:pwd
-    			}
-    		});
-            return false;
-      };
-//    {adminName:user.value,adminPwd:pwd.value}   'adminName=' + user.value +"&adminPwd=" + pwd.value
-    ym.init.XML({method:'POST',uri:JSON.parse(localStorage.getItem('_e')).URLS.Development_Server_ + "admin_login",async:false,xmldata:{adminName:user.value,adminPwd:pwd.value},done:function(_e){
-		if (_e.statusCode.status == 2000){
-              localStorage.setItem("token",JSON.stringify({uname:ym.init.COMPILESTR.encryption(_e.id.toString()),utoken:ym.init.COMPILESTR.encryption(_e.token)}));
-              if($("#remember").is(":checked"))
-                  {
-                      localStorage.setItem("remember",JSON.stringify({name:ym.init.COMPILESTR.encryption(user.value),pwd:ym.init.COMPILESTR.encryption(pwd.value)}));
-                  }
-              else
-                  {
-                      localStorage.removeItem("remember");
-                  };
-//              ym.init.paraMessage('rangelider');
-				ym.init.XML({
-					method:'POST',
-					uri:JSON.parse(localStorage.getItem('_e')).URLS.Development_Server_ + "index_info",
-					async:false,
-					xmldata:{id: ym.init.COMPILESTR.decrypt(JSON.parse(localStorage.getItem("token")).uname),token:ym.init.COMPILESTR.decrypt(JSON.parse(localStorage.getItem("token")).utoken),url:"/manage/index.html"},
-					done:function(res) {
-						ym.init._COLUMN.varel(res.adminInfo.roleInfo.permissionInfoList,'tr');
-				}});
-//              window.location.href = "./index.html?d=#" + ym.init.GETRANDOM();
-          }
-      else{
-              ym.init.MBOX({
-              	msg:_e.statusCode.msg,
-              	dely:3000,
-              	redom:'.coffeeLogin',
-    			resetdom:{
-    				inner:'登录',
-    				tag:login
-    			}
-              });
-          };
-    }})
-};
-
-
-jQuery('#login-qrcode').bind('click',function(_e){
-	ym.init.MBOX({
-		msg:'功能开发中',
-		dely:3000
-	});
-})
 
 
 // var el = document.createElement("script"), tyihead = document.querySelector("head"), fn = res.Fn;

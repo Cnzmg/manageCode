@@ -59,10 +59,10 @@ ym.init = {
 		if(res != null) return decodeURI(res[2]);
 		return null;
 	},
-	GETRANDOM:function(){
-		argument = arguments[0] || 12;
-		var m = "", i = 0; str = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-		for(let i = 0; i < argument; i++){
+	GETRANDOM:function(n){
+		n = arguments[0] || 12;
+		var m = "", i = 0, str = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+		for(let i = 0; i < n; i++){
 			m += str.charAt(Math.floor(Math.random() * str.length));
 		}
 		return m;
@@ -83,6 +83,8 @@ ym.init = {
 		return code;
 	},
 	LOADING:function(){
+		//  按钮动画  
+		//  模态四角动画  
 		switch(typeof arguments[0]){
 			case 'object':
 				jQuery(arguments[0].tap).html(`<div class="k-ball-holder" style="${arguments[0].style}">${ym.init.plugin.loading}<div style="margin-left:60%;">${arguments[0].select}</div></div>`);  //改变提交的方式
@@ -91,8 +93,7 @@ ym.init = {
 				console.log(2);
 		}
 	},
-	getDateTime:function(data)
-	{
+	getDateTime:function(data){
 			var date = new Date(data);   //如果date为10位不需要乘1000
 			var Y = date.getFullYear() + '-';
 			var M = (date.getMonth()+1 < 10 ? '0'+(date.getMonth()+1) : date.getMonth()+1) + '-';
@@ -101,7 +102,7 @@ ym.init = {
 			var m = (date.getMinutes() <10 ? '0' + date.getMinutes() : date.getMinutes()) + ':';
 			var s = (date.getSeconds() <10 ? '0' + date.getSeconds() : date.getSeconds());
 
-			return Y+M+D+h+m+s;
+			return Y + M + D + h + m + s;
 	},
 	MBOX:function(){
 		if(arguments[0].redom){
@@ -370,3 +371,4 @@ if (typeof module !== 'undefined' && !module.nodeType && module.exports) {
 //   	new Foo.getName();	//
 //   	new Foo().getName();
 // 		new new Foo().getName();
+
