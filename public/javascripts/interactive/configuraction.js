@@ -1,5 +1,4 @@
-import emement from '../plugin/element.min.js'
-
+import style from '../../stylesheets/base/style.css'
 import media from '../../stylesheets/base/mediasheets.css'
 import app from '../../../app.js'
 import json from '../config/json/configuraction.json'
