@@ -33,5 +33,6 @@
     "SissionHref":{
         "URI":["ManagerUserList","ManagerUserLog","ProductList","FormulaList","InventoryList","DeviceList","DeviceApplicationUpdate","WebAdvertising","VideoAdvertisement","VideoAdvertisementList","UserStatistics","MerchantStatistics","OrdinaryUserList","MembershipGrade","FeedbackInformation","CouponList","OrderList","PerationList","PersonalInformation"],
         "Functions":[]
-    }
+    },
+    "successfull": "6666"
 }
