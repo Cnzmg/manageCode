@@ -21,6 +21,26 @@
 	<div id="c-container-list" style="height: 100%;" data-uri="find_formula_list">
 		<el-container>
 			<el-main>
+				<el-form>
+					<el-input placeholder="请输入内容" v-model="searchVal" class="_searchVal">
+						<el-select v-model="searchName" class="_searchVal_select" slot="prepend" placeholder="请选择">
+							<el-option label="配方名称/ID" value="name"></el-option>
+						</el-select>
+					</el-input>
+					<div class="_search_centent">
+						<el-button>机器类型</el-button>
+						<el-select v-model="select" slot="prepend" placeholder="请选择">
+							<el-option label="不限" value="machineType:"></el-option>
+							<el-option label="大型柜式机" value="machineType:1"></el-option>
+							<el-option label="小型桌面机" value="machineType:2"></el-option>
+						</el-select>
+					</div>
+
+					<el-button icon="el-icon-search" class="_search_btn" @click="list(searchName,searchVal,select)">搜索
+					</el-button>
+				</el-form>
+
+
 				<template>
 					<el-table :data="tableData" stripe style="width: 100%">
 						<el-table-column prop="formulaId" label="配方ID">
@@ -28,6 +48,18 @@
 						<el-table-column prop="formulaName" label="配方名称">
 						</el-table-column>
 						<el-table-column prop="createTime" label="创建时间">
+						</el-table-column>
+						<el-table-column label="设备类型">
+							<template slot-scope="scope">
+								<div slot="reference" class="name-wrapper">
+									<el-tag size="medium">{{ (scope.row.machineType == 1 ? "大型柜式机" : "小型桌面机" ) }}</el-tag>
+								</div>
+							</template>
+						</el-table-column>
+						<el-table-column prop="formulaTemperature" label="是否可冷">
+							<template slot-scope="scope">
+								{{ (scope.row.formulaTemperature == 1 ? "是" : "否" ) }}
+							</template>
 						</el-table-column>
 						<el-table-column fixed="right" label="操作">
 							<template slot-scope="scope">

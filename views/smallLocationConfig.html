@@ -19,7 +19,7 @@
 
 
 <body class="_scrollbar">
-    <div id="c-container-list" style="height: 100%;" data-uri="find_machine_advertisement_list">
+    <div id="c-container-list" style="height: 100%;" data-uri="find_machine_poi_list">
         <el-container>
             <el-main>
                 <el-form>
@@ -34,12 +34,18 @@
                 </el-form>
                 <template>
                     <el-table :data="tableData" stripe style="width: 100%">
-                        <el-table-column prop="madId" label="ID"></el-table-column>
-                        <el-table-column prop="madTitle" label="视频名称"></el-table-column>
-                        <el-table-column prop="madUrl" label="视频地址"></el-table-column>
-                        <el-table-column prop="madStatus" label="状态"></el-table-column>
-                        <el-table-column prop="madTime" label="上传时间"></el-table-column>
-                        <el-table-column prop="madOrder" label="排序"></el-table-column>
+                        <el-table-column prop="poiId" label="ID"></el-table-column>
+                        <el-table-column prop="longitude" label="经度"></el-table-column>
+                        <el-table-column prop="latitude" label="纬度"></el-table-column>
+                        <el-table-column prop="addr" label="详细地址"></el-table-column>
+                        <el-table-column prop="mapMarkerIcon" label="麻点图标"></el-table-column>
+                        <el-table-column prop="province" label="省"></el-table-column>
+                        <el-table-column prop="city" label="市"></el-table-column>
+                        <el-table-column prop="district" label="区"></el-table-column>
+                        <el-table-column prop="machineUrl" label="大楼外景图"></el-table-column>
+                        <el-table-column prop="hide" label="是否显示"></el-table-column>
+                        <el-table-column prop="machineCount" label="设备数量"></el-table-column>
+                        <el-table-column prop="numberList" label="设备"></el-table-column>
 
                         <el-table-column fixed="right" label="操作">
                             <template slot-scope="scope">

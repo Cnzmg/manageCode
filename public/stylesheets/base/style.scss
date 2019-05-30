@@ -279,7 +279,7 @@ ul,ol{
 	  background: #fff100;
   }
   .el-main{
-	//   padding: 0 !important;
+	  padding: 0 !important;
   }
   ._scrollbars::-webkit-scrollbar{
 	width: 10px;
@@ -302,10 +302,32 @@ ul,ol{
   ._scrollbar{
 	overflow-y: auto;
 	margin-top: 40.5px;
+	background: #fff
   }
-  
   .el-pagination {
     float: right;
     margin-right: 30px;
 	margin-bottom: 212px;
 }
+.el-form{
+	margin: 10px;
+}
+._search_btn{
+	margin-top: 10px;
+}
+	._searchVal{
+		width:400px;
+	}
+	._searchVal_select{
+		width: 120px;
+		margin: 10px 0;
+	}
+	._search_centent{
+		margin: 10px 0;
+	}
+	.more_search{
+		margin:10px 0;
+		color: #40b8ff;
+		display: block;
+		cursor:pointer;
+	}

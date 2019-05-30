@@ -49,7 +49,7 @@ new Vue({
                         <el-menu-item-group>`;
                     for(let j = 0; j < tag[i].pageInfoList.length; j ++){
                         // _tag += `<el-menu-item @click=Href({'uri':'${tag[i].pageInfoList[j].pageUrl}','title':'${tag[i].pageInfoList[j].pageName}'}) index="${i + 1}-${j}">${tag[i].pageInfoList[j].pageName}</el-menu-item>`;
-                        _tag += `<el-menu-item @click=Href({'uri':'../formulaList.html?hash:iforx650','title':'${tag[i].pageInfoList[j].pageName}'}) index="${i + 1}-${j}">${tag[i].pageInfoList[j].pageName}</el-menu-item>`;
+                        _tag += `<el-menu-item @click=Href({'uri':'../advertisementRootList.html?hash:iforx650','title':'${tag[i].pageInfoList[j].pageName}'}) index="${i + 1}-${j}">${tag[i].pageInfoList[j].pageName}</el-menu-item>`;
                     };
                 _tag += `</el-menu-item-group>
                 </el-submenu>`;
