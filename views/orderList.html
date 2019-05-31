@@ -1,256 +1,104 @@
 <!DOCTYPE html>
 <!--[if IE 9 ]><html class="ie9"><![endif]-->
-    <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
-        <meta name="format-detection" content="telephone=no">
-        <meta charset="UTF-8">
 
-        <meta name="description" content="Violate Responsive Admin Template">
-        <meta name="keywords" content="Super Admin, Admin, Template, Bootstrap">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+    <meta name="format-detection" content="telephone=no">
+    <meta charset="UTF-8">
 
-        <title>广东圆梦实业发展有限公司</title>
+    <meta name="description" content="共享咖啡管理后台">
+    <meta name="keywords" content="yuanmeng,ym,圆梦,系统,后台系统,咖啡蜗,蜗牛,大正集团">
+    <meta name="renderer" content="webkit">
+    <link rel="stylesheet" href="../../public/stylesheets/plugin/bootstrap.min.css">
+    <link rel="stylesheet" href="../../public/stylesheets/plugin/element.min.css">
+    <script src="../../public/javascripts/plugin/vue.js"></script>
+    <script src="../../public/javascripts/plugin/element.min.js"></script>
 
-        <!-- CSS -->
-        <link href="css/bootstrap.min.css" rel="stylesheet">
-        <link href="css/animate.min.css" rel="stylesheet">
-        <link href="css/font-awesome.min.css" rel="stylesheet">
-        <link href="css/form.css" rel="stylesheet">
-        <link href="css/calendar.css" rel="stylesheet">
-        <link href="css/style.css" rel="stylesheet">
-        <link href="css/icons.css" rel="stylesheet">
-        <link href="css/generics.css" rel="stylesheet">
-        <link rel="icon" href="img/bitbug_favicon.ico" type="image/x-icon" />
-        <link rel="stylesheet" type="text/css" href="page/paging.css" />
-        <script type="text/javascript" src="js/config/config.js"></script>
-        <script type="text/javascript" src="js/My97DatePicker/WdatePicker.js"></script>
-        <style media="screen">
-          .article{
-            background:rgba(0,0,0,0.75);
-          }
-          #select-btn-true{
-          	line-height: 30px;
-          	text-align: center;
-          }
-          #select-btn-true span{
-          	cursor: pointer;
-          	margin: 0 20px;
-          	font-size: 14px;
-          }
-          #select-btn-true i{
-          	display: inline-block;
-          	width: 10px;
-          	height: 10px;
-          	border: 1px solid #000;
-          	margin-right: 3px;
-          }
-        </style>
-    </head>
-    <body id="skin-cloth">
-<div id="c-container-body" style="height: 100%;">
-        <header id="header" class="media">
-            <a href="" id="menu-toggle"></a>
-            <a class="logo pull-left" href="index.html">咖啡蜗后台管理系统</a>
+    <title>广东圆梦实业发展有限公司</title>
+</head>
 
-            <div class="media-body">
-                <div class="media" id="top-menu">
-                    <div id="time" class="pull-right">
-                        <span id="hours"></span>
-                        :
-                        <span id="min"></span>
-                        :
-                        <span id="sec"></span>
+
+<body class="_scrollbar">
+    <div id="c-container-list" style="height: 100%;" data-uri="find_order_list">
+        <el-container>
+            <el-main>
+                <el-form>
+                    <el-input placeholder="请输入内容" v-model="searchVal" class="_searchVal">
+                        <el-select v-model="searchName" class="_searchVal_select" slot="prepend" placeholder="请选择">
+                            <el-option label="用户名/设备名/订单号" value="name"></el-option>
+                        </el-select>
+                    </el-input>
+                    <div class="_search_centent" v-show="more">
+                        <el-button>消费类型</el-button>
+                        <el-select v-model="select" slot="prepend" placeholder="请选择">
+                            <el-option label="不限" value="consumptionType:"></el-option>
+                            <el-option label="网页消费" value="consumptionType:1"></el-option>
+                            <el-option label="机器直销" value="consumptionType:2"></el-option>
+                            <el-option label="网页充值" value="consumptionType:3"></el-option>
+                        </el-select>
+                    </div>
+                    <div class="_search_centent" v-show="more">
+                        <el-button>订单状态</el-button>
+                        <el-select v-model="selectFil" slot="prepend" placeholder="请选择">
+                            <el-option label="不限" value="orderStatus:"></el-option>
+                            <el-option label="未支付" value="orderStatus:1"></el-option>
+                            <el-option label="已支付" value="orderStatus:2"></el-option>
+                            <el-option label="已退款" value="orderStatus:3"></el-option>
+                            <el-option label="已完成" value="orderStatus:4"></el-option>
+                            <el-option label="已取消" value="orderStatus:5"></el-option>
+                            <el-option label="制作中" value="orderStatus:6"></el-option>
+                            <el-option label="未兑换" value="orderStatus:7"></el-option>
+                            <el-option label="已兑换" value="orderStatus:8"></el-option>
+                            <el-option label="已过期" value="orderStatus:9"></el-option>
+                        </el-select>
                     </div>
 
-                    <div class="media-body" style="line-height:39px;">
-                        <!-- <input type="text" class="main-search"> -->
-                        广东圆梦实业发展有限公司
+                    
+                    <div class="more_search el-icon-circle-plus-outline" v-show="!more" @click="more = !more"> 更多搜索条件
                     </div>
-                </div>
-            </div>
-        </header>
+                    <div class="more_search el-icon-remove-outline" v-show="more" @click="more = !more"> 收起 </div>
 
-        <div class="clearfix"></div>
+                    <el-button icon="el-icon-search" class="_search_btn" @click="list(searchName,searchVal,select,selectFil)">搜索
+                    </el-button>
+                </el-form>
 
-        <section id="main" class="p-relative" role="main">
+                <template>
 
-            <!-- Sidebar -->
-            <aside id="sidebar">
+                    <el-table :data="tableData" stripe style="width: 100%">
+                        <el-table-column prop="orderId" label="订单号"></el-table-column>
+                        <el-table-column prop="spendingMoney" label="消费金额"></el-table-column>
+                        <el-table-column prop="paymentMoney" label="支付金额"></el-table-column>
 
-                <!-- Sidbar Widgets -->
-                <div class="side-widgets overflow">
-                    <!-- Profile Menu -->
-                    <div class="text-center s-widget m-b-25 dropdown" id="profile-menu">
-                        <a href="" data-toggle="dropdown">
-                            <img class="profile-pic animated" src="img/1516775224.jpg" alt="">
-                        </a>
-                        <ul class="dropdown-menu profile-menu">
-                        </ul>
-                        <h4 class="m-0" id="usAdministration">Admin</h4>
-                        <span id="Administration"></span>
-                    </div>
+                        <el-table-column prop="paymentType" label="支付类型"></el-table-column>
 
-                    <!-- Calendar -->
-                    <div class="s-widget m-b-25">
-                        <div id="sidebar-calendar"></div>
-                    </div>
+                        <el-table-column prop="consumptionType" label="消费方式"></el-table-column>
+                        <el-table-column prop="orderStatus" label="订单状态">
+                            <template slot-scope="scope"> 
+                                <el-tag size="medium">{{ scope.row.orderStatus }}</el-tag>
+                            </template>
+                        </el-table-column>
+                        <el-table-column prop="paymentTime" label="支付时间"></el-table-column>
 
-                </div>
+                        <el-table-column fixed="right" label="操作">
+                            <template slot-scope="scope">
+                                <el-button type="text" size="small">
+                                    编辑
+                                </el-button>
+                            </template>
+                        </el-table-column>
+                    </el-table>
+                </template>
+                
+                
+                <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange"
+                    :current-page="currentPage" :page-sizes="[10, 20, 30, 40]" :page-size="pageSize"
+                    layout="total, sizes, prev, pager, next, jumper" :total="total">
+                </el-pagination>
+            </el-main>
+        </el-container>
+    </div>
+</body>
 
-                <!-- Side Menu -->
-                <ul class="list-unstyled side-menu" id="J_menuatch">
-
-                </ul>
-
-            </aside>
-
-            <!-- Content -->
-            <section id="content" class="container">
-
-                <!-- Table Striped -->
-                <div class="block-area" id="tableStriped">
-                    <h3 class="block-title spanaction" style="font-size:14px;">订单管理（手机端+设备端）</h3>
-                    <div style="margin:3px 20px;">
-                        <span class="block-title spanaction" style="font-size:12px;width:142px;text-align:center;margin-right:10px;">用户名/设备名/订单号</span>
-
-                        <input type="text" id="name" style="width:200px;background:none;border:1px solid rgba(0,0,0,0.3);height:27px;" />
-                        <span class="block-title" id="seach" style="font-size:12px;padding: 3px 12px;margin-left:70px;cursor:pointer;" onclick="this.setAttribute('data-type','unity');jzm.findOrderList()">搜索</span>
-                        <a class="block-title" style="font-size:12px;padding: 3px 12px;margin-left:70px;cursor:pointer;" href="#" id="pathUrl">导出Excel</a>
-                    </div>
-                    <div style="padding:6px 20px;">
-                        <span class="block-title spanaction" style="font-size:12px;width:112px;text-align:center;margin-right:10px;cursor:pointer;">日期选择：</span>
-                        <span style="font-size:12px;text-align:center;margin-right:10px;cursor:pointer;">
-                            <input type="text" id="startTime" style="background:none;border:1px solid #fff;line-height: 26px;" onClick="WdatePicker({el:this,dateFmt:'yyyy-MM-dd'})" placeholder="起始日期"/> 到
-                            <input type="text" id="endTime" style="background:none;border:1px solid #fff;line-height: 26px;" onClick="WdatePicker({el:this,dateFmt:'yyyy-MM-dd',Mchanged:function(){console.log(123)}})" placeholder="终止日期"/>
-                        </span>
-                    </div>
-                    <form class="typeData" method="post">
-                      <div style="margin:3px 20px;" class="ui_action">
-                          <div  class="block-title spanaction" style="font-size:12px;width:142px;text-align:center;margin-right:10px;">消费类型</div>
-                          <span class="block-title spanaction" data-unity="consumptionType,,findOrderList" style="font-size:12px;cursor:pointer;">不限</span>
-                          <span class="block-title" data-unity="consumptionType,1,findOrderList" style="font-size:12px;cursor:pointer;">网页消费</span>
-                          <span class="block-title" data-unity="consumptionType,2,findOrderList" style="font-size:12px;cursor:pointer;">机器直销</span>
-                          <span class="block-title" data-unity="consumptionType,3,findOrderList" style="font-size:12px;cursor:pointer;">网页充值</span>
-                      </div>
-                      
-                      <div style="margin:3px 20px;" class="ui_action notshop">
-                          <div  class="block-title spanaction" style="font-size:12px;width:142px;text-align:center;margin-right:10px;">订单类型</div>
-                          <span class="block-title spanaction" data-unity="orderType,,findOrderList" style="font-size:12px;cursor:pointer;">不限</span>
-                          <span class="block-title" data-unity="orderType,1,findOrderList" style="font-size:12px;cursor:pointer;">普通订单</span>
-                          <span class="block-title" data-unity="orderType,2,findOrderList" style="font-size:12px;cursor:pointer;">刷单订单</span>
-                          <span class="block-title" data-unity="orderType,3,findOrderList" style="font-size:12px;cursor:pointer;">流水账订单</span>
-                          <span class="block-title" data-unity="orderType,4,findOrderList" style="font-size:12px;cursor:pointer;">客如云账单</span>
-                      </div>
-                      
-                      <div style="margin:3px 20px;" class="ui_action">
-                          <div class="block-title spanaction" style="font-size:12px;width:142px;text-align:center;margin-right:10px;">订单状态</div>
-
-                          <span class="block-title spanaction" data-unity="orderStatus,,findOrderList" style="font-size:12px;cursor:pointer;">不限</span>
-                          <span class="block-title" data-unity="orderStatus,1,findOrderList" style="font-size:12px;cursor:pointer;">未支付</span>
-                          <span class="block-title" data-unity="orderStatus,2,findOrderList" style="font-size:12px;cursor:pointer;">已支付</span>
-                          <span class="block-title" data-unity="orderStatus,3,findOrderList" style="font-size:12px;cursor:pointer;">已退款</span>
-                          <span class="block-title" data-unity="orderStatus,4,findOrderList" style="font-size:12px;cursor:pointer;">已完成</span>
-
-                          <span class="block-title" data-unity="orderStatus,5,findOrderList" style="font-size:12px;cursor:pointer;">已取消</span>
-                          <span class="block-title" data-unity="orderStatus,6,findOrderList" style="font-size:12px;cursor:pointer;">制作中</span>
-                          <span class="block-title" data-unity="orderStatus,7,findOrderList" style="font-size:12px;cursor:pointer;">未兑换</span>
-                          <span class="block-title" data-unity="orderStatus,8,findOrderList" style="font-size:12px;cursor:pointer;">已兑换</span>
-                          <span class="block-title" data-unity="orderStatus,9,findOrderList" style="font-size:12px;cursor:pointer;">已过期</span>
-                      </div>
-                    </form>
-                    <input type="hidden" name="orderType" id="orderType" />
-                    <input type="hidden" name="orderStatus" id="orderStatus" />
-                    <input type="hidden" name="consumptionType" id="consumptionType" />
-
-                    <div class="table-responsive overflow">
-                        <table class="tile table table-bordered table-striped">
-                            <thead>
-                                <tr>
-                                    <th>订单号</th>
-                                    <th>用户名称/ID</th>
-                                    <th onclick="orderTypeSeach(1,1)">商户名/设备名称</th>
-                                    <th onclick="orderTypeSeach(3,1)">消费金额</th>
-                                    <th onclick="orderTypeSeach(4,1)">实际消费</th>
-                                    <th>支付类型</th>
-                                    <th>消费品种</th>
-                                    <th>消费类型</th>
-                                    <th>优惠信息</th>
-                                    <th>订单类型</th>
-                                    <th>订单状态</th>
-                                    <th onclick="orderTypeSeach(5,1)">交易时间</th>
-                                    <th>操作</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tbodyhtml">
-
-                            </tbody>
-                        </table>
-                        <!-- page -->
-                        <div class="col-sm-6" id="page"></div>
-                        <div id="pageTool" class="col-sm-6" ></div>
-                        <input type="hidden" id="pageNums" value="" />
-                    </div>
-                </div>
-            </section>
-            <br/><br/>
-        </section>
-        
-        <div class="editBox" id="editBoxAdd" style="display:none;position: fixed; top: 50%; left: 50%; background-color: rgb(40, 112, 126); z-index: 1500; margin-left: -100px; margin-top: -100px; padding: 10px 20px; box-sizing: border-box; width: 208px; height: 268px;">
-            <div class="block-title">
-            	当前订单号：
-            </div>
-            <div class="order_number" style="margin-top: 10px;">
-            	
-            </div>
-            <div class="block-title" style="font-size:12px;width:100%;text-align:center;margin:20px 0;"> 
-                退款金额
-            </div>
-            <input type="text" name="order" value="" style="background:none;border:1px solid #F2F2F2;width:100%;height:30px;font-size:14px;">
-            <div class="form-group">
-                <div class="col-sm-12" style="text-align:center;margin-top:40px;">
-                    <button class="btn btn-primary" type="button" onclick="jzm.refundMoney('refund');return false;">提交</button>
-                    <button class="btn btn-primary" type="button" onclick="jzm.moduleBox();return false;">关闭</button>
-                </div>
-            </div>
-        </div>
-		</div>
-        <!-- Javascript Libraries -->
-        <!-- jQuery -->
-        <script src="js/jquery.min.js"></script> <!-- jQuery Library -->
-
-        <!-- Bootstrap -->
-        <script src="js/bootstrap.min.js"></script>
-
-        <!-- UX -->
-        <script src="js/scroll.min.js"></script> <!-- Custom Scrollbar -->
-
-        <!-- Other -->
-        <script src="js/calendar.min.js"></script> <!-- Calendar -->
-        <script type="text/javascript" src="js/lbs/messageInfo.js?v=20180726"></script>
-        <!-- All JS functions -->
-        <script src="js/functions.js"></script>
-         <!-- page all -->
-        <script type="text/javascript" src="page/query.js"></script>
-        <script type="text/javascript" src="page/paging.js"></script>
-        <script type="text/javascript">
-            function orderTypeSeach(n,e){
-              if(!localStorage.getItem('stat')){
-                  localStorage.setItem('stat',JSON.stringify({orderLine:n,sort:e}));
-              }else if(JSON.parse(localStorage.getItem('stat')).orderLine == n && JSON.parse(localStorage.getItem('stat')).sort == 1){
-                  localStorage.setItem('stat',JSON.stringify({orderLine:n,sort:2}));
-              }else{
-                localStorage.setItem('stat',JSON.stringify({orderLine:n,sort:e}));
-              }
-                jzm.findOrderList();
-            };
-            //导出ex
-            var path = document.getElementById("pathUrl");
-            path.onclick = function(e){
-               var ch = "&type=2&name=" + $("#name").val() + "&orderType=" + $("#orderType").val() + "&orderStatus=" + $("#orderStatus").val() + "&startTime=" + $("#startTime").val() + "&endTime=" + $("#endTime").val();
-                jzm.paraMessage('loadAjaxdata',{url:"find_order_list",xmldata:ch,callbackfn:function(reg){
-                    window.location.href = httpJoin + reg.path;
-                    console.log(reg);
-                },type:'post',trcny:true});
-            };
-        </script>
-    </body>
 </html>
+                                    
+     

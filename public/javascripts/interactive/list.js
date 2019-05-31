@@ -58,8 +58,10 @@ new Vue({
             if (uri == 'manage_prodcut_list_list') _data['type'] = 1;  //临时处理存在此接口存在type 数值问题
             if (uri == 'manage_machine_version') _data['type'] = 1;  //临时处理存在此接口存在type 数值问题
             if (uri == 'find_machine_advertisement_list') _data['type'] = 1;
+            if (uri == 'manage_advertisement_list_list') _data['type'] = 1;
+            if (uri == 'client_user_list') _data['type'] = 1;
             ym.init.XML({
-                method: (uri == 'find_machine_poi_list' ? "GET" : 'POST'),
+                method: (uri == 'find_machine_poi_list' || uri == 'get_activity_list' ? "GET" : 'POST'),
                 uri: token._j.URLS.Development_Server_ + uri,
                 async: false,
                 xmldata: _data,
@@ -149,7 +151,7 @@ new Vue({
                                 }
                                 break;
                             case `find_machine_poi_list`:
-                                for (let i = 0; i < res.poiList.length; i++) { 
+                                for (let i = 0; i < res.poiList.length; i++) {
                                     xml.push({
                                         poiId: res.poiList[i].poiId,
                                         longitude: res.poiList[i].longitude,
@@ -166,18 +168,118 @@ new Vue({
                                     })
                                 }
                                 break;
-                                case `find_machine_advertisement_list`:
-                                    for (let i = 0; i < res.machineAdvertisementList.length; i++) { 
-                                        xml.push({
-                                            madId: res.machineAdvertisementList[i].madId,
-                                            madTitle: res.machineAdvertisementList[i].madTitle,
-                                            madUrl: res.machineAdvertisementList[i].madUrl,
-                                            madStatus: res.machineAdvertisementList[i].madStatus,
-                                            madTime: res.machineAdvertisementList[i].madTime,
-                                            madOrder: res.machineAdvertisementList[i].madOrder
-                                        })
-                                    }
-                                    break;
+                            case `find_machine_advertisement_list`:
+                                for (let i = 0; i < res.machineAdvertisementList.length; i++) {
+                                    xml.push({
+                                        madId: res.machineAdvertisementList[i].madId,
+                                        madTitle: res.machineAdvertisementList[i].madTitle,
+                                        madUrl: res.machineAdvertisementList[i].madUrl,
+                                        madStatus: res.machineAdvertisementList[i].madStatus,
+                                        madTime: res.machineAdvertisementList[i].madTime,
+                                        madOrder: res.machineAdvertisementList[i].madOrder
+                                    })
+                                }
+                                break;
+                            case `manage_advertisement_list_list`:
+                                for (let i = 0; i < res.advertisementListList.length; i++) {
+                                    xml.push({
+                                        listId: res.advertisementListList[i].listId,
+                                        listName: res.advertisementListList[i].listName,
+                                    })
+                                }
+                                break;
+                            case `statistics_shop`:
+                                for (let i = 0; i < res.package.ShopMachine.length; i++) {
+                                    xml.push({
+                                        adminID: res.package.ShopMachine[i].adminID,
+                                        adminName: res.package.ShopMachine[i].adminName,
+                                        payMoney: res.package.ShopMachine[i].payMoney,
+                                        payCount: res.package.ShopMachine[i].payCount,
+                                        machineCount: res.package.ShopMachine[i].machineCount,
+                                        realName: res.package.ShopMachine[i].realName
+                                    })
+                                }
+                                break;
+                            case `get_activity_list`:
+                                for (let i = 0; i < res.activityList.length; i++) {
+                                    xml.push({
+                                        id: res.activityList[i].id,
+                                        comment: res.activityList[i].comment,
+                                        name: res.activityList[i].name,
+                                        startTime: res.activityList[i].startTime
+                                    })
+                                }
+                                break;
+                            case `client_user_list`:
+                                for (let i = 0; i < res.clientUserList.length; i++) {
+                                    xml.push({
+                                        userId: res.clientUserList[i].userId,
+                                        headPicUrl: res.clientUserList[i].headPicUrl,
+                                        nickName: res.clientUserList[i].nickName,
+                                        mobile: res.clientUserList[i].mobile,
+                                        userType: res.clientUserList[i].userType,
+                                        source: res.clientUserList[i].source,
+                                        userStatus: res.clientUserList[i].userStatus,
+                                        registerTime: res.clientUserList[i].registerTime,
+                                        compensateMilliliter: res.clientUserList[i].compensateMilliliter,
+                                        memberMilliliter: res.clientUserList[i].memberMilliliter
+                                    })
+                                }
+                                break;
+                            case `get_member_list`:
+                                for (let i = 0; i < res.memberRuleList.length; i++) {
+                                    xml.push({
+                                        memberRuleId: res.memberRuleList[i].memberRuleId,
+                                        memberRuleName: res.memberRuleList[i].memberRuleName,
+                                        memberLevel: res.memberRuleList[i].memberLevel,
+                                        duration: res.memberRuleList[i].duration,
+                                        payMoney: res.memberRuleList[i].payMoney,
+                                        discount: res.memberRuleList[i].discount,
+                                        discountsStartTime: res.memberRuleList[i].discountsStartTime,
+                                        discountsEndTime: res.memberRuleList[i].discountsEndTime,
+                                        milliliter: res.memberRuleList[i].milliliter,
+                                        memberPicUrl: res.memberRuleList[i].memberPicUrl
+                                    })
+                                }
+                                break;
+                            case `find_fault_feedback_list`:
+                                for (let i = 0; i < res.faultFeedbackShowList.length; i++) {
+                                    xml.push({
+                                        nickName: res.faultFeedbackShowList[i].nickName,
+                                        faultPhone: res.faultFeedbackShowList[i].faultPhone,
+                                        machineNumber: res.faultFeedbackShowList[i].machineNumber,
+                                        machineAddr: res.faultFeedbackShowList[i].machineAddr,
+                                        faultTime: res.faultFeedbackShowList[i].faultTime,
+                                        faultContent: res.faultFeedbackShowList[i].faultContent,
+                                        orderId: res.faultFeedbackShowList[i].orderId
+                                    })
+                                }
+                                break;
+                            case `find_coupon_list`:
+                                for (let i = 0; i < res.couponInfoList.length; i++) {
+                                    xml.push({
+                                        couponId: res.couponInfoList[i].couponId,
+                                        couponName: res.couponInfoList[i].couponName,
+                                        couponType: res.couponInfoList[i].couponType,
+                                        couponRangeName: res.couponInfoList[i].couponRangeName,
+                                        couponMoney: res.couponInfoList[i].couponMoney,
+                                        couponTime: res.couponInfoList[i].couponTime
+                                    })
+                                }
+                                break;
+                            case `find_order_list`:
+                                for (let i = 0; i < res.orders.length; i++) {
+                                    xml.push({
+                                        orderId: res.orders[i].orderId,
+                                        spendingMoney: res.orders[i].spendingMoney,
+                                        paymentMoney: res.orders[i].paymentMoney,
+                                        paymentType: res.orders[i].paymentType,
+                                        consumptionType: res.orders[i].consumptionType,
+                                        orderStatus: res.orders[i].orderStatus,
+                                        paymentTime: res.orders[i].paymentTime
+                                    })
+                                }
+                                break;
                             default:
                                 break;
                         }
