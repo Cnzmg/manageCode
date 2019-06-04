@@ -20,7 +20,7 @@
 
 <body class="_scrollbar">
     <div id="c-container-list" style="height: 100%;" data-uri="get_activity_list">
-        <el-container>
+        <el-container v-loading.fullscreen.lock="loading">
             <el-main>
                 <el-form>
                     <el-input placeholder="请输入内容" v-model="searchVal" class="_searchVal">

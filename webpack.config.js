@@ -3,7 +3,7 @@ var [path, HtmlWebpackPlugin, MiniCssExtractPlugin, optimizecssassets, uglifyjs]
 ];
 
 module.exports = {
-    mode: 'development',  //模式 production development
+    mode: 'production',  //模式 production development
     optimization: {
         minimizer: [
             new uglifyjs({
@@ -23,6 +23,7 @@ module.exports = {
         contentBase: './dist',
         compress: true
     },
+    devtool: 'eval-source-map',
     output: {
         filename: '[name]._23_aKvs-b8bW2Vg3fwHozO.js',
         path: path.resolve(__dirname, './src/dist/javascripts/')
@@ -31,6 +32,16 @@ module.exports = {
         new HtmlWebpackPlugin({  //login
             template: './src/views/login.html',
             filename: '../login.htm',
+            minify: {
+                removeAttributeQuotes: true,
+                collapseWhitespace: true
+            },
+            hash: true,
+            chunks: ['configration', 'login']
+        }),
+        new HtmlWebpackPlugin({  //tables
+            template: './src/views/tables.html',
+            filename: '../tables.htm',
             minify: {
                 removeAttributeQuotes: true,
                 collapseWhitespace: true

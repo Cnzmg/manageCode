@@ -7,29 +7,29 @@ new Vue({
         }
     },
     created: function () {
-        $('body').on('click', '.template-skins > a', function(e){
-			e.preventDefault();
-			var skin = $(this).data('skin');
-			$('body').attr('id', skin);
-			localStorage.setItem("skin",JSON.stringify({skin:skin}));
+        $('body').on('click', '.template-skins > a', function (e) {
+            e.preventDefault();
+            var skin = $(this).data('skin');
+            $('body').attr('id', skin);
+            localStorage.setItem("skin", JSON.stringify({ skin: skin }));
         });
         //if body not bg
-        if(JSON.parse(localStorage.getItem("skin"))){
+        if (JSON.parse(localStorage.getItem("skin"))) {
             $('body').attr('id', JSON.parse(localStorage.getItem("skin")).skin);
         };
 
-        localStorage.getItem('uri') ? JSON.parse("["+ localStorage.getItem('uri') +"]").forEach( (els, index) => {
+        localStorage.getItem('uri') ? JSON.parse("[" + localStorage.getItem('uri') + "]").forEach((els, index) => {
             console.log('Testing：\n\n' + JSON.stringify(els.uri.split('?')[1]));
         }) : null;
-        if(!sessionStorage.getItem('token')){
+        if (!sessionStorage.getItem('token')) {
             this.$message.error('登陆已失效');
-            setTimeout(()=>{
+            setTimeout(() => {
                 location.href = '../../login.htm?hash:err(o012)';
-            },1000);
+            }, 1000);
         };
 
         //tag 权限列表
-        let tag = JSON.parse(sessionStorage.getItem('tag')), _tag = '',icons = [
+        let tag = JSON.parse(sessionStorage.getItem('tag')), _tag = '', icons = [
             'el-icon-s-cooperation',
             'el-icon-s-order',
             'el-icon-video-camera-solid',
@@ -39,46 +39,100 @@ new Vue({
             'el-icon-s-grid',
             'el-icon-s-tools',
             'el-icon-s-unfold'
-        ];
-        for(let i = 0; i < tag.length; i ++){
+        ], _lists = {
+            _admin: [
+                'tables',
+                'u_Journal'
+            ],
+            _system: [
+                'formulaList',
+                'productList',
+                'detailedList',
+                'equipmentList',
+                'equipmentLongUpdate',
+                'smallLocationConfig',
+                'advertisementRootList',
+                'adRootDetailedList',
+                'chartsActive',
+                'systemUserList',
+                'systemUserLvList',
+                'feedbackList',
+                'systemUserLvSearch',
+                'couponList',
+                'orderList',
+                'refundOrder',
+                'orderEverDayList',
+                'financialManagement',
+                'RepairPersonnelList',
+                'materialLog'
+            ],
+            _shop: [
+                'RepairPersonnelList',
+                'equipmentList',
+                'equipmentList',
+                'maintenanceLog',
+                'smallLocationConfig',
+                'information',
+                'chartsFinance',
+                'orderList',
+                'orderEverDayList'
+            ]
+        }, num = 0;
+        for (let i = 0; i < tag.length; i++) {
             _tag += `<el-submenu index="${i + 1}">
                         <template slot="title">
                             <i class="${icons[i]}"></i>
                             <span>${tag[i].permissionName}</span>
                         </template>
                         <el-menu-item-group>`;
-                    for(let j = 0; j < tag[i].pageInfoList.length; j ++){
-                        // _tag += `<el-menu-item @click=Href({'uri':'${tag[i].pageInfoList[j].pageUrl}','title':'${tag[i].pageInfoList[j].pageName}'}) index="${i + 1}-${j}">${tag[i].pageInfoList[j].pageName}</el-menu-item>`;
-                        _tag += `<el-menu-item @click=Href({'uri':'../orderList.html?hash:iforx650','title':'${tag[i].pageInfoList[j].pageName}'}) index="${i + 1}-${j}">${tag[i].pageInfoList[j].pageName}</el-menu-item>`;
-                    };
-                _tag += `</el-menu-item-group>
+            for (let j = 0; j < tag[i].pageInfoList.length; j++) {
+                // _tag += `<el-menu-item @click=Href({'uri':'${tag[i].pageInfoList[j].pageUrl}','title':'${tag[i].pageInfoList[j].pageName}'}) index="${i + 1}-${j}">${tag[i].pageInfoList[j].pageName}</el-menu-item>`;
+                switch (tag.length) {  //启用本地路由
+                    case 9:
+                        _tag += `<el-menu-item u="${_lists._system[num]}" @click=Href({'uri':'../${_lists._system[num]}.html?hash:iforx${parseInt(13 * num / j + 2)}','title':'${tag[i].pageInfoList[j].pageName}'}) index="${i + 1}-${j}">${tag[i].pageInfoList[j].pageName}</el-menu-item>`;
+                        break;
+                    case 2:
+                        _tag += `<el-menu-item @click=Href({'uri':'../${_lists._admin[num]}.html?hash:iforx${parseInt(13 * num / j + 2)}','title':'${tag[i].pageInfoList[j].pageName}'}) index="${i + 1}-${j}">${tag[i].pageInfoList[j].pageName}</el-menu-item>`;
+                        break;
+                    default:
+                        _tag += `<el-menu-item @click=Href({'uri':'../${_lists._shop[num]}.html?hash:iforx${parseInt(13 * num / j + 2)}','title':'${tag[i].pageInfoList[j].pageName}'}) index="${i + 1}-${j}">${tag[i].pageInfoList[j].pageName}</el-menu-item>`;
+                        break;
+                };
+                num++;
+            };
+            _tag += `</el-menu-item-group>
                 </el-submenu>`;
         };
         jQuery('.menu').html(_tag);
-        
+
     },
     methods: {
         Error(err) {
             this.$message.error('错了哦，' + err);
         },
-        Href(e){
+        Href(e) {
             jQuery('#tagHref').attr('src', e.uri);
             let c = [], local = JSON.parse('[' + localStorage.getItem('uri') + ']');
-            for (let i = 0; i < local.length; i++) {
-                if (local[i].uri == e.uri) {
-                    c.push(localStorage.getItem('uri'));
-                    return c;
+            if (localStorage.getItem('uri')) {
+                for (let i = 0; i < local.length; i++) {
+                    if (local[i].uri == e.uri) {
+                        c.push(localStorage.getItem('uri'));
+                        return c;
+                    }
                 }
+                c.push(localStorage.getItem('uri'));
+                c.push(JSON.stringify({ uri: e.uri, title: e.title }));
+                localStorage.setItem('uri', c);
+            } else {
+                localStorage.setItem('uri', JSON.stringify({ uri: e.uri, title: e.title }))
             }
-            c.push(localStorage.getItem('uri'));
-            c.push(JSON.stringify({ uri: e.uri, title: e.title }));
-            localStorage.setItem('uri', c);
-            jQuery('#tagMenu ul').append(
-                `<li data-href="${ e.uri }" class="tag_40b8ff">${ e.title }<i data-click="${ e.uri }"><svg class="icon icon_clone" aria-hidden="true">
+
+            jQuery('#tagMenu ul').append(   //关闭按钮
+                `<li data-href="${e.uri}" class="tag_40b8ff">${e.title}<i data-click="${e.uri}"><svg class="icon icon_clone" aria-hidden="true">
                 <use xlink:href="#ym-icon-guanbi"></use>
             </svg></i></li>`
             );
-            tag();
+            tag();  //
         }
     }
 });
@@ -87,18 +141,18 @@ new Vue({
     let local = JSON.parse("[" + localStorage.getItem('uri') + "]"), _href = document.getElementById('tagHref');
     for (let i = 0; i < local.length; i++) {  //渲染tag栏
         $('#tagList').append(
-            `<li data-href="${ local[0] != null ? local[i].uri : '../index.htm?hash:ix' }" class="tag_40b8ff">${ local[0] != null ? local[i].title : "首页"}<i data-click="${ local[0] != null ? local[i].uri : '../index.htm?hash:ix' }"><svg class="icon icon_clone" aria-hidden="true">
+            `<li data-href="${local[0] != null ? local[i].uri : '../index.htm?hash:ix'}" class="tag_40b8ff">${local[0] != null ? local[i].title : "首页"}<i data-click="${local[0] != null ? local[i].uri : '../index.htm?hash:ix'}"><svg class="icon icon_clone" aria-hidden="true">
             <use xlink:href="#ym-icon-guanbi"></use>
-        </svg></i></li>`)
-        // if (i == 0) {
-        //     _href.setAttribute('src', local[0] != null ? local[i].uri : '../index.htm?hash:ix');  //默认最后一个页面内容
-        //     localStorage.getItem('uri') ? null : localStorage.setItem('uri', JSON.stringify({ uri: '../index.htm?hash:ix', title: '首页' }));
-        // }
+        </svg></i></li>`);
+        if (local.length < 1) {
+            _href.setAttribute('src', local[0] != null ? local[i].uri : '../index.htm?hash:ix');  //默认最后一个页面内容
+            localStorage.getItem('uri') ? null : localStorage.setItem('uri', JSON.stringify({ uri: '../index.htm?hash:ix', title: '首页' }));
+        }
     }
     tag();
-    jQuery('#tagMenu').show();
 })();
 function tag() {
+    jQuery('#tagMenu').show();
     let _tag = document.getElementById('tagMenu'), _href = document.getElementById('tagHref');
     try {
         for (let i = 0; i < _tag.childNodes[0].childNodes.length; i++) {
@@ -128,7 +182,7 @@ function tag() {
                     _href.setAttribute('src', '../index.htm?hash:io');
                     localStorage.removeItem('uri');  //清除缓存uri
                     jQuery('#tagMenu').hide();
-                }else{
+                } else {
                     _tag.childNodes[0].childNodes[_tag.childNodes.length - 1].setAttribute('class', 'tag_40b8ff');  //执行当前长度 -1 的颜色变换
                     _href.setAttribute('src', _tag.childNodes[0].childNodes[_tag.childNodes.length - 1].childNodes[1].getAttribute('data-click')); //更改属性
                 }

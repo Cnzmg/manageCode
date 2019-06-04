@@ -20,7 +20,8 @@
 
 <body class="_scrollbar">
 	<div id="c-container-list" style="height: 100%;" data-uri="manage_machine_version">
-		<el-container>
+		<template>
+		<el-container v-loading.fullscreen.lock="loading">
 			<el-main>
 				<template>
 					<el-table :data="tableData" stripe style="width: 100%">
@@ -58,6 +59,8 @@
 				</el-pagination>
 			</el-main>
 		</el-container>
+		
+	</template>
 	</div>
 </body>
 

@@ -22,6 +22,10 @@
 		<el-container>
 			<el-main>
 				<el-form>
+					<div style="width: 100%;margin-bottom:10px;">
+						<el-button @click="crud({uri:'AddFormula'})" type="primary">添加<i class="el-icon-plus el-icon--right"></i></el-button>
+					</div>
+
 					<el-input placeholder="请输入内容" v-model="searchVal" class="_searchVal">
 						<el-select v-model="searchName" class="_searchVal_select" slot="prepend" placeholder="请选择">
 							<el-option label="配方名称/ID" value="name"></el-option>

@@ -15,7 +15,8 @@ new Vue({
             searchName: '',
             tags: {},   //待定
             selectFil: '',
-            selectMater: ''
+            selectMater: '',
+            dateLog: ''
         }
     },
     created: function () {
@@ -41,6 +42,7 @@ new Vue({
                 url: u,
                 page: it.page
             }, xml = [];
+            it.loading = true;
             arg == '' ? null : ~function () {
                 arg.forEach((arr, index) => {
                     if (arr.indexOf(':') != -1) {  //处理2、3数据
@@ -60,14 +62,41 @@ new Vue({
             if (uri == 'find_machine_advertisement_list') _data['type'] = 1;
             if (uri == 'manage_advertisement_list_list') _data['type'] = 1;
             if (uri == 'client_user_list') _data['type'] = 1;
+            if (uri == 'manage_dividend_list') _data['type'] = 1;
             ym.init.XML({
-                method: (uri == 'find_machine_poi_list' || uri == 'get_activity_list' ? "GET" : 'POST'),
+                method: (uri == 'find_machine_poi_list' || uri == 'get_activity_list' || uri == 'statistics_list' || uri == 'maintainer_list' ? "GET" : 'POST'),
                 uri: token._j.URLS.Development_Server_ + uri,
                 async: false,
                 xmldata: _data,
                 done: function (res) {
                     ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
                         switch (uri) {
+                            case `find_user_list`:
+                                for (let i = 0; i < res.adminShowList.length; i++) {
+                                    xml.push({
+                                        adminId: res.adminShowList[i].adminId,
+                                        realName: res.adminShowList[i].realName,
+                                        adminName: res.adminShowList[i].adminName,
+                                        roleId: res.adminShowList[i].roleId,
+                                        adminStatus: res.adminShowList[i].adminStatus,
+                                        nickName: res.adminShowList[i].nickName + '/' + res.adminShowList[i].userId,
+                                        registerTime: res.adminShowList[i].registerTime,
+                                        parentAdminName: res.adminShowList[i].parentAdminName
+                                    })
+                                }
+                                break;
+                            case `find_log_list`:
+                                for (let i = 0; i < res.logInfoList.length; i++) {
+                                    xml.push({
+                                        adminName: res.logInfoList[i].adminName,
+                                        logContent: res.logInfoList[i].logContent,
+                                        logTime: res.logInfoList[i].logTime,
+                                        permissionName: res.logInfoList[i].permissionName,
+                                        realName: res.logInfoList[i].realName,
+                                        roleId: res.logInfoList[i].roleId
+                                    })
+                                }
+                                break;
                             case `find_formula_list`:
                                 for (let i = 0; i < res.formulaInfoList.length; i++) {
                                     xml.push({
@@ -280,17 +309,99 @@ new Vue({
                                     })
                                 }
                                 break;
+                            case `refund_order_list`:
+                                for (let i = 0; i < res.list.length; i++) {
+                                    xml.push({
+                                        orderId: res.list[i].orderId,
+                                        refundId: res.list[i].refundId,
+                                        createTime: res.list[i].createTime,
+                                        paymentTime: res.list[i].paymentTime,
+                                        refundTime: res.list[i].refundTime,
+                                        refundMoney: res.list[i].refundMoney,
+                                        refundType: res.list[i].refundType,
+                                        refundStatus: res.list[i].refundStatus,
+                                        orderType: res.list[i].orderType
+                                    })
+                                }
+                                break;
+                            case `statistics_list`:
+                                for (let i = 0; i < res.statisticsList.length; i++) {
+                                    xml.push({
+                                        statisticsId: res.statisticsList[i].statisticsId,
+                                        statisticsTime: res.statisticsList[i].statisticsTime,
+                                        statisticsDate: res.statisticsList[i].statisticsDate,
+                                        statisticsMachine: res.statisticsList[i].statisticsMachine,
+                                        adminName: res.statisticsList[i].adminName,
+                                        refundMoney: res.statisticsList[i].refundMoney,
+                                        orderCount: res.statisticsList[i].orderCount,
+                                        cancelOrderCount: res.statisticsList[i].cancelOrderCount,
+                                        refundOrderCount: res.statisticsList[i].refundOrderCount,
+                                        sendCount: res.statisticsList[i].sendCount,
+                                        refundAmount: res.statisticsList[i].refundAmount,
+                                        sendUsers: res.statisticsList[i].sendUsers,
+                                        userCount: res.statisticsList[i].userCount,
+                                        completeAmount: res.statisticsList[i].completeAmount
+                                    })
+                                }
+                                break;
+                            case `manage_dividend_list`:
+                                for (let i = 0; i < res.dList.length; i++) {
+                                    xml.push({
+                                        dId: res.dList[i].dId,
+                                        orderId: res.dList[i].orderId,
+                                        recId: res.dList[i].recId,
+                                        recName: res.dList[i].recName,
+                                        recType: res.dList[i].recType,
+                                        recMoney: res.dList[i].recMoney,
+                                        allMoney: res.dList[i].allMoney,
+                                        recTime: res.dList[i].recTime
+                                    })
+                                }
+                                break;
+                            case `maintainer_list`:
+                                for (let i = 0; i < res.maintainerList.length; i++) {
+                                    xml.push({
+                                        maintainerId: res.maintainerList[i].maintainerId,
+                                        maintainerName: res.maintainerList[i].maintainerName,
+                                        maintainerPhone: res.maintainerList[i].maintainerPhone,
+                                        adminName: res.maintainerList[i].adminName,
+                                        nickName: res.maintainerList[i].nickName,
+                                        maintainerStatus: res.maintainerList[i].maintainerStatus,
+                                        auditStatus: res.maintainerList[i].auditStatus,
+                                        royaltyRate: res.maintainerList[i].royaltyRate,
+                                        auditAdminName: res.maintainerList[i].auditAdminName
+                                    })
+                                }
+                                break;
+                            case `material_log_list`:
+                                for (let i = 0; i < res.materialLog.length; i++) {
+                                    xml.push({
+                                        materialLogId: res.materialLog[i].materialLogId,
+                                        machineNumber: res.materialLog[i].machineNumber,
+                                        adminName: res.materialLog[i].adminName,
+                                        productId: res.materialLog[i].productId,
+                                        productName: res.materialLog[i].productName,
+                                        orderId: res.materialLog[i].orderId,
+                                        createTime: res.materialLog[i].createTime,
+                                        materialDeductionList: res.materialLog[i].materialDeductionList
+                                    })
+                                }
+                                break;
                             default:
                                 break;
                         }
                         it.total = parseInt(res.pageCount * 20);
                         // it.currentPage = parseInt(res.pageCount);  数据总条数
                         it.tableData = xml;
+                        it.loading = false;
                     })()
                         :
                         it.Error(res.statusCode.msg);
                 }
             })
+        },
+        crud(arg){
+            window.parent.document.getElementById('tagHref').setAttribute('src', `../${ arg.uri }.html?[hash]`);
         }
     }
 });
