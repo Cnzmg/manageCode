@@ -302,7 +302,9 @@ ul,ol{
   ._scrollbar{
 	overflow-y: auto;
 	margin-top: 40.5px;
-	background: #fff
+	background: #fff;
+	padding: 10px;
+	box-sizing: border-box;
   }
   .el-pagination {
     float: right;

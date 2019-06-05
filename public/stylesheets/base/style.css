@@ -339,6 +339,8 @@ ul, ol {
   overflow-y: auto;
   margin-top: 40.5px;
   background: #fff;
+  padding: 10px;
+  box-sizing: border-box;
 }
 
 .el-pagination {
