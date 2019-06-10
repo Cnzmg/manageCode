@@ -401,7 +401,7 @@ new Vue({
             })
         },
         crud(arg){
-            window.parent.document.getElementById('tagHref').setAttribute('src', `../${ arg.uri }.html?[hash]`);
+            window.parent.document.getElementById('tagHref').setAttribute('src', `../${ arg.uri }.html?[hash]${ arg.enitId ? '*' +encodeURI(JSON.stringify(arg.enitId)) : ''}`); // 编辑带参数
         }
     }
 });

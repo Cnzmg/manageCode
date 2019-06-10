@@ -334,3 +334,21 @@ ul,ol{
 		display: block;
 		cursor:pointer;
 	}
+	.el-radio{
+		margin-right: 0;
+	}
+	.el-radio.is-bordered{
+		padding: 0;
+		border: 0;
+		height: auto;
+		float: left;
+	}
+	.el-radio.is-bordered{
+		margin-left: 0;
+	}
+	.el-radio.is-bordered+.el-radio.is-bordered{
+		margin-left: 0;
+	}
+	.el-message{
+		top: 80px !important;
+	}
