@@ -26,6 +26,12 @@ module.exports = {
         compress: true
     },
     devtool: 'eval-source-map',
+    watch:true,
+    watchOptions:{
+        poll: 1000,
+        aggregateTimeOut: 300,
+        ignored: /node_modules/
+    }
     output: {
         filename: '[name]._23_aKvs-b8bW2Vg3fwHozO.js',
         path: path.resolve(__dirname, './src/dist/javascripts/')
