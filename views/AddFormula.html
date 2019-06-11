@@ -29,7 +29,7 @@
                 </el-select>
         </div>
             <div class="ibox-content" style="margin-top:20px;">
-                <el-form class="form-horizontal m-t formulaMakeList"  v-show="!boxshow" :model="formData">
+                <el-form class="form-horizontal m-t formulaMakeList" v-show="!boxshow" :model="formData">
                     <div class="table-responsive overflow">
                         <table class="tile table table-bordered table-striped">
                             <thead>
@@ -269,10 +269,7 @@
                                             <el-input v-model="formData.formulaMakeList[6].gradientWeight"  placeholder=" 0<x<=100">
     
                                             </el-input></td>
-                                        <td>
-                                            <el-input v-model="formData.formulaMakeList[6].mixSpeed" placeholder=" 0<x<=127">
-    
-                                            </el-input></td>
+                                        <td></td>
                                         <td> <el-input v-model="formData.formulaMakeList[6].recipeOutSpeed" placeholder=" 0<x<=127">
     
                                             </el-input></td>
@@ -339,9 +336,12 @@
                                 <td>
                                         <template>
                                                 <div>
-                                                        <el-radio v-model="formDataSmall.formulaMakeList[0].pumpPressure" label="-1" border>无</el-radio>
-                                                        <el-radio v-model="formDataSmall.formulaMakeList[0].pumpPressure" label="1" border>高</el-radio>
-                                                        <el-radio v-model="formDataSmall.formulaMakeList[0].pumpPressure" label="0" border>低</el-radio>
+                                                    <el-radio-group v-model="formDataSmall.formulaMakeList[0].pumpPressure">
+                                                            <el-radio  :label="-1" border>无</el-radio>
+                                                            <el-radio  :label="1" border>高</el-radio>
+                                                            <el-radio  :label="0" border>低</el-radio>
+                                                    </el-radio-group>
+                                                        
                                                 </div>
                                         </template>
                                 </td>
@@ -356,11 +356,13 @@
                     </table>
                     <template>
                         <div>
-                                <el-radio v-model="formDataSmall.formulaMakeList[0].formulaType" label="1" border>美式咖啡</el-radio>
-                                <el-radio v-model="formDataSmall.formulaMakeList[0].formulaType" label="2" border>意式浓缩</el-radio>
-                                <el-radio v-model="formDataSmall.formulaMakeList[0].formulaType" label="3" border>拿铁咖啡</el-radio>
-                                <el-radio v-model="formDataSmall.formulaMakeList[0].formulaType" label="4" border>卡布奇诺</el-radio>
-                                <el-radio v-model="formDataSmall.formulaMakeList[0].formulaType" label="5" border>热牛奶</el-radio>
+                            <el-radio-group v-model="formDataSmall.formulaMakeList[0].formulaType">
+                                    <el-radio :label="1" border>美式咖啡</el-radio>
+                                    <el-radio :label="2" border>意式浓缩</el-radio>
+                                    <el-radio :label="3" border>拿铁咖啡</el-radio>
+                                    <el-radio :label="4" border>卡布奇诺</el-radio>
+                                    <el-radio :label="5" border>热牛奶</el-radio>
+                            </el-radio-group>
                         </div>
                 </template>
                     <el-input v-model="formDataSmall.machineType = 2" type="hidden"></el-input>

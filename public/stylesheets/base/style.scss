@@ -315,6 +315,11 @@ ul,ol{
 .el-form{
 	margin: 10px;
 }
+.demo-ruleForm{
+	margin:0 0 150px 0 ;
+	width: 100%;
+	overflow: auto;
+}
 ._search_btn{
 	margin-top: 10px;
 }
@@ -351,4 +356,12 @@ ul,ol{
 	}
 	.el-message{
 		top: 80px !important;
+	}
+	.el-upload__input{
+		display: none !important;
+	}
+	.el-form-item.is-required:not(.is-no-asterisk) .el-form-item__label-wrap>.el-form-item__label:before, .el-form-item.is-required:not(.is-no-asterisk)>.el-form-item__label:before{
+		content: "*";
+		color: #f56c6c;
+		margin-right: 4px;
 	}
