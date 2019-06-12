@@ -134,31 +134,25 @@ new Vue({
             }],
             flavorCanChange: '',
             ruleForm: {
-                name: '',
-                region: '',
-                date1: '',
-                date2: '',
-                delivery: false,
-                type: [],
-                resource: '',
-                desc: ''
+                formulaId: '',
+                productName: '',
+                productPrice: '',
+                productMachinePicurl: '',
+                productPicurl: '',
+                productMachineDetailPicurl: '',
+                productRank: '',
+                operateType: '',
+                productStatus: '',
+                productTemperature: '',
+                productComment: ''
             },
             rules: {
-                name: [
-                    { required: true, message: '请输入活动名称', trigger: 'blur' },
-                    { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
+                productName: [
+                    { required: true, message: '请输入名称', trigger: 'blur' },
+                    { min: 3, max: 5, message: '中英文结合以,分隔', trigger: 'blur' }
                 ],
-                region: [
-                    { required: true, message: '请选择活动区域', trigger: 'change' }
-                ],
-                type: [
-                    { type: 'array', required: true, message: '请至少选择一个活动性质', trigger: 'change' }
-                ],
-                resource: [
-                    { required: true, message: '请选择活动资源', trigger: 'change' }
-                ],
-                desc: [
-                    { required: true, message: '请填写活动形式', trigger: 'blur' }
+                formulaId: [
+                    { required: true, message: '请选择配方', trigger: 'change' }
                 ]
             },
             dialogImageUrl: '',
@@ -166,7 +160,8 @@ new Vue({
             num: 1,
             fileData: _data,
             samllfileUpdata: false,
-            formulaIds: []
+            formulaIds: [],
+            productFlavorList:[]
         }
     },
     created: function () {
@@ -176,7 +171,7 @@ new Vue({
             this.tagshow = true;
         };
         switch (document.getElementById('c-container-list').getAttribute('data-search')) {
-            case 'manage_product':
+            case 'manage_product':  //回显所有的配方选项
                 _data['type'] = 2;
                 ym.init.XML({
                     method: 'POST',
@@ -363,21 +358,21 @@ new Vue({
         fileChange() {
             this.fileData['type'] = 3;  //动态配置
         },
-        fileSuccess(e){
-            console.log(e)
+        fileMachineSuccess(e) {
+            this.ruleForm.productMachinePicurl = e.realPath;
         },
         submitForm(formName) {
-            _data['formulaId'] = formName.formulaId;
-            _data['productName'] = formName.productName;
-            _data['productPrice'] = formName.productPrice;
-            _data['productMachinePicurl'] = formName.productMachinePicurl;
-            _data['productPicurl'] = formName.productPicurl;
-            _data['productMachineDetailPicurl'] = formName.productMachineDetailPicurl;
-            _data['productRank'] = formName.productRank;
-            _data['operateType'] = formName.operateType;
-            _data['productStatus'] = formName.productStatus;
-            _data['productTemperature'] = formName.productTemperature;
-            _data['productComment'] = formName.productComment;
+            _data['formulaId'] = formName.formulaId || '';
+            _data['productName'] = formName.productName || '';
+            _data['productPrice'] = formName.productPrice || '';
+            _data['productMachinePicurl'] = formName.productMachinePicurl || '';
+            _data['productPicurl'] = formName.productPicurl || '';
+            _data['productMachineDetailPicurl'] = formName.productMachineDetailPicurl || '';
+            _data['productRank'] = formName.productRank || '';
+            _data['operateType'] = formName.operateType || '';
+            _data['productStatus'] = formName.productStatus || '';
+            _data['productTemperature'] = formName.productTemperature || '';
+            _data['productComment'] = formName.productComment || '';
             _data['type'] = 3;
             ym.init.XML({
                 method: 'POST',
@@ -385,15 +380,19 @@ new Vue({
                 async: false,
                 xmldata: _data,
                 done: function (res) {
-                    ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
-                        it.ISuccessfull(res.statusCode.msg);
-                        setTimeout(() => {
-                            parent.document.getElementById('tagHref').setAttribute('src', callBackHtml);
-                        }, 500);
-                    })() : (() => {
-                        it.IError(res.statusCode.msg);
-                        throw "收集到错误：\n\n" + res.statusCode.status;
-                    })();
+                    try {
+                        ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
+                            it.ISuccessfull(res.statusCode.msg);
+                            setTimeout(() => {
+                                parent.document.getElementById('tagHref').setAttribute('src', callBackHtml);
+                            }, 500);
+                        })() : (() => {
+                            it.IError(res.statusCode.msg);
+                            throw "收集到错误：\n\n" + res.statusCode.status;
+                        })();
+                    } catch (error) {
+                        this.IError("收集到错误：\n\n" + res.statusCode.status);
+                    }
                 }
             })
             // this.ISuccessfull('提交成功');
@@ -401,8 +400,35 @@ new Vue({
         resetForm(formName) {  //重置表单
             this.$refs[formName].resetFields();
         },
-        tagChange(e){
-            // console.log(e)
+        tagChange(e) {  //处理select 的机器类型
+            try {
+                const it = this;
+                e.ID != "" ? (() => {
+                    e._arr.forEach((element) => {
+                        if (e.ID == element.value) {
+                            element.machineType != 1 ? this.samllfileUpdata = true : null;
+                        }
+                    });
+                    _data['formulaId'] = e.ID;
+                    ym.init.XML({
+                        method: 'POST',
+                        uri: token._j.URLS.Development_Server_ + 'find_product_flavor',
+                        async: false,
+                        xmldata: _data,
+                        done: function (res) {
+                            res.productFlavorList.forEach(e => {
+                                it.productFlavorList.push({
+                                    value: e.bunkerNumber,
+                                    label: e.flavorName,
+                                    hide: e.hide
+                                });
+                            });
+                        }
+                    })
+                })() : null;
+            } catch (error) {
+                this.IError(error);
+            }
         }
     }
 })
