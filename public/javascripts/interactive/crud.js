@@ -141,15 +141,17 @@ new Vue({
                 productPicurl: '',
                 productMachineDetailPicurl: '',
                 productRank: '',
-                operateType: '',
-                productStatus: '',
-                productTemperature: '',
-                productComment: ''
+                operateType: 0,
+                productStatus: 1,
+                productTemperature: 1,
+                productComment: '',
+                bunkerNumberArr: [],
+                machineType: 1
             },
             rules: {
                 productName: [
                     { required: true, message: '请输入名称', trigger: 'blur' },
-                    { min: 3, max: 5, message: '中英文结合以,分隔', trigger: 'blur' }
+                    { min: 3, max: 15, message: '中英文结合以,分隔', trigger: 'blur' }
                 ],
                 formulaId: [
                     { required: true, message: '请选择配方', trigger: 'change' }
@@ -157,11 +159,18 @@ new Vue({
             },
             dialogImageUrl: '',
             dialogVisible: false,
+            dialogVisibleData: false,
             num: 1,
             fileData: _data,
             samllfileUpdata: false,
             formulaIds: [],
-            productFlavorList:[]
+            productFlavorList: [],
+            radioclod: false,
+            imageList: {
+                machine: [],
+                product: [],
+                detail: []
+            }
         }
     },
     created: function () {
@@ -183,7 +192,8 @@ new Vue({
                             it.formulaIds.push({
                                 value: e.formulaId,
                                 label: e.formulaName,
-                                machineType: e.machineType
+                                machineType: e.machineType,
+                                formulaTemperature: e.formulaTemperature
                             })
                         });
                     }
@@ -274,17 +284,18 @@ new Vue({
         },
         Ienit(e) {
             const it = this;
-            switch (assetUri) {
+            switch (uri) {
                 case 'manage_formula':
                     _data['type'] = 1;
                     _data['formulaId'] = JSON.parse(e).formulaId;
                     break;
                 case 'manage_product':
+                    _data['type'] = 1;
+                    _data['productId'] = JSON.parse(e).productId;
                     break;
                 default:
                     break;
             }
-
             it.loading = true;
             ym.init.XML({
                 method: 'POST',
@@ -293,50 +304,101 @@ new Vue({
                 xmldata: _data,
                 done: function (res) {
                     ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
-                        if (res.formulaInfo.machineType == 1) {
-                            try {
-                                res.formulaInfo.formulaMakeList.forEach(e => {
-                                    if (e.canisterId != 170) {
-                                        it.formData.formulaMakeList[e.canisterId - 1].delayTime = e.delayTime;
-                                        it.formData.formulaMakeList[e.canisterId - 1].waterVolume = e.waterVolume;
-                                        it.formData.formulaMakeList[e.canisterId - 1].gradientWeight = e.gradientWeight;
-                                        it.formData.formulaMakeList[e.canisterId - 1].mixSpeed = e.mixSpeed;
-                                        it.formData.formulaMakeList[e.canisterId - 1].recipeOutSpeed = e.recipeOutSpeed;
-                                        it.formData.formulaMakeList[e.canisterId - 1].recipeOutOrder = it.recipeOutOrder[e.recipeOutOrder].value;
-                                        it.formData.formulaMakeList[e.canisterId - 1].flavorName = e.flavorName;
-                                    } else {
-                                        it.formData.formulaMakeList[e.canisterId - 164].delayTime = e.delayTime;
-                                        it.formData.formulaMakeList[e.canisterId - 164].waterVolume = e.waterVolume;
-                                        it.formData.formulaMakeList[e.canisterId - 164].gradientWeight = e.gradientWeight;
-                                        it.formData.formulaMakeList[e.canisterId - 164].mixSpeed = e.mixSpeed;
-                                        it.formData.formulaMakeList[e.canisterId - 164].recipeOutSpeed = e.recipeOutSpeed;
-                                        it.formData.formulaMakeList[e.canisterId - 164].recipeOutOrder = it.recipeOutOrder[e.recipeOutOrder].value;
-                                        it.formData.formulaMakeList[e.canisterId - 164].flavorName = e.flavorName;
+                        switch (uri) {
+                            case 'manage_formula':
+                                if (res.formulaInfo.machineType == 1) {
+                                    try {
+                                        res.formulaInfo.formulaMakeList.forEach(e => {
+                                            if (e.canisterId != 170) {
+                                                it.formData.formulaMakeList[e.canisterId - 1].delayTime = e.delayTime;
+                                                it.formData.formulaMakeList[e.canisterId - 1].waterVolume = e.waterVolume;
+                                                it.formData.formulaMakeList[e.canisterId - 1].gradientWeight = e.gradientWeight;
+                                                it.formData.formulaMakeList[e.canisterId - 1].mixSpeed = e.mixSpeed;
+                                                it.formData.formulaMakeList[e.canisterId - 1].recipeOutSpeed = e.recipeOutSpeed;
+                                                it.formData.formulaMakeList[e.canisterId - 1].recipeOutOrder = it.recipeOutOrder[e.recipeOutOrder].value;
+                                                it.formData.formulaMakeList[e.canisterId - 1].flavorName = e.flavorName;
+                                            } else {
+                                                it.formData.formulaMakeList[e.canisterId - 164].delayTime = e.delayTime;
+                                                it.formData.formulaMakeList[e.canisterId - 164].waterVolume = e.waterVolume;
+                                                it.formData.formulaMakeList[e.canisterId - 164].gradientWeight = e.gradientWeight;
+                                                it.formData.formulaMakeList[e.canisterId - 164].mixSpeed = e.mixSpeed;
+                                                it.formData.formulaMakeList[e.canisterId - 164].recipeOutSpeed = e.recipeOutSpeed;
+                                                it.formData.formulaMakeList[e.canisterId - 164].recipeOutOrder = it.recipeOutOrder[e.recipeOutOrder].value;
+                                                it.formData.formulaMakeList[e.canisterId - 164].flavorName = e.flavorName;
+                                            }
+                                        });
+                                        it.formData.formulaName = res.formulaInfo.formulaName;
+                                    } catch (error) {
+                                        it.IError(error);
                                     }
-                                });
-                                it.formData.formulaName = res.formulaInfo.formulaName;
-                            } catch (error) {
-                                it.IError(error);
-                            }
-                        } else {  //小机器
-                            document.getElementsByClassName('offFormulaMakeList')[0].style.display = 'block';  //方法待定
-                            document.getElementsByClassName('formulaMakeList')[0].style.display = 'none';  //方法待定
-                            try {
-                                // it.$set(it, it.formDataSmall.formulaMakeList[0].coffeeFlow, res.formulaInfo.officeFormulaMakeList[0].coffeeFlow)
-                                it.formDataSmall.formulaMakeList[0].coffeeFlow = res.formulaInfo.officeFormulaMakeList[0].coffeeFlow;
-                                it.formDataSmall.formulaMakeList[0].coffeeTemporature = res.formulaInfo.officeFormulaMakeList[0].coffeeTemporature;
-                                it.formDataSmall.formulaMakeList[0].coffeeWeight = res.formulaInfo.officeFormulaMakeList[0].coffeeWeight;
-                                it.formDataSmall.formulaMakeList[0].playMilkTime = res.formulaInfo.officeFormulaMakeList[0].playMilkTime;
-                                it.formDataSmall.formulaMakeList[0].pumpPressure = res.formulaInfo.officeFormulaMakeList[0].pumpPressure;
-                                it.formDataSmall.formulaMakeList[0].americanHotWaterWeight = res.formulaInfo.officeFormulaMakeList[0].americanHotWaterWeight;
-                                it.formDataSmall.formulaMakeList[0].milkFlow = res.formulaInfo.officeFormulaMakeList[0].milkFlow;
-                                it.formDataSmall.formulaMakeList[0].formulaType = res.formulaInfo.officeFormulaMakeList[0].formulaType;
-                                it.formDataSmall.formulaName = res.formulaInfo.formulaName;
-                            } catch (error) {
-                                it.IError(error);
-                                throw error
-                            }
+                                } else {  //小机器
+                                    document.getElementsByClassName('offFormulaMakeList')[0].style.display = 'block';  //方法待定
+                                    document.getElementsByClassName('formulaMakeList')[0].style.display = 'none';  //方法待定
+                                    try {
+                                        // it.$set(it, it.formDataSmall.formulaMakeList[0].coffeeFlow, res.formulaInfo.officeFormulaMakeList[0].coffeeFlow)
+                                        it.formDataSmall.formulaMakeList[0].coffeeFlow = res.formulaInfo.officeFormulaMakeList[0].coffeeFlow;
+                                        it.formDataSmall.formulaMakeList[0].coffeeTemporature = res.formulaInfo.officeFormulaMakeList[0].coffeeTemporature;
+                                        it.formDataSmall.formulaMakeList[0].coffeeWeight = res.formulaInfo.officeFormulaMakeList[0].coffeeWeight;
+                                        it.formDataSmall.formulaMakeList[0].playMilkTime = res.formulaInfo.officeFormulaMakeList[0].playMilkTime;
+                                        it.formDataSmall.formulaMakeList[0].pumpPressure = res.formulaInfo.officeFormulaMakeList[0].pumpPressure;
+                                        it.formDataSmall.formulaMakeList[0].americanHotWaterWeight = res.formulaInfo.officeFormulaMakeList[0].americanHotWaterWeight;
+                                        it.formDataSmall.formulaMakeList[0].milkFlow = res.formulaInfo.officeFormulaMakeList[0].milkFlow;
+                                        it.formDataSmall.formulaMakeList[0].formulaType = res.formulaInfo.officeFormulaMakeList[0].formulaType;
+                                        it.formDataSmall.formulaName = res.formulaInfo.formulaName;
+                                    } catch (error) {
+                                        it.IError(error);
+                                        throw error
+                                    }
+                                }
+                                break;
+                            case 'manage_product':
+                                try {
+                                    it.formulaIds.forEach(ex => {
+                                        if (ex.value == res.productInfo.formulaId) {
+                                            it.ruleForm.formulaId = ex.value;  //配方
+                                        }
+                                    });
+                                    it.ruleForm.productName = res.productInfo.productName;  //产品名称
+                                    it.ruleForm.productPrice = res.productInfo.productPrice;  //产品价格
+                                    it.imageList.machine.push({ name: 'machinePic', url: res.productInfo.productMachinePicurl }); //机器产品图片
+                                    it.imageList.product.push({ name: 'product', url: res.productInfo.productPicurl }); //手机产品图片
+                                    it.imageList.detail.push({ name: 'detail', url: res.productInfo.productMachineDetailPicurl }); //小机器详情图片
+
+                                    it.ruleForm.productMachinePicurl = res.productInfo.productMachinePicurl; //机器产品图片
+                                    it.ruleForm.productPicurl = res.productInfo.productPicurl; //手机产品图片
+                                    it.ruleForm.productMachineDetailPicurl = res.productInfo.productMachineDetailPicurl; //小机器详情图片
+
+                                    it.ruleForm.productRank = res.productInfo.productRank;  //排序
+                                    it.ruleForm.operateType = res.productInfo.operateType;  //产品属性
+                                    it.ruleForm.productStatus = res.productInfo.productStatus;  //是否上架
+                                    it.ruleForm.productTemperature = res.productInfo.productTemperature;  //冷热状态
+                                    it.ruleForm.machineType = res.productInfo.machineType;  //设备类型
+                                    if (res.productInfo.productTemperature == 1) { //冷热锁定
+                                        it.radioclod = true;
+                                    }
+                                    if (res.productInfo.machineType == 1) {  //大机器才有
+                                        res.productFlavorList.forEach(e => { //口味信息
+                                            it.productFlavorList.push({
+                                                value: e.bunkerNumber,
+                                                label: e.flavorName,
+                                                hide: e.hide
+                                            });
+                                        });
+                                    }else{
+                                        it.samllfileUpdata = true;  //详情图片开启
+                                    }
+
+                                    it.ruleForm.productComment = res.productInfo.productComment;  //冷热状态
+                                } catch (error) {
+                                    it.IError(error);
+                                    throw error;
+                                }
+
+                                break;
+                            default:
+                                break;
                         }
+
                         it.ISuccessfull(res.statusCode.msg);
                     })() : (() => {
                         it.IError(res.statusCode.msg);
@@ -358,10 +420,25 @@ new Vue({
         fileChange() {
             this.fileData['type'] = 3;  //动态配置
         },
+        filePicChange() {
+            this.fileData['type'] = 2;  //动态配置
+        },
         fileMachineSuccess(e) {
             this.ruleForm.productMachinePicurl = e.realPath;
         },
+        filePicSuccess(e) {
+            this.ruleForm.productPicurl = e.realPath;
+        },
+        fileDateilSuccess(e) {
+            this.ruleForm.productMachineDetailPicurl = e.realPath;
+        },
         submitForm(formName) {
+            _data['type'] = 3;
+            if(dataHref.split('*').length > 1){
+                _data['type'] = 4;
+                _data['productCreateTime'] = ym.init.getDateTime(JSON.parse(decodeURI(dataHref.split('*')[1])).createTime)
+            }
+            const it = this;
             _data['formulaId'] = formName.formulaId || '';
             _data['productName'] = formName.productName || '';
             _data['productPrice'] = formName.productPrice || '';
@@ -369,11 +446,12 @@ new Vue({
             _data['productPicurl'] = formName.productPicurl || '';
             _data['productMachineDetailPicurl'] = formName.productMachineDetailPicurl || '';
             _data['productRank'] = formName.productRank || '';
-            _data['operateType'] = formName.operateType || '';
+            _data['operateType'] = formName.operateType || 0;
             _data['productStatus'] = formName.productStatus || '';
             _data['productTemperature'] = formName.productTemperature || '';
             _data['productComment'] = formName.productComment || '';
-            _data['type'] = 3;
+            _data['bunkerNumberArr'] = formName.bunkerNumberArr || '';
+            _data['machineType'] = this.ruleForm.machineType;
             ym.init.XML({
                 method: 'POST',
                 uri: token._j.URLS.Development_Server_ + uri,
@@ -387,11 +465,10 @@ new Vue({
                                 parent.document.getElementById('tagHref').setAttribute('src', callBackHtml);
                             }, 500);
                         })() : (() => {
-                            it.IError(res.statusCode.msg);
-                            throw "收集到错误：\n\n" + res.statusCode.status;
+                            throw "收集到错误：\n\n" + res.statusCode.msg;
                         })();
                     } catch (error) {
-                        this.IError("收集到错误：\n\n" + res.statusCode.status);
+                        it.IError(error);
                     }
                 }
             })
@@ -406,25 +483,31 @@ new Vue({
                 e.ID != "" ? (() => {
                     e._arr.forEach((element) => {
                         if (e.ID == element.value) {
-                            element.machineType != 1 ? this.samllfileUpdata = true : null;
+                            this.ruleForm.machineType = element.machineType;
+                            this.productFlavorList = [];
+                            element.machineType != 1 ? this.samllfileUpdata = true : (() => {
+                                _data['formulaId'] = e.ID;
+                                ym.init.XML({
+                                    method: 'POST',
+                                    uri: token._j.URLS.Development_Server_ + 'find_product_flavor',
+                                    async: false,
+                                    xmldata: _data,
+                                    done: function (res) {
+                                        res.productFlavorList.forEach(e => {
+                                            it.productFlavorList.push({
+                                                value: e.bunkerNumber,
+                                                label: e.flavorName,
+                                                hide: e.hide
+                                            });
+                                        });
+                                    }
+                                });
+                                this.samllfileUpdata = false;
+                                //this.dialogVisibleData = true;   //第三张图片显示模态背景问题i
+                            })(); //判断是否显示小设备的详情图片
+                            element.formulaTemperature != 1 ? this.radioclod = true : this.radioclod = false; //判断是否可以冷热切换
                         }
                     });
-                    _data['formulaId'] = e.ID;
-                    ym.init.XML({
-                        method: 'POST',
-                        uri: token._j.URLS.Development_Server_ + 'find_product_flavor',
-                        async: false,
-                        xmldata: _data,
-                        done: function (res) {
-                            res.productFlavorList.forEach(e => {
-                                it.productFlavorList.push({
-                                    value: e.bunkerNumber,
-                                    label: e.flavorName,
-                                    hide: e.hide
-                                });
-                            });
-                        }
-                    })
                 })() : null;
             } catch (error) {
                 this.IError(error);

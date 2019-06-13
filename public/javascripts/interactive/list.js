@@ -1,4 +1,20 @@
-const [$, token, u, uri] = [parent.all.jq, parent.all.json, parent.document.getElementById('tagHref').getAttribute('src').replace('..', '/manage').split('?')[0], document.getElementById('c-container-list').getAttribute('data-uri')];
+const [
+    $,
+    token,
+    u,
+    uri
+] = [
+        parent.all.jq,
+        parent.all.json,
+        parent.document.getElementById('tagHref').getAttribute('src').replace('..', '/manage').split('?')[0],
+        document.getElementById('c-container-list').getAttribute('data-uri'),
+    ];
+const _data = {
+    id: ym.init.COMPILESTR.decrypt(token.id),
+    token: ym.init.COMPILESTR.decrypt(token.asset),
+    // url: u.toLowerCase(),
+    url: u
+};
 new Vue({
     el: '#c-container-list',
     data: () => {
@@ -16,15 +32,37 @@ new Vue({
             tags: {},   //待定
             selectFil: '',
             selectMater: '',
-            dateLog: ''
+            dateLog: '',
+            InputAndVisible: false, //列表操作
+            formData: {
+                machineType: 1,
+                name: ''
+            },
+            TableAndVisible: false,
+            TableFormData: [],
+            UpdateTableAndVisible: false,
+            UpdateTableFormData: [],
+            listId: ''
         }
     },
     created: function () {
         this.list();
     },
     methods: {
-        Error(err) {
+        IError(err) {
+            setTimeout(() => {
+                this.loading = false;
+            }, 1000);
             this.$message.error('错了哦，' + err);
+        },
+        ISuccessfull(e) {
+            setTimeout(() => {
+                this.loading = false;
+            }, 1000);
+            this.$message({
+                message: 'ok 了哦,' + e,
+                type: 'success'
+            });
         },
         handleSizeChange(e) {
             this.pageSize = e;
@@ -35,13 +73,7 @@ new Vue({
             this.list();
         },
         list(...arg) {
-            let it = this, _data = {
-                id: ym.init.COMPILESTR.decrypt(token.id),
-                token: ym.init.COMPILESTR.decrypt(token.asset),
-                // url: u.toLowerCase(),
-                url: u,
-                page: it.page
-            }, xml = [];
+            let it = this, xml = [];
             it.loading = true;
             arg == '' ? null : ~function () {
                 arg.forEach((arr, index) => {
@@ -63,6 +95,7 @@ new Vue({
             if (uri == 'manage_advertisement_list_list') _data['type'] = 1;
             if (uri == 'client_user_list') _data['type'] = 1;
             if (uri == 'manage_dividend_list') _data['type'] = 1;
+            _data['page'] = it.page;
             ym.init.XML({
                 method: (uri == 'find_machine_poi_list' || uri == 'get_activity_list' || uri == 'statistics_list' || uri == 'maintainer_list' ? "GET" : 'POST'),
                 uri: token._j.URLS.Development_Server_ + uri,
@@ -132,6 +165,9 @@ new Vue({
                                         listName: res.productListList[i].listName,
                                         machineType: res.productListList[i].machineType
                                     })
+                                }
+                                function el() {
+                                    console.log(11)
                                 }
                                 break;
                             case `find_machine_list`:
@@ -396,12 +432,136 @@ new Vue({
                         it.loading = false;
                     })()
                         :
-                        it.Error(res.statusCode.msg);
+                        it.IError(res.statusCode.msg);
                 }
             })
         },
-        crud(arg){
-            window.parent.document.getElementById('tagHref').setAttribute('src', `../${ arg.uri }.html?[hash]${ arg.enitId ? '*' +encodeURI(JSON.stringify(arg.enitId)) : ''}`); // 编辑带参数
-        }
+        crud(arg) {
+            window.parent.document.getElementById('tagHref').setAttribute('src', `../${arg.uri}.html?[hash]${arg.enitId ? '*' + encodeURI(JSON.stringify(arg.enitId)) : ''}`); // 编辑带参数
+        },
+        //列表操作
+        //清单列表
+        listoperation(e) {
+            const it = this;
+            switch (e._tag) {
+                case 'manage_prodcut_list_list':
+                    switch (e._type) {
+                        case "A":
+                            _data['type'] = 6;
+                            _data['machineType'] = e._evt.machineType;
+                            _data['name'] = e._evt.name;
+                            ym.init.XML({
+                                method: 'POST',
+                                uri: token._j.URLS.Development_Server_ + uri,
+                                async: false,
+                                xmldata: _data,
+                                done: function (res) {
+                                    try {
+                                        ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
+                                            it.ISuccessfull(res.statusCode.msg);
+                                            it.list();  //刷新列表
+                                        })() :
+                                            (() => {
+                                                throw "收集到错误：\n\n" + res.statusCode.msg;
+                                            })()
+                                    } catch (error) {
+                                        it.IError(error);
+                                    }
+                                }
+                            });
+                            break;
+                        case "S":
+                            _data['type'] = 2;
+                            _data['page'] = 1;
+                            _data['listId'] = e._evt.listId;
+                            it.listId = e._evt.listId;
+                            ym.init.XML({
+                                method: 'POST',
+                                uri: token._j.URLS.Development_Server_ + uri,
+                                async: false,
+                                xmldata: _data,
+                                done: function (res) {
+                                    try {
+                                        it.TableFormData = [];
+                                        ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
+                                            res.productShowList.forEach(element => {
+                                                it.TableFormData.push({
+                                                    productId: element.productId,
+                                                    productName: element.productName,
+                                                    productPrice: element.productPrice,
+                                                    productPicurl: element.productPicurl,
+                                                    formulaName: element.formulaName,
+                                                    bunkerNumber: element.bunkerNumber,
+                                                    createTime: element.createTime,
+                                                    productRank: element.productRank,
+                                                    machineType: element.machineType,
+                                                    productComment: element.productComment
+                                                });
+                                            });
+                                        })() :
+                                            (() => {
+                                                throw "收集到错误：\n\n" + res.statusCode.msg;
+                                            })()
+                                    } catch (error) {
+                                        it.IError(error);
+                                    }
+                                }
+                            });
+                            break;
+                        case "E":
+                            _data['type'] = 3;
+                            _data['listId'] = it.listId;
+                            ym.init.XML({
+                                method: 'POST',
+                                uri: token._j.URLS.Development_Server_ + uri,
+                                async: false,
+                                xmldata: _data,
+                                done: function (res) {
+                                    try {
+                                        it.UpdateTableFormData = [];
+                                        ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
+                                            res.productInfoList.forEach(element => {
+                                                it.UpdateTableFormData.push({
+                                                    productId: element.productId,
+                                                    productName: element.productName,
+                                                    productPrice: element.productPrice,
+                                                    productPicurl: element.productPicurl,
+                                                    formulaName: element.formulaName,
+                                                    bunkerNumber: element.bunkerNumber,
+                                                    createTime: element.createTime,
+                                                    productRank: element.productRank,
+                                                    machineType: element.machineType,
+                                                    productComment: element.productComment
+                                                });
+                                            });
+                                        })() :
+                                            (() => {
+                                                throw "收集到错误：\n\n" + res.statusCode.msg;
+                                            })()
+                                    } catch (error) {
+                                        it.IError(error);
+                                    }
+                                }
+                            });
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                default:
+                    break;
+            }
+        },
+        handleSelectionChange(val) {
+            this.multipleSelection = val;
+        },
+        filterTag(value, row) {
+            if(row.machineType == 1){
+                row.machineType = "大型柜式机"
+            }else{
+                row.machineType = "小型桌面机"
+            }
+            return row.machineType === value;
+        },
     }
 });
