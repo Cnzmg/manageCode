@@ -103,34 +103,29 @@
 					</el-form>
 				</el-dialog>
 
-				<el-dialog title="清单详情" :visible.sync="TableAndVisible">
+				<el-dialog title="清单详情" :visible.sync="TableAndVisible" width="60%">
 					<template>
 						<el-button @click="listoperation({_tag:'manage_prodcut_list_list',_type: 'E'}); UpdateTableAndVisible = true" type="primary">
 							更新
 						</el-button>
 					</template>
-					<el-table :data="TableFormData">
+					<el-table :data="TableFormData" height="500px">
 						<el-table-column property="productId" label="ID" fixed></el-table-column>
 						<el-table-column property="productName" label="产品名称"></el-table-column>
 						<el-table-column property="productPrice" label="产品价格"></el-table-column>
-						<el-table-column property="productPicurl" label="产品图片">
-							<template slot-scope="scope">
-								<div slot="reference" class="name-wrapper">
-									<el-image :src="scope.row.productPicurl" lazy></el-image>
-								</div>
-							</template>
-						</el-table-column>
 						<el-table-column property="formulaName" label="配方名称"></el-table-column>
 						<el-table-column property="bunkerNumber" label="料仓"></el-table-column>
 						<el-table-column property="createTime" label="创建时间"></el-table-column>
 						<el-table-column property="productRank" label="排序"></el-table-column>
 						<el-table-column property="machineType" label="设备类型"></el-table-column>
-						<el-table-column property="productComment" label="说明"></el-table-column>
 					</el-table>
 				</el-dialog>
 
-				<el-dialog title="更新清单产品" :visible.sync="UpdateTableAndVisible" width="1200">
-						<el-table :data="UpdateTableFormData" tooltip-effect="dark" @selection-change="handleSelectionChange"  ref="multipleTable">
+				<el-dialog title="更新清单产品" :visible.sync="UpdateTableAndVisible" width="60%">
+					<div>
+						已选产品数量：{{ productCount }}
+					</div>
+						<el-table :data="UpdateTableFormData" height="500px" tooltip-effect="dark" @selection-change="handleSelectionChange"  ref="multipleTable">
 							<el-table-column
 								type="selection"
 								width="55">
@@ -155,11 +150,16 @@
 								<template slot-scope="scope">
 									<el-tag
 									:type="scope.row.machineType === '大型柜式机' ? 'primary' : 'success'"
-									disable-transitions>{{scope.row.machineType == 1 ? '大型柜式机' : '小型桌面机'}}</el-tag>
+									disable-transitions>{{scope.row.machineType}}</el-tag>
 								</template>
 							</el-table-column>
 							<el-table-column property="productComment" label="说明"></el-table-column>
 						</el-table>
+						<template>
+							<el-button type="primary" style="margin: 10px auto;" @click="listoperation({_tag:'manage_prodcut_list_list',_type: 'P'});">
+								确定
+							</el-button>
+						</template>
 					</el-dialog>
 
 			</el-main>

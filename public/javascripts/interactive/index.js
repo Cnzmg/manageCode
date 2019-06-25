@@ -199,6 +199,11 @@ function tag() {
                 e.stopPropagation();  //阻止事件冒泡
             };
         };
+        $('#tagList li').hover(function () {
+            jQuery(this).children('i').show(100);
+        }, function () {
+            jQuery(this).children('i').hide(100);
+        })
     } catch (error) {
         alert(error);
     }

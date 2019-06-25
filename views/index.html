@@ -91,33 +91,32 @@
             </div>
 
             <el-container>
-                <el-menu default-active="1" class="el-menu-vertical-demo menu" >
-
-                </el-menu>
+                <el-menu default-active="1" class="el-menu-vertical-demo menu"></el-menu>
                 <section id="content" class="_container">
                     <transition name="el-zoom-in-top">
                         <div class="tag" id="tagMenu">
                             <ul class="tag-con-ul" id="tagList">
-                                
+
                             </ul>
                         </div>
                     </transition>
 
                     <iframe id="tagHref" scrolling="no" sandbox="allow-scripts allow-same-origin"
                         style="border:none;width: 100%;height: 100%;" src="../index.htm?hash:ix"
-                        frameborder="0" ></iframe>
+                        frameborder="0"></iframe>
                 </section>
 
             </el-container>
         </section>
     </div>
     <script>
-        var all = {};
-        all['jq'] = $;
-        all['json'] = {
-            _j:JSON.parse(localStorage.getItem('_e')),
-            asset: JSON.parse(sessionStorage.getItem('token')).utoken,
-            id: JSON.parse(sessionStorage.getItem('token')).uname
+        var all = {
+            jq: $,
+            json: {
+                _j: JSON.parse(localStorage.getItem('_e')),
+                asset: JSON.parse(sessionStorage.getItem('token')).utoken,
+                id: JSON.parse(sessionStorage.getItem('token')).uname
+            }
         };
     </script>
 </body>

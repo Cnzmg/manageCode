@@ -42,7 +42,9 @@ new Vue({
             TableFormData: [],
             UpdateTableAndVisible: false,
             UpdateTableFormData: [],
-            listId: ''
+            listId: '',
+            productCount: 0,
+            productId: []
         }
     },
     created: function () {
@@ -165,9 +167,6 @@ new Vue({
                                         listName: res.productListList[i].listName,
                                         machineType: res.productListList[i].machineType
                                     })
-                                }
-                                function el() {
-                                    console.log(11)
                                 }
                                 break;
                             case `find_machine_list`:
@@ -489,13 +488,11 @@ new Vue({
                                                     productId: element.productId,
                                                     productName: element.productName,
                                                     productPrice: element.productPrice,
-                                                    productPicurl: element.productPicurl,
                                                     formulaName: element.formulaName,
                                                     bunkerNumber: element.bunkerNumber,
                                                     createTime: element.createTime,
                                                     productRank: element.productRank,
-                                                    machineType: element.machineType,
-                                                    productComment: element.productComment
+                                                    machineType: element.machineType
                                                 });
                                             });
                                         })() :
@@ -520,7 +517,7 @@ new Vue({
                                     try {
                                         it.UpdateTableFormData = [];
                                         ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
-                                            res.productInfoList.forEach(element => {
+                                            res.productInfoList.forEach((element, index) => {
                                                 it.UpdateTableFormData.push({
                                                     productId: element.productId,
                                                     productName: element.productName,
@@ -530,10 +527,45 @@ new Vue({
                                                     bunkerNumber: element.bunkerNumber,
                                                     createTime: element.createTime,
                                                     productRank: element.productRank,
-                                                    machineType: element.machineType,
+                                                    machineType: (element.machineType != 1 ? "小型桌面机" : "大型柜式机"),
                                                     productComment: element.productComment
                                                 });
+                                                if (res.productIdList) {
+                                                    console.log(res.productIdList != '');
+                                                    res.productIdList.forEach(e => {
+                                                        if (e == element.productId) {
+                                                            it.$nextTick(function () {
+                                                                it.tableChecked(index);  //每次更新了数据，触发这个函数即可。
+                                                            });
+                                                        }
+                                                    })
+                                                };
                                             });
+                                        })() :
+                                            (() => {
+                                                throw "收集到错误：\n\n" + res.statusCode.msg;
+                                            })()
+                                    } catch (error) {
+                                        it.IError(error);
+                                    }
+                                }
+                            });
+                            break;
+                        case "P":
+                            _data['type'] = 4;
+                            _data['listId'] = it.listId;
+                            _data['productId'] = it.productId;
+                            ym.init.XML({
+                                method: 'POST',
+                                uri: token._j.URLS.Development_Server_ + uri,
+                                async: false,
+                                xmldata: _data,
+                                done: function (res) {
+                                    try {
+                                        it.UpdateTableFormData = [];
+                                        ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
+                                            it.ISuccessfull(res.statusCode.msg);
+                                            it.listoperation({_tag:'manage_prodcut_list_list',_evt: it.listId,_type: 'S'});  //刷新列表
                                         })() :
                                             (() => {
                                                 throw "收集到错误：\n\n" + res.statusCode.msg;
@@ -554,14 +586,17 @@ new Vue({
         },
         handleSelectionChange(val) {
             this.multipleSelection = val;
+            this.productCount = val.length;
+            this.productId = [];
+            val.forEach(e => {
+                this.productId.push(e.productId)
+            });
         },
         filterTag(value, row) {
-            if(row.machineType == 1){
-                row.machineType = "大型柜式机"
-            }else{
-                row.machineType = "小型桌面机"
-            }
             return row.machineType === value;
+        },
+        tableChecked(e) {
+            this.$refs.multipleTable.toggleRowSelection(this.UpdateTableFormData[e], true);
         },
     }
 });
