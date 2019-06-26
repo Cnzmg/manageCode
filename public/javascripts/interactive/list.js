@@ -44,7 +44,16 @@ new Vue({
             UpdateTableFormData: [],
             listId: '',
             productCount: 0,
-            productId: []
+            productId: [],
+            detailTableAndVisible: false,
+            detailTableFormData: [],
+            options: [],
+            unbinadmin: {
+                adminIds: ''
+            },
+            UnFormData: [],
+            adminIds: [],
+            listIds: []
         }
     },
     created: function () {
@@ -551,7 +560,7 @@ new Vue({
                                 }
                             });
                             break;
-                        case "P":
+                        case "P":  //编辑清单
                             _data['type'] = 4;
                             _data['listId'] = it.listId;
                             _data['productId'] = it.productId;
@@ -565,7 +574,8 @@ new Vue({
                                         it.UpdateTableFormData = [];
                                         ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
                                             it.ISuccessfull(res.statusCode.msg);
-                                            it.listoperation({_tag:'manage_prodcut_list_list',_evt: it.listId,_type: 'S'});  //刷新列表
+                                            it.UpdateTableAndVisible = false;
+                                            it.listoperation({ _tag: 'manage_prodcut_list_list', _evt: { listId: it.listId }, _type: 'S' });  //刷新列表
                                         })() :
                                             (() => {
                                                 throw "收集到错误：\n\n" + res.statusCode.msg;
@@ -598,5 +608,59 @@ new Vue({
         tableChecked(e) {
             this.$refs.multipleTable.toggleRowSelection(this.UpdateTableFormData[e], true);
         },
+        searchAPIs(_v) {
+            const it = this;
+            _v._type.forEach(e => {
+                _data['type'] = e
+                _data['adminId'] = _v._id || ''
+                ym.init.XML({
+                    method: 'POST',
+                    uri: token._j.URLS.Development_Server_ + _v._uri,
+                    async: false,
+                    xmldata: _data,
+                    done: function (res) {
+                        try {
+                            ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
+                                switch (e) {
+                                    case 1:
+                                        it.listIds = [];
+                                        res.productListList.forEach(data => {
+                                            it.listIds.push({
+                                                value: data.listId,
+                                                label: data.listName
+                                            });
+                                        })
+                                        break;
+                                    case 2:
+                                        it.adminIds = [];
+                                        res.userList.forEach(data => {
+                                            it.adminIds.push({
+                                                value: data.adminId,
+                                                label: data.adminName
+                                            });
+                                        })
+                                        break;
+                                    default:
+                                        for (let i = 0; i < res.machineNumberList.length; i++) {
+                                            it.UnFormData.push({
+                                                listId: res.machineNumberList[i].listId,
+                                                listName: res.machineNumberList[i].listName,
+                                                machineNumber: res.machineNumberList[i].machineNumber,
+                                                machineType: res.machineNumberList[i].machineType
+                                            })
+                                        }
+                                        break;
+                                }
+                            })() :
+                                (() => {
+                                    throw "收集到错误：\n\n" + res.statusCode.msg;
+                                })()
+                        } catch (error) {
+                            it.IError(error);
+                        }
+                    }
+                });
+            })
+        }
     }
 });
