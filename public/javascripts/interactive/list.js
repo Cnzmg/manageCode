@@ -29,7 +29,9 @@ new Vue({
             select: '',
             searchVal: '',
             searchName: '',
-            tags: {},   //待定
+            machineNumbers: {
+                machineCount: 0
+            },
             selectFil: '',
             selectMater: '',
             dateLog: '',
@@ -53,7 +55,13 @@ new Vue({
             },
             UnFormData: [],
             adminIds: [],
-            listIds: []
+            listIds: [],
+            machineNumber: [],
+            restaurants: [],  //用户ID搜索相关
+            state: '',
+            timeout:  null,
+            userIds: [],
+            userIdts: [],
         }
     },
     created: function () {
@@ -189,10 +197,10 @@ new Vue({
                                         url: u
                                     },
                                     done: function (res) {
-                                        it.tags['machineCount'] = res.machineCount;
-                                        it.tags['offLineNum'] = res.offLineNum;
-                                        it.tags['starvingNum'] = res.starvingNum;
-                                        it.tags['faultNum'] = res.faultNum;
+                                        it.machineNumbers['machineCount'] = res.machineCount;
+                                        it.machineNumbers['offLineNum'] = res.offLineNum;
+                                        it.machineNumbers['starvingNum'] = res.starvingNum;
+                                        it.machineNumbers['faultNum'] = res.faultNum;
                                     }
                                 })
                                 for (let i = 0; i < res.machineShowList.length; i++) {
@@ -586,6 +594,29 @@ new Vue({
                                 }
                             });
                             break;
+                        case "D":
+                            _data['type'] = 5;
+                            _data['listId'] = e._evt.listId;
+                            ym.init.XML({
+                                method: 'POST',
+                                uri: token._j.URLS.Development_Server_ + uri,
+                                async: true,
+                                xmldata: _data,
+                                done: function (res) {
+                                    try {
+                                        ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
+                                            it.ISuccessfull(res.statusCode.msg);
+                                            it.listoperation({ _tag: 'manage_prodcut_list_list', _evt: { listId: it.listId }, _type: 'S' });  //刷新列表
+                                        })() :
+                                            (() => {
+                                                throw "收集到错误：\n\n" + res.statusCode.msg;
+                                            })()
+                                    } catch (error) {
+                                        it.IError(error);
+                                    }
+                                }
+                            });
+                            break;
                         default:
                             break;
                     }
@@ -598,8 +629,11 @@ new Vue({
             this.multipleSelection = val;
             this.productCount = val.length;
             this.productId = [];
+            this.machineNumber = [];
             val.forEach(e => {
                 this.productId.push(e.productId)
+                this.machineNumber.push(e.machineNumber)
+                e.userId != "无" ? this.userIdts.push(e.userId) : null;
             });
         },
         filterTag(value, row) {
@@ -610,56 +644,152 @@ new Vue({
         },
         searchAPIs(_v) {
             const it = this;
-            _v._type.forEach(e => {
-                _data['type'] = e
-                _data['adminId'] = _v._id || ''
-                ym.init.XML({
-                    method: 'POST',
-                    uri: token._j.URLS.Development_Server_ + _v._uri,
-                    async: false,
-                    xmldata: _data,
-                    done: function (res) {
-                        try {
-                            ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
-                                switch (e) {
-                                    case 1:
-                                        it.listIds = [];
-                                        res.productListList.forEach(data => {
-                                            it.listIds.push({
-                                                value: data.listId,
-                                                label: data.listName
-                                            });
-                                        })
-                                        break;
-                                    case 2:
-                                        it.adminIds = [];
-                                        res.userList.forEach(data => {
-                                            it.adminIds.push({
-                                                value: data.adminId,
-                                                label: data.adminName
-                                            });
-                                        })
-                                        break;
-                                    default:
-                                        for (let i = 0; i < res.machineNumberList.length; i++) {
-                                            it.UnFormData.push({
-                                                listId: res.machineNumberList[i].listId,
-                                                listName: res.machineNumberList[i].listName,
-                                                machineNumber: res.machineNumberList[i].machineNumber,
-                                                machineType: res.machineNumberList[i].machineType
-                                            })
+            switch (_v._uri) {
+                case 'manage_machine_product_relation':  //清单的绑定解绑
+                    _v._type.forEach(e => {
+                        _data['type'] = e;
+                        _data['adminId'] = _v._id || '';
+                        _data['listId'] = _v._listid || '';
+                        _data['machineNumber'] = this.machineNumber || [];
+                        ym.init.XML({
+                            method: 'POST',
+                            uri: token._j.URLS.Development_Server_ + _v._uri,
+                            async: false,
+                            xmldata: _data,
+                            done: function (res) {
+                                try {
+                                    ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
+                                        switch (e) {
+                                            case 1:
+                                                it.listIds = [];
+                                                res.productListList.forEach(data => {
+                                                    it.listIds.push({
+                                                        value: data.listId,
+                                                        label: data.listName
+                                                    });
+                                                })
+                                                break;
+                                            case 2:
+                                                it.adminIds = [];
+                                                res.userList.forEach(data => {
+                                                    it.adminIds.push({
+                                                        value: data.adminId,
+                                                        label: data.adminName
+                                                    });
+                                                })
+                                                break;
+                                            case 3:
+                                                it.UnFormData = [];
+                                                for (let i = 0; i < res.machineNumberList.length; i++) {
+                                                    it.UnFormData.push({
+                                                        listId: res.machineNumberList[i].listId,
+                                                        listName: res.machineNumberList[i].listName,
+                                                        machineNumber: res.machineNumberList[i].machineNumber,
+                                                        machineType: res.machineNumberList[i].machineType
+                                                    })
+                                                }
+                                                break;
+                                            default:
+                                                it.ISuccessfull(res.statusCode.msg);
+                                                it.detailTableAndVisible = false;
+                                                break;
                                         }
-                                        break;
+                                    })() :
+                                        (() => {
+                                            throw "收集到错误：\n\n" + res.statusCode.msg;
+                                        })()
+                                } catch (error) {
+                                    it.IError(error);
                                 }
-                            })() :
-                                (() => {
-                                    throw "收集到错误：\n\n" + res.statusCode.msg;
-                                })()
-                        } catch (error) {
-                            it.IError(error);
+                            }
+                        });
+                    })
+                    break;
+                case 'get_machine_number_arr':  //绑定推送/解绑 
+                    _data['name'] = '';  //处理name 缓存
+                    this.userIds = [];  //处理name 缓存
+                    ym.init.XML({
+                        method: 'POST',
+                        uri: token._j.URLS.Development_Server_ + _v._uri,
+                        async: false,
+                        xmldata: _data,
+                        done: function (res) {
+                            res.list.forEach(e => {
+                                _data['machineNumber'] = e;
+                                ym.init.XML({
+                                    method: 'GET',
+                                    uri: token._j.URLS.Development_Server_ + 'statistics_user_list',  //查询绑定关系
+                                    async: false,
+                                    xmldata: _data,
+                                    done: function (res) {
+                                        let uname = "无", uid = "无";
+                                        res.statusCode.status != '4444' ? res.userList.forEach(arr => {
+                                            uname = arr.nickName;
+                                            uid = arr.userId;
+                                        }) : null;
+                                        it.UnFormData.push({
+                                            machineNumber: e,
+                                            userName: uname,
+                                            userId: uid
+                                        });
+                                    }
+                                })
+                            })
                         }
-                    }
-                });
+                    })
+                    break;
+                default:
+                    break
+            }
+        },
+        querySearchAsync(queryString, cb) {  //动态查询用户
+            const it = this;
+            _data['type'] = 1;
+            _data['name'] = queryString || '拉';
+            ym.init.XML({
+                method: 'POST',
+                uri: token._j.URLS.Development_Server_ + 'find_user_for_bind',  //查询绑定关系
+                async: false,
+                xmldata: _data,
+                done: function (res) {
+                    let _arr = []; 
+                    res.list.forEach(e => {
+                        _arr.push({
+                            value: e.nickName,
+                            _id: e.userId
+                        })
+                    })
+                    var results = queryString ? _arr.filter(it.createStateFilter(queryString)) : _arr;
+                    clearTimeout(it.timeout);
+                    it.timeout = setTimeout(() => {
+                        cb(results);
+                    }, 3000 * Math.random());
+                }
+            })
+            
+        },
+        createStateFilter(queryString) {
+            return (state) => {
+                return (state.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0);
+            };
+        },
+        handleSelect(item) {  //取得选择的用户ID
+            this.userIds.push(item._id);
+        },
+        bindUser(e){  //执行绑定/解绑
+            const it = this;
+            _data['machineNumber'] = this.machineNumber; 
+            _data['type'] = e._type;
+            _data['userIds'] = (e._id ? this.userIdts : this.userIds);
+            ym.init.XML({
+                method: 'GET',
+                uri: token._j.URLS.Development_Server_ + e._uri,  //查询绑定关系
+                async: false,
+                xmldata: _data,
+                done: function (res) {
+                    it.detailTableAndVisible = false;
+                    it.ISuccessfull(res.statusCode.msg);
+                }
             })
         }
     }

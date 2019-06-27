@@ -27,7 +27,7 @@
 						<el-button @click="InputAndVisible = true" type="primary">添加清单<i
 								class="el-icon-plus el-icon--right"></i></el-button>
 						<el-button
-							@click="detailTableAndVisible = true; searchAPIs({_uri: 'manage_machine_product_relation', _type:[1,2]}) "
+							@click="detailTableAndVisible = true;UnFormData = [];unbinadmin = {}; searchAPIs({_uri: 'manage_machine_product_relation', _type:[1,2]}) "
 							type="primary">清单绑定/解绑<i class="el-icon-edit el-icon--right"></i></el-button>
 					</div>
 					<el-input placeholder="请输入内容" v-model="searchVal" class="_searchVal">
@@ -69,7 +69,7 @@
 									@click="listoperation({_tag:'manage_prodcut_list_list',_evt: scope.row,_type: 'S'}); TableAndVisible = true">
 									清单详情
 								</el-button>
-								<el-button type="text" size="small">
+								<el-button type="text" size="small" @click="listoperation({_tag:'manage_prodcut_list_list',_evt: scope.row,_type: 'D'});">
 									删除
 								</el-button>
 							</template>
@@ -188,10 +188,10 @@
 						</el-select>
 						<template>
 							<div style="margin-top: 10px">
-								<el-button type="primary">
+								<el-button type="primary" @click="searchAPIs({_id: unbinadmin.adminId,_listid: unbinadmin.listId, _uri: 'manage_machine_product_relation',_type:[4]})">
 									绑定
 								</el-button>
-								<el-button type="primary">
+								<el-button type="primary" @click="searchAPIs({_id: unbinadmin.adminId,_uri: 'manage_machine_product_relation',_type:[5]})">
 									解绑
 								</el-button>
 							</div>

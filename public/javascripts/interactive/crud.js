@@ -1,3 +1,4 @@
+import { regionData, CodeToText, TextToCode } from 'element-china-area-data'
 const [
     $,
     token,
@@ -170,7 +171,8 @@ new Vue({
                 machine: [],
                 product: [],
                 detail: []
-            }
+            },
+            address: [] //
         }
     },
     created: function () {
@@ -293,6 +295,10 @@ new Vue({
                     _data['type'] = 1;
                     _data['productId'] = JSON.parse(e).productId;
                     break;
+                case 'manage_machine':
+                    _data['type'] = 3;
+                    _data['machineNumber'] = JSON.parse(e).machineNumber;
+                    break;
                 default:
                     break;
             }
@@ -384,7 +390,7 @@ new Vue({
                                                 hide: e.hide
                                             });
                                         });
-                                    }else{
+                                    } else {
                                         it.samllfileUpdata = true;  //详情图片开启
                                     }
 
@@ -393,7 +399,9 @@ new Vue({
                                     it.IError(error);
                                     throw error;
                                 }
-
+                                break;
+                            case 'manage_machine':
+                                it.ruleForm.adminName = res.machineInfo.adminName;  //管理员名称
                                 break;
                             default:
                                 break;
@@ -434,7 +442,7 @@ new Vue({
         },
         submitForm(formName) {
             _data['type'] = 3;
-            if(dataHref.split('*').length > 1){
+            if (dataHref.split('*').length > 1) {
                 _data['type'] = 4;
                 _data['productCreateTime'] = ym.init.getDateTime(JSON.parse(decodeURI(dataHref.split('*')[1])).createTime)
             }
@@ -474,9 +482,6 @@ new Vue({
             })
             // this.ISuccessfull('提交成功');
         },
-        resetForm(formName) {  //重置表单
-            this.$refs[formName].resetFields();
-        },
         tagChange(e) {  //处理select 的机器类型
             try {
                 const it = this;
@@ -512,6 +517,10 @@ new Vue({
             } catch (error) {
                 this.IError(error);
             }
+        },
+        handleChange(e) {
+            //地区选项 CodeToText 
+            this.resetForm.province = e;
         }
     }
 })
