@@ -147,7 +147,8 @@ new Vue({
                 productTemperature: 1,
                 productComment: '',
                 bunkerNumberArr: [],
-                machineType: 1
+                machineType: 1,
+                province: [],   //地址数组
             },
             rules: {
                 productName: [
@@ -172,7 +173,7 @@ new Vue({
                 product: [],
                 detail: []
             },
-            address: [] //
+            address: regionData   // 地址选择
         }
     },
     created: function () {
@@ -400,8 +401,52 @@ new Vue({
                                     throw error;
                                 }
                                 break;
-                            case 'manage_machine':
+                            case 'manage_machine':  //
+                                it.ruleForm.adminId = res.machineInfo.adminId;  //管理员id
                                 it.ruleForm.adminName = res.machineInfo.adminName;  //管理员名称
+                                it.ruleForm.machineNumber = res.machineInfo.machineNumber;  //设备编号
+                                it.ruleForm.machineLatitude = res.machineInfo.machineLatitude;  //纬度
+                                it.ruleForm.machineLongitude = res.machineInfo.machineLongitude;  //经度
+
+                                it.ruleForm.province.push(res.machineInfo.machineAddrDesc)  //反显地址
+
+                                var map = new AMap.Map('cityg', {
+                                    resizeEnable: true, //是否监控地图容器尺寸变化
+                                    zoom: 12 //初始化地图层级
+                                });
+                                map.on('click', function (e) {
+                                    console.log(e);
+                                });
+                                AMap.plugin('AMap.PlaceSearch', function () {
+                                    var placeSearch = new AMap.PlaceSearch({
+                                        city: '020'
+                                    });
+                                    placeSearch.search(it.ruleForm.province, function (status, result) {
+                                        // 查询成功时，result即对应匹配的POI信息
+                                        if (typeof result.poiList === "undefined") {
+                                            alert('Impact error! wrong keywords?');
+                                            return false;
+                                        }
+                                        map.setFitView();
+                                    })
+                                })
+                                //加载云图层插件
+                                jQuery.ajax({
+                                    url: 'https://yuntuapi.amap.com/datasearch/local?tableid=5bebc2507bbf195c079c50d6&city=全国&keywords=' + res.machineInfo.machineNumber + '&filter=machineNumber:' + res.machineInfo.machineNumber + '&limit=50&page=1&key=8d7d4594c6fdff4624696ba71f9e4c8a',
+                                    type: 'post',
+                                    dataType: 'jsonp'
+                                }).done(function (res) {
+                                    for (var i = 0; i < res.datas.length; i++) {
+                                        // 创建点覆盖物
+                                        var marker = new AMap.Marker({
+                                            position: new AMap.LngLat(res.datas[i]._location.split(',')[0], res.datas[i]._location.split(',')[1]),
+                                            icon: res.datas[i].marker,
+                                            offset: new AMap.Pixel(-13, -30)
+                                        });
+                                        map.add(marker);
+                                    }
+                                });
+
                                 break;
                             default:
                                 break;
@@ -520,7 +565,42 @@ new Vue({
         },
         handleChange(e) {
             //地区选项 CodeToText 
-            this.resetForm.province = e;
+            this.ruleForm.province = e;
+        },
+        newAMap() {
+            var map = new AMap.Map('cityg', {
+                resizeEnable: true, //是否监控地图容器尺寸变化
+                zoom: 12 //初始化地图层级
+            });
+            map.on('click', function (e) {
+                console.log(e);
+            });
+            map.clearMap();
+            AMap.plugin('AMap.PlaceSearch', function () {
+                var placeSearch = new AMap.PlaceSearch({
+                    city: '020'
+                });
+                placeSearch.search(adds, function (status, result) {
+                    // 查询成功时，result即对应匹配的POI信息
+                    if (typeof result.poiList === "undefined") {
+                        alert('Impact error! wrong keywords?');
+                        return false;
+                    }
+                    var pois = result.poiList.pois;
+                    for (var i = 0; i < pois.length; i++) {
+                        var poi = pois[i];
+                        var marker = [];
+                        marker[i] = new AMap.Marker({
+                            position: poi.location,   // 经纬度对象，也可以是经纬度构成的一维数组[116.39, 39.9]
+                            title: poi.name
+                        });
+                        // 将创建的点标记添加到已有的地图实例：
+                        map.add(marker[i]);
+                        marker[i].on('click', allmap);
+                    }
+                    map.setFitView();
+                })
+            })
         }
     }
 })
