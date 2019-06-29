@@ -148,7 +148,10 @@ new Vue({
                 productComment: '',
                 bunkerNumberArr: [],
                 machineType: 1,
-                province: [],   //地址数组
+                province: ['440100'],   //地址数组
+                machineLatitude: '',  //纬度
+                machineLongitude: ''  //经度
+
             },
             rules: {
                 productName: [
@@ -408,14 +411,21 @@ new Vue({
                                 it.ruleForm.machineLatitude = res.machineInfo.machineLatitude;  //纬度
                                 it.ruleForm.machineLongitude = res.machineInfo.machineLongitude;  //经度
 
-                                it.ruleForm.province.push(res.machineInfo.machineAddrDesc)  //反显地址
+                                console.log(TextToCode['广东省']);
+                                // it.ruleForm.province.push(TextToCode[res.machineInfo.province].code);
+                                // it.ruleForm.province.push(TextToCode[res.machineInfo.city].code);
+                                // it.ruleForm.province.push(TextToCode[res.machineInfo.district].code);
+                                // console.log(TextToCode[res.machineInfo.province].code);
+                                // console.log(it.ruleForm.province);
+                                //it.ruleForm.province.push(res.machineInfo.machineAddrDesc)  //反显地址
 
                                 var map = new AMap.Map('cityg', {
                                     resizeEnable: true, //是否监控地图容器尺寸变化
                                     zoom: 12 //初始化地图层级
                                 });
                                 map.on('click', function (e) {
-                                    console.log(e);
+                                    it.ruleForm.machineLatitude = e.lnglat.lat;  //纬度
+                                    it.ruleForm.machineLongitude = e.lnglat.lng; //经度
                                 });
                                 AMap.plugin('AMap.PlaceSearch', function () {
                                     var placeSearch = new AMap.PlaceSearch({
@@ -424,7 +434,7 @@ new Vue({
                                     placeSearch.search(it.ruleForm.province, function (status, result) {
                                         // 查询成功时，result即对应匹配的POI信息
                                         if (typeof result.poiList === "undefined") {
-                                            alert('Impact error! wrong keywords?');
+                                            it.IError('Impact error! wrong keywords?');
                                             return false;
                                         }
                                         map.setFitView();
@@ -566,24 +576,26 @@ new Vue({
         handleChange(e) {
             //地区选项 CodeToText 
             this.ruleForm.province = e;
+            this.newAMap();
         },
         newAMap() {
+            const it = this;
             var map = new AMap.Map('cityg', {
                 resizeEnable: true, //是否监控地图容器尺寸变化
                 zoom: 12 //初始化地图层级
             });
             map.on('click', function (e) {
-                console.log(e);
+                it.ruleForm.machineLatitude = e.lnglat.lat;  //纬度
+                it.ruleForm.machineLongitude = e.lnglat.lng; //经度
             });
             map.clearMap();
+            it.ruleForm.province.push(CodeToText[it.ruleForm.province[0]] + CodeToText[it.ruleForm.province[1]] + CodeToText[it.ruleForm.province[2]]);
             AMap.plugin('AMap.PlaceSearch', function () {
-                var placeSearch = new AMap.PlaceSearch({
-                    city: '020'
-                });
-                placeSearch.search(adds, function (status, result) {
+                var placeSearch = new AMap.PlaceSearch();
+                placeSearch.search(it.ruleForm.province, function (status, result) {
                     // 查询成功时，result即对应匹配的POI信息
                     if (typeof result.poiList === "undefined") {
-                        alert('Impact error! wrong keywords?');
+                        it.IError('Impact error! wrong keywords?');
                         return false;
                     }
                     var pois = result.poiList.pois;
@@ -596,7 +608,6 @@ new Vue({
                         });
                         // 将创建的点标记添加到已有的地图实例：
                         map.add(marker[i]);
-                        marker[i].on('click', allmap);
                     }
                     map.setFitView();
                 })
