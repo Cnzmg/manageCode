@@ -66,9 +66,9 @@
 						<el-form :model="formData" class="demo-ruleForm" ref="ruleForm" label-width="100px">
 							<el-form-item label="类型">
 								<el-select v-model="formData.formulaId" placeholder="选择配方" class="w400">
-									<el-option></el-option>
-									<el-option></el-option>
-									<el-option></el-option>
+									<el-option value="1">11</el-option>
+									<el-option value="2">22</el-option>
+									<el-option value="3">33</el-option>
 								</el-select>
 							</el-form-item>
 							<el-form-item label="版本号" prop="mUpdateVersion">
@@ -81,11 +81,10 @@
 								<el-input v-model="formData.mUpdateVersion" class="w400" type="textarea"></el-input>
 							</el-form-item>
 							<el-form-item>
-								<template v-model="ruleForm.machineScenePicUrl">
-									<small>场景图片</small>
-									<el-upload prop="machineScenePicUrl"
+								<template v-model="formData.mUpdateUrl">
+									<el-upload prop="mUpdateUrl"
 										action="http://test.cbcoffee.cn:8085/upload_file" list-type="picture-card"
-										:file-list="imageList.machineScenePicUrl" :limit="num" :data="fileData"
+										:file-list="imageList.mUpdateUrl" :limit="num" :data="fileData"
 										:on-change="fileChange" :on-success="machineSceneSuccess"
 										:on-exceed="fileExceed" :on-preview="handlePictureCardPreview"
 										:on-remove="handleRemove">

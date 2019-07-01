@@ -38,7 +38,11 @@ new Vue({
             InputAndVisible: false, //列表操作
             formData: {
                 machineType: 1,
-                name: ''
+                name: '',
+                mUpdateUrl: ''  //应用更新
+            },
+            imageList:{
+                mUpdateUrl: [] //图片li
             },
             TableAndVisible: false,
             TableFormData: [],
@@ -63,7 +67,11 @@ new Vue({
             userIds: [],
             userIdts: [],
             machineLogs: [],  //设备日志
-            machineLogViews: false
+            machineLogViews: false,
+            fileData: _data,
+            num: 1,
+            dialogVisible: false,
+            dialogImageUrl: ''
         }
     },
     created: function () {
@@ -813,6 +821,21 @@ new Vue({
                     })
                 }
             })
-        }
+        },
+        fileChange(e){//上传结构
+            console.log(e);
+        },
+        fileExceed() {
+            this.IError('只允许一张图片')
+        },
+        machineSceneSuccess(e) {
+            this.ruleForm.productMachinePicurl = e.realPath;
+        },
+        handleRemove(file, fileList) {
+            console.log(file, fileList);
+        },
+        handlePictureCardPreview(file) {
+            this.dialogVisible = true;
+        },
     }
 });
