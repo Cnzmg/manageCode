@@ -6,444 +6,135 @@
 	<meta name="format-detection" content="telephone=no">
 	<meta charset="UTF-8">
 
-	<meta name="description" content="Violate Responsive Admin Template">
-	<meta name="keywords" content="Super Admin, Admin, Template, Bootstrap">
+	<meta name="description" content="共享咖啡管理后台">
+	<meta name="keywords" content="yuanmeng,ym,圆梦,系统,后台系统,咖啡蜗,蜗牛,大正集团">
+	<meta name="renderer" content="webkit">
+	<link rel="stylesheet" href="../../public/stylesheets/plugin/bootstrap.min.css">
+	<link rel="stylesheet" href="../../public/stylesheets/plugin/element.min.css">
+	<script src="../../public/javascripts/plugin/vue.js"></script>
+	<script src="../../public/javascripts/plugin/element.min.js"></script>
 
 	<title>广东圆梦实业发展有限公司</title>
-
-	<!-- CSS -->
-	<link href="css/bootstrap.min.css" rel="stylesheet">
-	<link href="css/animate.min.css" rel="stylesheet">
-	<link href="css/font-awesome.min.css" rel="stylesheet">
-	<link href="css/form.css" rel="stylesheet">
-	<link href="css/calendar.css" rel="stylesheet">
-	<link href="css/style.css" rel="stylesheet">
-	<link href="css/icons.css" rel="stylesheet">
-	<link href="css/generics.css" rel="stylesheet">
-	<link rel="icon" href="img/bitbug_favicon.ico" type="image/x-icon" />
-	<script type="text/javascript" src="js/config/config.js"></script>
 </head>
 
-<body id="skin-cloth">
+<body class="_scrollbar">
+	<div id="c-container-list" data-uri="remote_operation" data-asset="/manage/equipmentList.html"
+		data-goback="../equipmentList.html" v-loading.fullscreen.lock="loading" data-search="manage_machine">
 
-	<header id="header" class="media">
-		<a href="" id="menu-toggle"></a>
-		<a class="logo pull-left" href="index.html">咖啡蜗后台管理系统</a>
+		<el-container>
+			<el-form>
+				<div>机器远程操作指令：</div>
+				<br />
+				<el-button @click="sendMachine({_operationType: 1})"><i class="el-icon-s-promotion"></i>大门指令</el-button>
+				<el-button @click="sendMachine({_operationType: 2})"><i class="el-icon-s-promotion"></i>小门指令</el-button>
+				<el-button @click="sendMachine({_operationType: 5})"><i class="el-icon-s-promotion"></i>推送菜单指令</el-button>
+				<el-button @click="sendMachine({_operationType: 3})"><i class="el-icon-s-promotion"></i>机器清洗指令</el-button>
+				<el-button @click="sendMachine({_operationType: 4})"><i class="el-icon-s-promotion"></i>机器消毒指令</el-button>
+				<el-button @click="sendMachine({_operationType: 6})"><i class="el-icon-s-promotion"></i>推送视频指令</el-button>
+				<el-button @click="sendMachine({_operationType: 7})"><i class="el-icon-s-promotion"></i>日志上传指令</el-button>
+			</el-form>
+		</el-container>
 
-		<div class="media-body">
-			<div class="media" id="top-menu">
-				<div id="time" class="pull-right">
-					<span id="hours"></span> :
-					<span id="min"></span> :
-					<span id="sec"></span>
+		<el-container>
+			<el-form v-for="data in longStatus">
+				<div>普通状态查询：</div>
+
+				<div style="width:100%;height:auto;overflow:hidden;">
+					<el-form-label style="float: left;margin: 0 20px" name="machineNumber">
+						<div style="margin: 10px 0">设备编号：{{ data.canister.machineNumber }}</div>
+					</el-form-label>
+
+					<el-form-label style="float: left;margin: 0 20px" name="version">
+						<div style="margin: 10px 0">应用版本：{{ data.canister.version }}</div>
+					</el-form-label>
 				</div>
 
-				<div class="media-body" style="line-height:39px;">
-					<!-- <input type="text" class="main-search"> -->
-					广东圆梦实业发展有限公司
-				</div>
-			</div>
-		</div>
-	</header>
+				<div style="width:100%;height:auto;overflow:hidden;">
+					<el-form-label style="float: left;margin: 0 20px" name="boilerTemperature">
+						<div style="margin: 10px 0">锅炉温度：{{data.boilerTemperature}}</div>
+					</el-form-label>
 
-	<div class="clearfix"></div>
+					<el-form-label style="float: left;margin: 0 20px" name="machineStatus">
+						<div style="margin: 10px 0">机器状态：{{ data.machineStatus }}</div>
+					</el-form-label>
 
-	<section id="main" class="p-relative" role="main">
+					<el-form-label style="float: left;margin: 0 20px" name="failureStatus">
+						<div style="margin: 10px 0">警告状态：{{ data.failureStatus }}</div>
+					</el-form-label>
 
-		<!-- Sidebar -->
-		<aside id="sidebar">
-
-			<!-- Sidbar Widgets -->
-			<div class="side-widgets overflow">
-				<!-- Profile Menu -->
-				<div class="text-center s-widget m-b-25 dropdown" id="profile-menu">
-					<a href="" data-toggle="dropdown">
-						<img class="profile-pic animated" src="img/1516775224.jpg" alt="">
-					</a>
-					<ul class="dropdown-menu profile-menu">
-					</ul>
-					<h4 class="m-0" id="usAdministration">Admin</h4>
-					<span id="Administration"></span>
+					<el-form-label style="float: left" name="bootTime">
+						<div style="margin: 10px 0">开机运行时间：{{ data.bootTime }}</div>
+					</el-form-label>
 				</div>
 
-				<!-- Calendar -->
-				<div class="s-widget m-b-25">
-					<div id="sidebar-calendar"></div>
+				<div>
+					<el-form-label style="float: left;margin: 10px 60px" name="at">
+						<div style="margin: 10px 0">料仓1</div>
+						<el-progress type="circle" :percentage="data.canister.at[0]" :color="(()=>{ return data.canister.at[0] < 10 ? 'red' : '' })()"></el-progress>
+						<div>余量：{{ parseFloat(data.canister.at[0] * data.canister.at[1] / 100).toFixed(2) }}</div>
+						<div>总量：{{ data.canister.at[1] }}</div>
+					</el-form-label>
+
+					<el-form-label style="float: left;margin: 10px 60px" name="bt">
+						<div style="margin: 10px 0">料仓2</div>
+						<el-progress type="circle" :percentage="data.canister.bt[0]" :color="(()=>{ return data.canister.bt[0] < 10 ? 'red' : '' })()"></el-progress>
+						<div>余量：{{ parseFloat(data.canister.bt[0] * data.canister.bt[1] / 100).toFixed(2) }}</div>
+						<div>总量：{{ data.canister.bt[1] }}</div>
+					</el-form-label>
+
+					<el-form-label style="float: left;margin: 10px 60px" name="ct">
+						<div style="margin: 10px 0">料仓3</div>
+						<el-progress type="circle" :percentage="data.canister.ct[0]" :color="(()=>{ return data.canister.ct[0] < 10 ? 'red' : '' })()"></el-progress>
+						<div>余量：{{ parseFloat(data.canister.ct[0] * data.canister.ct[1] / 100).toFixed(2) }}</div>
+						<div>总量：{{ data.canister.ct[1] }}</div>
+					</el-form-label>
+
+					<el-form-label style="float: left;margin: 10px 60px" name="dt">
+						<div style="margin: 10px 0">料仓4</div>
+						<el-progress type="circle" :percentage="data.canister.dt[0]" :color="(()=>{ return data.canister.dt[0] < 10 ? 'red' : '' })()"></el-progress>
+						<div>余量：{{ parseFloat(data.canister.dt[0] * data.canister.dt[1] / 100).toFixed(2) }}</div>
+						<div>总量：{{ data.canister.dt[1] }}</div>
+					</el-form-label>
+
+					<el-form-label style="float: left;margin: 10px 60px" name="et">
+						<div style="margin: 10px 0">料仓5</div>
+						<el-progress type="circle" :percentage="data.canister.et[0]" :color="(()=>{ return data.canister.et[0] < 10 ? 'red' : '' })()"></el-progress>
+						<div>余量：{{ parseFloat(data.canister.et[0] * data.canister.et[1] / 100).toFixed(2) }}</div>
+						<div>总量：{{ data.canister.et[1] }}</div>
+					</el-form-label>
+
+					<el-form-label style="float: left;margin: 10px 60px" name="ft">
+						<div style="margin: 10px 0">料仓6</div>
+						<el-progress type="circle" :percentage="data.canister.ft[0]" :color="(()=>{ return data.canister.ft[0] < 10 ? 'red' : '' })()"></el-progress>
+						<div>余量：{{ parseFloat(data.canister.ft[0] * data.canister.ft[1] / 100).toFixed(2) }}</div>
+						<div>总量：{{ data.canister.ft[1] }}</div>
+					</el-form-label>
+
+					<el-form-label style="float: left;margin: 10px 60px" name="gt">
+						<div style="margin: 10px 0">料仓7</div>
+						<el-progress type="circle" :percentage="data.canister.gt[0]" :color="(()=>{ return data.canister.gt[0] < 10 ? 'red' : '' })()"></el-progress>
+						<div>余量：{{ parseFloat(data.canister.gt[0] * data.canister.gt[1] / 100).toFixed(2) }}</div>
+						<div>总量：{{ data.canister.gt[1] }}</div>
+					</el-form-label>
+
+					<el-form-label style="float: left;margin: 10px 60px" name="ht">
+						<div style="margin: 10px 0">杯子</div>
+						<el-progress type="circle" :percentage="data.canister.ht[0]" :color="(()=>{ return data.canister.ht[0] < 10 ? 'red' : '' })()"></el-progress>
+						<div>余量：{{ parseFloat(data.canister.ht[0] * data.canister.ht[1] / 100).toFixed(2) }}</div>
+						<div>总量：{{ data.canister.ht[1] }}</div>
+					</el-form-label>
+
+					<el-form-label style="float: left;margin: 10px 60px" name="it">
+						<div style="margin: 10px 0">水</div>
+						<el-progress type="circle" :percentage="data.canister.it[0]" :color="(()=>{ return data.canister.it[0] < 10 ? 'red' : '' })()"></el-progress>
+						<div>余量：{{ parseFloat(data.canister.it[0] * data.canister.it[1] / 100).toFixed(2) }}</div>
+						<div>总量：{{ data.canister.it[1] }}</div>
+					</el-form-label>
 				</div>
 
-			</div>
-
-			<!-- Side Menu -->
-			<ul class="list-unstyled side-menu" id="J_menuatch">
-
-			</ul>
-
-		</aside>
-
-		<!-- Content -->
-		<section id="content" class="container">
-
-			<!-- Table Striped -->
-			<div class="block-area" id="tableStriped" style="height: auto;overflow: hidden;display: block;" >
-				<h3 style="font-size:16px;">状态操作<span style="padding-left:12.5%;" class="calNumber"></span><span style="padding-left:5%;" id="version"></span></h3>
-				<div class="form-group" style="height:auto;overflow:hidden;">
-					<span style="text-align:center;width:112px;margin-top:10px;">
-                            机器远程操作
-                        </span>
-				</div>
-				<div class="form-group" style="height:auto;overflow:hidden;">
-					<label class="col-sm-1 control-label block-title tableStriped" style="width:112px;text-align:center;margin-right:10px;">大门控制</label>
-					<div class="col-sm-1 tableStriped">
-						<a href="javascript:void(0)" class="block-title" style="background:rgba(0,0,0,0.8);" onclick="jzm.remoteOperation('search',1)">发送</a>
-					</div>
-					<label class="col-sm-1 tableStriped control-label block-title" style="width:112px;text-align:center;margin-right:10px;">小门控制</label>
-					<div class="col-sm-1 tableStriped">
-						<a href="javascript:void(0)" class="block-title" style="background:rgba(0,0,0,0.8);" onclick="jzm.remoteOperation('search',2)">发送</a>
-					</div>
-					<label class="col-sm-1 control-label block-title" style="width:112px;text-align:center;margin-right:10px;">推送更新菜单</label>
-					<div class="col-sm-5">
-						<a href="javascript:void(0)" class="block-title" style="background:rgba(0,0,0,0.8);" onclick="jzm.remoteOperation('search',5)">发送</a>
-					</div>
-				</div>
-				<div class="form-group" style="height:auto;overflow:hidden;">
-					<label class="col-sm-1 tableStriped control-label block-title" style="width:112px;text-align:center;margin-right:10px;">机器清洗</label>
-					<div class="col-sm-1 tableStriped">
-						<a href="javascript:void(0)" class="block-title" style="background:rgba(0,0,0,0.8);" onclick="jzm.remoteOperation('search',3)">发送</a>
-					</div>
-					<label class="tableStriped col-sm-1 control-label block-title" style="width:112px;text-align:center;margin-right:10px;">机器消毒</label>
-					<div class="col-sm-1 tableStriped">
-						<a href="javascript:void(0)" class="block-title" style="background:rgba(0,0,0,0.8);" onclick="jzm.remoteOperation('search',4)">发送</a>
-					</div>
-					<label class="col-sm-1 control-label block-title" style="width:112px;text-align:center;margin-right:10px;">推送视频</label>
-					<div class="col-sm-5">
-						<a href="javascript:void(0)" class="block-title" style="background:rgba(0,0,0,0.8);" onclick="jzm.remoteOperation('search',6)">发送</a>
-					</div>
-				</div>
-				<div class="tableStriped" style="display: none;">
-					<div class="form-group" style="height:auto;overflow:hidden;">
-						<span style="text-align:center;width:112px;margin-top:10px;">
-                            普通状态查询
-                        </span>
-					</div>
-
-					<div class="form-group" style="height:auto;overflow:hidden;">
-						<label class="col-sm-1 control-label block-title" style="width:112px;text-align:center;margin-right:10px;">锅炉温度</label>
-						<div class="col-sm-1">
-							<a href="javascript:void(0)" class="block-title" id="boilerTemperature">
-								...
-							</a>
-						</div>
-
-						<label class="col-sm-1 control-label block-title" style="width:112px;text-align:center;margin-right:10px;">机器状态</label>
-						<div class="col-sm-1">
-							<a href="javascript:void(0)" class="block-title" id="machineStatus">...</a>
-						</div>
-
-						<label class="col-sm-1 control-label block-title" style="width:112px;text-align:center;margin-right:10px;">警告状态</label>
-						<div class="col-sm-1">
-							<a href="javascript:void(0)" class="block-title" id="failureStatus">...</a>
-						</div>
-					</div>
-
-					<div class="form-group" style="height:auto;overflow:hidden;">
-						<label class="col-sm-1 control-label block-title" style="width:112px;text-align:center;margin-right:10px;">冷水温度</label>
-						<div class="col-sm-1">
-							<a href="javascript:void(0)" class="block-title" id="bubbleTemperature">
-								0.0度
-							</a>
-						</div>
-
-						<label class="col-sm-1 control-label block-title" style="width:112px;text-align:center;margin-right:10px;">开机运行时间</label>
-						<div class="col-sm-2">
-							<a href="javascript:void(0)" class="block-title" id="bootTime">...</a>
-						</div>
-					</div>
-					<div class="form-group" style="height:auto;overflow:hidden;">
-						<label class="col-sm-1 control-label block-title" style="width:112px;text-align:center;margin-right:10px;">锅炉压力</label>
-						<div class="col-sm-1">
-							<a href="javascript:void(0)" class="block-title" id="boilerPressure">
-								... Pa
-							</a>
-						</div>
-
-						<label class="col-sm-1 control-label block-title" style="width:112px;text-align:center;margin-right:10px;">各组件是否连接</label>
-						<div class="col-sm-1">
-							<a href="javascript:void(0)" class="block-title">...</a>
-						</div>
-					</div>
-
-					<div class="form-group" style="height:auto;overflow:hidden;">
-						<label class="col-sm-1 control-label block-title" style="width:112px;text-align:center;margin-right:10px;">流量</label>
-						<div class="col-sm-1">
-							<a href="javascript:void(0)" class="block-title" id="traffic">
-								...
-							</a>
-						</div>
-
-						<label class="col-sm-1 control-label block-title" style="width:112px;text-align:center;margin-right:10px;">传感器状态</label>
-						<div class="col-sm-1">
-							<a href="javascript:void(0)" class="block-title" id="sensorStatus">...</a>
-						</div>
-					</div>
-
-					<!-- 料仓集合 -->
-					<div class="form-group" style="height:auto;overflow:hidden;">
-						<label for="bin1" class="col-sm-1 control-label block-title" style="width:10%;text-align:center;margin-right:10px;">料仓1（橙汁）</label>
-						<div class="col-sm-1">
-							<a href="javascript:void(0)" class="block-title" id="bin1">
-								...
-							</a>
-						</div>
-
-						<label for="bin2" class="col-sm-1 control-label block-title" style="width:10%;text-align:center;margin-right:10px;">料仓2（奶粉）</label>
-						<div class="col-sm-1">
-							<a href="javascript:void(0)" class="block-title" id="bin2">...</a>
-						</div>
-					</div>
-
-					<div class="form-group" style="height:auto;overflow:hidden;">
-						<label for="bin3" class="col-sm-1 control-label block-title" style="width:10%;text-align:center;margin-right:10px;">料仓3（糖）</label>
-						<div class="col-sm-1">
-							<a href="javascript:void(0)" class="block-title" id="bin3">
-								...
-							</a>
-						</div>
-
-						<label for="bin4" class="col-sm-1 control-label block-title" style="width:10%;text-align:center;margin-right:10px;">料仓4（奶粉）</label>
-						<div class="col-sm-1">
-							<a href="javascript:void(0)" class="block-title" id="bin4">...</a>
-						</div>
-					</div>
-
-					<div class="form-group" style="height:auto;overflow:hidden;">
-						<label for="bin5" class="col-sm-1 control-label block-title" style="width:10%;text-align:center;margin-right:10px;">料仓5（巧克力）</label>
-						<div class="col-sm-1">
-							<a href="javascript:void(0)" class="block-title" id="bin5">
-								...
-							</a>
-						</div>
-
-						<label for="bin6" class="col-sm-1 control-label block-title" style="width:10%;text-align:center;margin-right:10px;">料仓6（茶）</label>
-						<div class="col-sm-1">
-							<a href="javascript:void(0)" class="block-title" id="bin6">...</a>
-						</div>
-					</div>
-
-					<div class="form-group" style="height:auto;overflow:hidden;">
-						<label for="bin7" class="col-sm-1 control-label block-title" style="width:10%;text-align:center;margin-right:10px;">料仓170（咖啡）</label>
-						<div class="col-sm-1">
-							<a href="javascript:void(0)" class="block-title" id="bin7">...</a>
-						</div>
-
-						<label for="bin8" class="col-sm-1 control-label block-title" style="width:10%;text-align:center;margin-right:10px;">杯子</label>
-						<div class="col-sm-1">
-							<a href="javascript:void(0)" class="block-title" id="bin8">...</a>
-						</div>
-					</div>
-
-					<!-- 料仓集合 -->
-					<hr class="whiter">
-					<!-- 设置参数 -->
-					<div class="form-group" style="margin-top:20px;">
-						<span style="text-align:center;width:112px;" id="rangshowlog">
-                            设置参数
-                        </span>
-					</div>
-
-					<div class="form-group" style="height:auto;overflow:hidden;">
-						<label class="col-sm-2 control-label block-title" style="text-align:center;">热水温度设置</label>
-						<div class="col-sm-2">
-							<input type="text" placeholder="..." style="width:100%;background:none;border:1px solid rgba(0,0,0,0.3);height:27px;" />
-						</div>
-
-						<label class="col-sm-2 control-label block-title" style="text-align:center;">冲泡器挤饼力设置</label>
-						<div class="col-sm-2">
-							<input type="text" placeholder="正常" style="width:100%;background:none;border:1px solid rgba(0,0,0,0.3);height:27px;" />
-						</div>
-
-						<label class="col-sm-2 control-label block-title" style="text-align:center;">自动冲洗时间间隔设置</label>
-						<div class="col-sm-2">
-							<input type="text" placeholder="..." style="width:100%;background:none;border:1px solid rgba(0,0,0,0.3);height:27px;" />
-						</div>
-					</div>
-
-					<div class="form-group" style="height:auto;overflow:hidden;">
-						<label class="col-sm-2 control-label block-title" style="text-align:center;">冷水温度设置</label>
-						<div class="col-sm-2">
-							<input type="text" placeholder="..." style="width:100%;background:none;border:1px solid rgba(0,0,0,0.3);height:27px;" />
-						</div>
-
-						<label class="col-sm-2 control-label block-title" style="text-align:center;">咖啡酿造压力设置</label>
-						<div class="col-sm-2">
-							<input type="text" placeholder="..." style="width:100%;background:none;border:1px solid rgba(0,0,0,0.3);height:27px;" />
-						</div>
-
-						<label class="col-sm-2 control-label block-title" style="text-align:center;">分杯器杯子检测阈值设置</label>
-						<div class="col-sm-2">
-							<input type="text" placeholder="..." style="width:100%;background:none;border:1px solid rgba(0,0,0,0.3);height:27px;" />
-						</div>
-					</div>
-
-					<div class="form-group" style="height:auto;overflow:hidden;">
-						<label class="col-sm-2 control-label block-title" style="text-align:center;">冲泡器挤饼时间设置</label>
-						<div class="col-sm-2">
-							<input type="text" placeholder="..." style="width:100%;background:none;border:1px solid rgba(0,0,0,0.3);height:27px;" />
-						</div>
-
-						<label class="col-sm-2 control-label block-title" style="text-align:center;">冲泡器挤饼时间设置</label>
-						<div class="col-sm-2">
-							<input type="text" placeholder="..." style="width:100%;background:none;border:1px solid rgba(0,0,0,0.3);height:27px;" />
-						</div>
-
-						<label class="col-sm-2 control-label block-title" style="text-align:center;">分杯失败后再分杯次数设置</label>
-						<div class="col-sm-2">
-							<input type="text" placeholder="..." style="width:100%;background:none;border:1px solid rgba(0,0,0,0.3);height:27px;" />
-						</div>
-					</div>
-					<div class="form-group" style="height:auto;overflow:hidden;">
-						<label class="col-sm-2 control-label block-title" style="text-align:center;">托盘杯子检测阈值设置</label>
-						<div class="col-sm-2">
-							<input type="text" placeholder="..." style="width:100%;background:none;border:1px solid rgba(0,0,0,0.3);height:27px;" />
-						</div>
-
-						<label class="col-sm-2 control-label block-title" style="text-align:center;">冲泡器回程时间设置</label>
-						<div class="col-sm-2">
-							<input type="text" placeholder="..." style="width:100%;background:none;border:1px solid rgba(0,0,0,0.3);height:27px;" />
-						</div>
-
-						<label class="col-sm-2 control-label block-title" style="text-align:center;">齿轮泵停止后延时关闭阀门时间设置</label>
-						<div class="col-sm-2">
-							<input type="text" placeholder="..." style="width:100%;background:none;border:1px solid rgba(0,0,0,0.3);height:27px;" />
-						</div>
-					</div>
-					<div class="form-group" style="height:auto;overflow:hidden;">
-						<label class="col-sm-2 control-label block-title" style="text-align:center;">冲泡器温度设置</label>
-						<div class="col-sm-2">
-							<input type="text" placeholder="..." style="width:100%;background:none;border:1px solid rgba(0,0,0,0.3);height:27px;" />
-						</div>
-
-						<label class="col-sm-2 control-label block-title" style="text-align:center;">冲泡器再挤时间设置</label>
-						<div class="col-sm-2">
-							<input type="text" placeholder="..." style="width:100%;background:none;border:1px solid rgba(0,0,0,0.3);height:27px;" />
-						</div>
-
-						<label class="col-sm-2 control-label block-title" style="text-align:center;">齿轮泵最大功率设置</label>
-						<div class="col-sm-2">
-							<input type="text" placeholder="..." style="width:100%;background:none;border:1px solid rgba(0,0,0,0.3);height:27px;" />
-						</div>
-					</div>
-					<div class="form-group" style="height:auto;overflow:hidden;">
-						<label class="col-sm-2 control-label block-title" style="text-align:center;">阀门搅拌器延时打开时间</label>
-						<div class="col-sm-2">
-							<input type="text" placeholder="..." style="width:100%;background:none;border:1px solid rgba(0,0,0,0.3);height:27px;" />
-						</div>
-
-						<label class="col-sm-2 control-label block-title" style="text-align:center;">停水后搅拌器延时停止时间</label>
-						<div class="col-sm-2">
-							<input type="text" placeholder="..." style="width:100%;background:none;border:1px solid rgba(0,0,0,0.3);height:27px;" />
-						</div>
-
-						<label class="col-sm-2 control-label block-title" style="text-align:center;">排风扇速度设置</label>
-						<div class="col-sm-2">
-							<input type="text" placeholder="..." style="width:100%;background:none;border:1px solid rgba(0,0,0,0.3);height:27px;" />
-						</div>
-					</div>
-					<div class="form-group" style="height:auto;overflow:hidden;">
-						<label class="col-sm-2 control-label block-title" style="text-align:center;">泡茶器空气泵速度设置</label>
-						<div class="col-sm-2">
-							<input type="text" placeholder="..." style="width:100%;background:none;border:1px solid rgba(0,0,0,0.3);height:27px;" />
-						</div>
-
-						<label class="col-sm-2 control-label block-title" style="text-align:center;">泡茶器出2段水间隔设置</label>
-						<div class="col-sm-2">
-							<input type="text" placeholder="..." style="width:100%;background:none;border:1px solid rgba(0,0,0,0.3);height:27px;" />
-						</div>
-
-						<label class="col-sm-2 control-label block-title" style="text-align:center;">空气泵吹气时间设置</label>
-						<div class="col-sm-2">
-							<input type="text" placeholder="..." style="width:100%;background:none;border:1px solid rgba(0,0,0,0.3);height:27px;" />
-						</div>
-					</div>
-					<div class="form-group" style="height:auto;overflow:hidden;">
-						<label class="col-sm-2 control-label block-title" style="text-align:center;">紫外灯控制亮时间设置</label>
-						<div class="col-sm-2">
-							<input type="text" placeholder="..." style="width:100%;background:none;border:1px solid rgba(0,0,0,0.3);height:27px;" />
-						</div>
-
-						<label class="col-sm-2 control-label block-title" style="text-align:center;">紫外灯控制灭时间设置</label>
-						<div class="col-sm-2">
-							<input type="text" placeholder="..." style="width:100%;background:none;border:1px solid rgba(0,0,0,0.3);height:27px;" />
-						</div>
-
-						<label class="col-sm-2 control-label block-title" style="text-align:center;">咖啡预冲泡水量比例设置</label>
-						<div class="col-sm-2">
-							<input type="text" placeholder="..." style="width:100%;background:none;border:1px solid rgba(0,0,0,0.3);height:27px;" />
-						</div>
-					</div>
-					<!-- <div class="form-group" style="height:auto;overflow:hidden;">
-                        <label class="col-sm-2 control-label block-title" style="text-align:center;">咖啡预冲泡时间设置</label>
-                        <div class="col-sm-2">
-                            <input type="text" placeholder="..."  style="width:100%;background:none;border:1px solid rgba(0,0,0,0.3);height:27px;"/>
-                        </div>
-
-                        <label class="col-sm-2 control-label block-title" style="text-align:center;">开机是否冲洗设置</label>
-                        <div class="col-sm-2">
-                            <input type="text" placeholder="..."  style="width:100%;background:none;border:1px solid rgba(0,0,0,0.3);height:27px;"/>
-                        </div>
-
-                    </div> -->
-
-					<!-- <div class="block-title" style="font-size:12px;text-align:center;margin-right:10px;width:180px;margin-top:30px;">
-                        <a href="javascript:void(0)">保存</a>
-                    </div> -->
-				</div>
-
-			</div>
-			<div class="small-machine-content" style="display: none;margin: 148px 20px;">
-				<div class="form-group" style="height:auto;overflow:hidden;">
-					<label class="col-sm-2 control-label block-title" style="text-align:center;">当前视图</label>
-					<div class="col-sm-2">
-						<div class="small-machine-views block-title"></div>
-					</div>
-				</div>
-				<div class="form-group" style="height:auto;overflow:hidden;">
-					<label class="col-sm-2 control-label block-title" style="text-align:center;">料仓(余量，总量)</label>
-					<div class="col-sm-2">
-						<div class="small-machine-pp block-title"></div>
-					</div>
-				</div>
-			</div>
-
-		</section>
-		<br/><br/>
-	</section>
-
-	<!-- Javascript Libraries -->
-	<!-- jQuery -->
-	<script src="js/jquery.min.js"></script>
-	<!-- jQuery Library -->
-
-	<!-- Bootstrap -->
-	<script src="js/bootstrap.min.js"></script>
-
-	<!-- UX -->
-	<script src="js/scroll.min.js"></script>
-	<!-- Custom Scrollbar -->
-
-	<!-- Other -->
-	<script src="js/calendar.min.js"></script>
-	<!-- Calendar -->
-	<!-- allr lbs -->
-	<script type="text/javascript" src="js/config/lbs_base.js"></script>
-	<!-- All JS functions -->
-	<script src="js/functions.js"></script>
-	<script type="text/javascript">
-		jzm.remoteOperation();
-		setInterval(function() {
-			jzm.remoteOperation();
-		}, 30000);
-		$(".calNumber").text('当前机器编号：' + jzm.getQueryString("machineNumber"));
-	</script>
+			</el-form>
+		</el-container>
+	</div>
 </body>
 
 </html>

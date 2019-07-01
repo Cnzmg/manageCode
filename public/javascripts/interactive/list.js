@@ -59,9 +59,11 @@ new Vue({
             machineNumber: [],
             restaurants: [],  //用户ID搜索相关
             state: '',
-            timeout:  null,
+            timeout: null,
             userIds: [],
             userIdts: [],
+            machineLogs: [],  //设备日志
+            machineLogViews: false
         }
     },
     created: function () {
@@ -625,7 +627,7 @@ new Vue({
                     break;
             }
         },
-        handleSelectionChange(val) {
+        handleSelectionChange(val) {  //下拉选项
             this.multipleSelection = val;
             this.productCount = val.length;
             this.productId = [];
@@ -642,7 +644,7 @@ new Vue({
         tableChecked(e) {
             this.$refs.multipleTable.toggleRowSelection(this.UpdateTableFormData[e], true);
         },
-        searchAPIs(_v) {
+        searchAPIs(_v) {  //查找API
             const it = this;
             switch (_v._uri) {
                 case 'manage_machine_product_relation':  //清单的绑定解绑
@@ -752,7 +754,7 @@ new Vue({
                 async: false,
                 xmldata: _data,
                 done: function (res) {
-                    let _arr = []; 
+                    let _arr = [];
                     res.list.forEach(e => {
                         _arr.push({
                             value: e.nickName,
@@ -766,7 +768,7 @@ new Vue({
                     }, 3000 * Math.random());
                 }
             })
-            
+
         },
         createStateFilter(queryString) {
             return (state) => {
@@ -776,9 +778,9 @@ new Vue({
         handleSelect(item) {  //取得选择的用户ID
             this.userIds.push(item._id);
         },
-        bindUser(e){  //执行绑定/解绑
+        bindUser(e) {  //执行绑定/解绑
             const it = this;
-            _data['machineNumber'] = this.machineNumber; 
+            _data['machineNumber'] = this.machineNumber;
             _data['type'] = e._type;
             _data['userIds'] = (e._id ? this.userIdts : this.userIds);
             ym.init.XML({
@@ -789,6 +791,26 @@ new Vue({
                 done: function (res) {
                     it.detailTableAndVisible = false;
                     it.ISuccessfull(res.statusCode.msg);
+                }
+            })
+        },
+        machineLog(e) {
+            const it = this;
+            delete _data['page'];
+            _data['type'] = 5;
+            _data['machineNumber'] = e.enitId.machineNumber;
+            ym.init.XML({
+                method: 'POST',
+                uri: token._j.URLS.Development_Server_ + 'manage_machine',  
+                async: true,
+                xmldata: _data,
+                done: function (res) {
+                    res.machineFaultList.forEach(arr => {
+                        it.machineLogs.push({
+                            i: arr.faultTime,
+                            t: arr.faultContent
+                        })
+                    })
                 }
             })
         }

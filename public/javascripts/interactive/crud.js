@@ -21,7 +21,7 @@ const _data = {
 }
 new Vue({
     el: '#c-container-list',
-    data: () => {
+    data() {
         return {
             loading: false,
             boxshow: false,
@@ -148,9 +148,14 @@ new Vue({
                 productComment: '',
                 bunkerNumberArr: [],
                 machineType: 1,
-                province: ['440100'],   //地址数组
+                province: [],   //地址数组
                 machineLatitude: '',  //纬度
-                machineLongitude: ''  //经度
+                machineLongitude: '',  //经度
+                machineScenePicUrl: '', //场景图片
+                mapMarkerIcon: '', //地图图标
+                planePicUrl: '', //楼层平面图
+                machineUrl: '', //大楼外景图
+                machineAddrDesc: '' //设备详情地址
 
             },
             rules: {
@@ -174,9 +179,22 @@ new Vue({
             imageList: {
                 machine: [],
                 product: [],
-                detail: []
+                detail: [],
+                machineScenePicUrl: [],
+                mapMarkerIcon: [],
+                planePicUrl: [],
+                machineUrl: []
             },
-            address: regionData   // 地址选择
+            address: regionData,   // 地址选择
+            percentage: 90,   //进度条数值0-100
+            customColors: [
+                { color: '#f56c6c', percentage: 20 },
+                { color: '#e6a23c', percentage: 40 },
+                { color: '#5cb87a', percentage: 60 },
+                { color: '#1989fa', percentage: 80 },
+                { color: '#6f7ad3', percentage: 100 }
+            ],
+            longStatus: []
         }
     },
     created: function () {
@@ -221,7 +239,7 @@ new Vue({
                 this.loading = false;
             }, 1000);
             this.$message({
-                message: 'ok 了哦,' + e,
+                message: '成功！,' + e,
                 type: 'success'
             });
         },
@@ -303,6 +321,9 @@ new Vue({
                     _data['type'] = 3;
                     _data['machineNumber'] = JSON.parse(e).machineNumber;
                     break;
+                case 'remote_operation':
+                    _data['type'] = 1;
+                    _data['machineNumber'] = JSON.parse(e).machineNumber;
                 default:
                     break;
             }
@@ -313,6 +334,7 @@ new Vue({
                 async: false,
                 xmldata: _data,
                 done: function (res) {
+                    res.statusCode.status = '6666';
                     ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
                         switch (uri) {
                             case 'manage_formula':
@@ -410,14 +432,20 @@ new Vue({
                                 it.ruleForm.machineNumber = res.machineInfo.machineNumber;  //设备编号
                                 it.ruleForm.machineLatitude = res.machineInfo.machineLatitude;  //纬度
                                 it.ruleForm.machineLongitude = res.machineInfo.machineLongitude;  //经度
+                                it.ruleForm.machineAddrDesc = res.machineInfo.machineAddrDesc;  //详细地址
+                                it.ruleForm.machineScenePicUrl = res.machineInfo.machineScenePicUrl;  //场景图片
+                                it.ruleForm.mapMarkerIcon = res.machineInfo.mapMarkerIcon;  //地图图标
+                                it.ruleForm.planePicUrl = res.machineInfo.planePicUrl;  //楼层平面图
+                                it.ruleForm.machineUrl = res.machineInfo.machineUrl;  //大楼外景图
 
-                                console.log(TextToCode['广东省']);
-                                // it.ruleForm.province.push(TextToCode[res.machineInfo.province].code);
-                                // it.ruleForm.province.push(TextToCode[res.machineInfo.city].code);
-                                // it.ruleForm.province.push(TextToCode[res.machineInfo.district].code);
-                                // console.log(TextToCode[res.machineInfo.province].code);
-                                // console.log(it.ruleForm.province);
-                                //it.ruleForm.province.push(res.machineInfo.machineAddrDesc)  //反显地址
+                                it.imageList.machineScenePicUrl.push({ name: 'machineScenePicUrl', url: res.machineInfo.machineScenePicUrl }); //场景图片
+                                it.imageList.mapMarkerIcon.push({ name: 'mapMarkerIcon', url: res.machineInfo.mapMarkerIcon }); //地图图标
+                                it.imageList.planePicUrl.push({ name: 'planePicUrl', url: res.machineInfo.planePicUrl }); //楼层平面图
+                                it.imageList.machineUrl.push({ name: 'machineUrl', url: res.machineInfo.machineUrl }); //大楼外景图
+
+                                it.ruleForm.province.push(TextToCode[res.machineInfo.province].code);
+                                it.ruleForm.province.push(TextToCode[res.machineInfo.province][res.machineInfo.city].code);
+                                it.ruleForm.province.push(TextToCode[res.machineInfo.province][res.machineInfo.city][res.machineInfo.district].code);
 
                                 var map = new AMap.Map('cityg', {
                                     resizeEnable: true, //是否监控地图容器尺寸变化
@@ -431,7 +459,7 @@ new Vue({
                                     var placeSearch = new AMap.PlaceSearch({
                                         city: '020'
                                     });
-                                    placeSearch.search(it.ruleForm.province, function (status, result) {
+                                    placeSearch.search(res.machineInfo.machineAddrDesc, function (status, result) {
                                         // 查询成功时，result即对应匹配的POI信息
                                         if (typeof result.poiList === "undefined") {
                                             it.IError('Impact error! wrong keywords?');
@@ -457,6 +485,29 @@ new Vue({
                                     }
                                 });
 
+                                break;
+                            case 'remote_operation':
+                                res = `{"machineStatus":{"boilerTemperature":"89.8度","boilerPressure":"2804mbar","traffic":"0.0","machineStatus":"正常待机","failureStatus":"App运行崩溃","bootTime":"19天2时40分","cumulativeTime":"0秒","systemSwitchboardRevisionNumber":"0","systemSwitchboardHardwareNumber":"0","burstBubbleBoardRevisionNumber":"0","burstBubbleBoardHardwareNumber":"0","productAllowedStatus":"00C0","sensorStatus":"67FF1800","version":"20","faultTime":"无故障","iofirmwareRevisionNumber":"66","iohardwareNumber":"20","cpufirmwareRevisionNumber":"37","cpuhardwareNumber":"20"},"machineConfig":{"hotWaterTemperature":"90.0度","coffeeBrewPressure":"100mbpa","automaticCleanTimeInterval":"9000分钟","bubbleTemperature":"0.0度","bubbleCrowdedCakeForce":"800","bubbleCrowdedCakeTime":"7.0秒","bubbleReturnTime":"2.0秒","bubbleReCrowdedTime":"0.2秒","trayValue":"15","cupKispensor":"96","reCupNum":"96","gearPumpTime":"0.6秒","gearPumpMaxPower":"16","valveOpenAfterBlenderDelayTime":"12.7秒","freshWaterAfterBlenderDelayTime":"0.4秒","fanSpeed":"35","teaInfuserAirPumpSpeed":"127","teaInfuserBetweenTime":"8.0秒","airPumpGassingTime":"2.0秒","coffeeWaterRatio":"250","coffeeBrewTime":"0.0秒","startUpWash":"否","uvlampOpenTime":"80分钟","uvlampCloseTime":"50分钟"},"canister":[92.0,1500.0,640.0,1000.0,1004.3,1500.0,717.8,1000.0,595.3,800.0,146.6,400.0,274.0,857.0,60.0,100.0,600.0,35000.0],"statusCode":{"status":6666,"msg":"查询成功"}}`;
+                                res = JSON.parse(res);
+                                it.longStatus.push({
+                                    boilerTemperature: res.machineStatus.boilerTemperature,
+                                    machineStatus: res.machineStatus.machineStatus,
+                                    failureStatus: res.machineStatus.failureStatus,
+                                    bootTime: res.machineStatus.bootTime,
+                                    canister:{
+                                        at: [+parseFloat(res.canister[0] / res.canister[1] * 100).toFixed(2), res.canister[1]],
+                                        bt: [+parseFloat(res.canister[2] / res.canister[3] * 100).toFixed(2), res.canister[3]],
+                                        ct: [+parseFloat(res.canister[4] / res.canister[5] * 100).toFixed(2), res.canister[5]],
+                                        dt: [+parseFloat(res.canister[6] / res.canister[7] * 100).toFixed(2), res.canister[7]],
+                                        et: [+parseFloat(res.canister[8] / res.canister[9] * 100).toFixed(2), res.canister[9]],
+                                        ft: [+parseFloat(res.canister[10] / res.canister[11] * 100).toFixed(2), res.canister[11]],
+                                        gt: [+parseFloat(res.canister[12] / res.canister[13] * 100).toFixed(2), res.canister[13]],
+                                        ht: [+parseFloat(res.canister[14] / res.canister[15] * 100).toFixed(2), res.canister[15]],
+                                        it: [+parseFloat(res.canister[16] / res.canister[17] * 100).toFixed(2), res.canister[17]],
+                                        version: res.machineStatus.version,
+                                        machineNumber: JSON.parse(e).machineNumber
+                                    }
+                                })
                                 break;
                             default:
                                 break;
@@ -495,47 +546,102 @@ new Vue({
         fileDateilSuccess(e) {
             this.ruleForm.productMachineDetailPicurl = e.realPath;
         },
+        machineSceneSuccess(e) {
+            this.ruleForm.machineScenePicUrl = e.machineScenePicUrl; //..
+        },
+        mapMarkerSuccess(e) {
+            this.ruleForm.mapMarkerIcon = e.mapMarkerIcon;
+        },
+        planeSuccess(e) {
+            this.ruleForm.planePicUrl = e.planePicUrl;
+        },
+        machineUrlSuccess(e) {
+            this.ruleForm.machineUrl = e.machineUrl;
+        },
         submitForm(formName) {
-            _data['type'] = 3;
-            if (dataHref.split('*').length > 1) {
-                _data['type'] = 4;
-                _data['productCreateTime'] = ym.init.getDateTime(JSON.parse(decodeURI(dataHref.split('*')[1])).createTime)
-            }
             const it = this;
-            _data['formulaId'] = formName.formulaId || '';
-            _data['productName'] = formName.productName || '';
-            _data['productPrice'] = formName.productPrice || '';
-            _data['productMachinePicurl'] = formName.productMachinePicurl || '';
-            _data['productPicurl'] = formName.productPicurl || '';
-            _data['productMachineDetailPicurl'] = formName.productMachineDetailPicurl || '';
-            _data['productRank'] = formName.productRank || '';
-            _data['operateType'] = formName.operateType || 0;
-            _data['productStatus'] = formName.productStatus || '';
-            _data['productTemperature'] = formName.productTemperature || '';
-            _data['productComment'] = formName.productComment || '';
-            _data['bunkerNumberArr'] = formName.bunkerNumberArr || '';
-            _data['machineType'] = this.ruleForm.machineType;
-            ym.init.XML({
-                method: 'POST',
-                uri: token._j.URLS.Development_Server_ + uri,
-                async: false,
-                xmldata: _data,
-                done: function (res) {
-                    try {
-                        ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
-                            it.ISuccessfull(res.statusCode.msg);
-                            setTimeout(() => {
-                                parent.document.getElementById('tagHref').setAttribute('src', callBackHtml);
-                            }, 500);
-                        })() : (() => {
-                            throw "收集到错误：\n\n" + res.statusCode.msg;
-                        })();
-                    } catch (error) {
-                        it.IError(error);
+            switch (uri) {
+                case 'manage_machine':
+                    _data['type'] = 4;
+                    _data['adminId'] = formName.adminId;
+                    _data['adminName'] = formName.adminName;
+                    _data['machineNumber'] = formName.machineNumber;
+                    _data['machineLongitude'] = formName.machineLongitude;
+                    _data['machineLatitude'] = formName.machineLatitude;
+
+                    _data['province'] = CodeToText[formName.province[0]] || '';
+                    _data['city'] = CodeToText[formName.province[1]] || '';
+                    _data['district'] = CodeToText[formName.province[2]] || '';
+
+                    _data['machineAddrDesc'] = formName.machineAddrDesc || '';
+
+                    _data['machineScenePicUrl'] = formName.machineScenePicUrl || '';
+                    _data['mapMarkerIcon'] = formName.mapMarkerIcon || '';
+                    _data['planePicUrl'] = formName.planePicUrl || '';
+                    _data['machineUrl'] = formName.machineUrl || '';
+                    ym.init.XML({
+                        method: 'POST',
+                        uri: token._j.URLS.Development_Server_ + uri,
+                        async: false,
+                        xmldata: _data,
+                        done: function (res) {
+                            try {
+                                ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
+                                    it.ISuccessfull(res.statusCode.msg);
+                                    setTimeout(() => {
+                                        parent.document.getElementById('tagHref').setAttribute('src', callBackHtml);
+                                    }, 500);
+                                })() : (() => {
+                                    throw "收集到错误：\n\n" + res.statusCode.msg;
+                                })();
+                            } catch (error) {
+                                it.IError(error);
+                            }
+                        }
+                    })
+                    break;
+                default:
+                    _data['type'] = 3;
+                    if (dataHref.split('*').length > 1) {
+                        _data['type'] = 4;
+                        _data['productCreateTime'] = ym.init.getDateTime(JSON.parse(decodeURI(dataHref.split('*')[1])).createTime)
                     }
-                }
-            })
-            // this.ISuccessfull('提交成功');
+                    _data['formulaId'] = formName.formulaId || '';
+                    _data['productName'] = formName.productName || '';
+                    _data['productPrice'] = formName.productPrice || '';
+                    _data['productMachinePicurl'] = formName.productMachinePicurl || '';
+                    _data['productPicurl'] = formName.productPicurl || '';
+                    _data['productMachineDetailPicurl'] = formName.productMachineDetailPicurl || '';
+                    _data['productRank'] = formName.productRank || '';
+                    _data['operateType'] = formName.operateType || 0;
+                    _data['productStatus'] = formName.productStatus || '';
+                    _data['productTemperature'] = formName.productTemperature || '';
+                    _data['productComment'] = formName.productComment || '';
+                    _data['bunkerNumberArr'] = formName.bunkerNumberArr || '';
+                    _data['machineType'] = this.ruleForm.machineType;
+                    ym.init.XML({
+                        method: 'POST',
+                        uri: token._j.URLS.Development_Server_ + uri,
+                        async: false,
+                        xmldata: _data,
+                        done: function (res) {
+                            try {
+                                ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
+                                    it.ISuccessfull(res.statusCode.msg);
+                                    setTimeout(() => {
+                                        parent.document.getElementById('tagHref').setAttribute('src', callBackHtml);
+                                    }, 500);
+                                })() : (() => {
+                                    throw "收集到错误：\n\n" + res.statusCode.msg;
+                                })();
+                            } catch (error) {
+                                it.IError(error);
+                            }
+                        }
+                    })
+                    break;
+            }
+
         },
         tagChange(e) {  //处理select 的机器类型
             try {
@@ -612,6 +718,20 @@ new Vue({
                     map.setFitView();
                 })
             })
+        },
+        sendMachine(_){  //发送控制指令
+            const it = this;
+            _data['type'] = 2;
+            _data['operationType'] = _._operationType;
+            ym.init.XML({
+                method: 'POST',
+                uri: token._j.URLS.Development_Server_ + uri,
+                async: true,
+                xmldata: _data,
+                done: function (res) {
+                    it.ISuccessfull(res.statusCode.msg);
+                }
+            });
         }
     }
 })
