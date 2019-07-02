@@ -822,20 +822,46 @@ new Vue({
                 }
             })
         },
-        fileChange(e){//上传结构
-            console.log(e);
+        fileChange(e){ //上传结构
+            _data['type'] = 4;
+            _data['mUpdateVersion'] = this.formData.mUpdateVersion;
+            this.dialogImageUrl = '../images/Android.svg';
         },
         fileExceed() {
             this.IError('只允许一张图片')
         },
         machineSceneSuccess(e) {
-            this.ruleForm.productMachinePicurl = e.realPath;
+            this.formData.mUpdateUrl = e.realPath;
         },
         handleRemove(file, fileList) {
             console.log(file, fileList);
         },
         handlePictureCardPreview(file) {
+            this.dialogImageUrl = '../images/Android.svg';
             this.dialogVisible = true;
         },
+        machineVersion(_idata){
+            const it = this;
+            _data['type'] = _idata._type;
+            _data['machineType'] = _idata._machineType;
+            _data['mUpdateVersion'] = _idata._d.mUpdateVersion;
+            _data['versionCode'] = _idata._d.versionCode;
+            _data['mUpdateDes'] = _idata._d.mUpdateDes;
+            _data['mUpdateUrl'] = this.formData.mUpdateUrl;
+            ym.init.XML({
+                method: 'POST',
+                uri: token._j.URLS.Development_Server_ + _idata._uri,  
+                async: true,
+                xmldata: _data,
+                done: function (res) {
+                    ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
+                        it.ISuccessfull(res.statusCode.msg);
+                        it.detailTableAndVisible = false;
+                        it.list();
+                    })() : 
+                    it.IError(res.statusCode.msg);
+                }
+            })
+        }
     }
 });

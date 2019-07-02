@@ -22,7 +22,7 @@
 	<div id="c-container-list" style="height: 100%;" data-uri="manage_machine_version">
 		<template>
 			<div style="width: 100%;margin-bottom:10px;">
-				<el-button @click="detailTableAndVisible = true" type="primary">添加版本<i
+				<el-button @click="detailTableAndVisible = true; formData = {}" type="primary">添加版本<i
 						class="el-icon-plus el-icon--right"></i></el-button>
 			</div>
 			<el-container v-loading.fullscreen.lock="loading">
@@ -49,9 +49,9 @@
 
 							<el-table-column fixed="right" label="操作">
 								<template slot-scope="scope">
-									<el-button type="text" size="small">
-										编辑
-									</el-button>
+									<el-link  :underline="false" type="primary" :href="scope.row.mUpdateUrl">
+										下载
+									</el-link>
 								</template>
 							</el-table-column>
 						</el-table>
@@ -65,20 +65,20 @@
 					<el-dialog title="新增版本" :visible.sync="detailTableAndVisible">
 						<el-form :model="formData" class="demo-ruleForm" ref="ruleForm" label-width="100px">
 							<el-form-item label="类型">
-								<el-select v-model="formData.formulaId" placeholder="选择配方" class="w400">
-									<el-option value="1">11</el-option>
-									<el-option value="2">22</el-option>
-									<el-option value="3">33</el-option>
+								<el-select v-model="select" placeholder="选择设备类型" class="w400">
+									<el-option label="大型柜式机" value="1"></el-option>
+									<el-option label="小型桌面机" value="2"></el-option>
+									<el-option label="无网络单机" value="3"></el-option>
 								</el-select>
 							</el-form-item>
 							<el-form-item label="版本号" prop="mUpdateVersion">
 								<el-input v-model="formData.mUpdateVersion" class="w400"></el-input>
 							</el-form-item>
-							<el-form-item label="序列号" prop="mUpdateVersion">
-								<el-input v-model="formData.mUpdateVersion" class="w400"></el-input>
+							<el-form-item label="序列号" prop="versionCode">
+								<el-input v-model="formData.versionCode" class="w400"></el-input>
 							</el-form-item>
-							<el-form-item label="说 明" prop="mUpdateVersion">
-								<el-input v-model="formData.mUpdateVersion" class="w400" type="textarea"></el-input>
+							<el-form-item label="说 明" prop="mUpdateDes">
+								<el-input v-model="formData.mUpdateDes" class="w400" type="textarea"></el-input>
 							</el-form-item>
 							<el-form-item>
 								<template v-model="formData.mUpdateUrl">
@@ -87,7 +87,7 @@
 										:file-list="imageList.mUpdateUrl" :limit="num" :data="fileData"
 										:on-change="fileChange" :on-success="machineSceneSuccess"
 										:on-exceed="fileExceed" :on-preview="handlePictureCardPreview"
-										:on-remove="handleRemove">
+										:on-remove="handleRemove" accept=".apk">
 										<i class="el-icon-plus"></i>
 									</el-upload>
 									<el-dialog :visible.sync="dialogVisible">
@@ -96,14 +96,10 @@
 								</template>
 							</el-form-item>
 							<template>
-								<div style="margin-top: 10px">
+								<div style="margin-top: 10px;text-align: center">
 									<el-button type="primary"
-										@click="bindUser({_uri: 'statistics_bind_user',_type:[1]})">
-										绑定
-									</el-button>
-									<el-button type="primary"
-										@click="bindUser({_id: 'userid',_uri: 'statistics_bind_user',_type:[2]})">
-										解绑
+										@click="machineVersion({_uri: 'manage_machine_version',_type:[2],_d: formData, _machineType:select})">
+										确定升级
 									</el-button>
 								</div>
 							</template>
