@@ -92,13 +92,13 @@ new Vue({
                 // _tag += `<el-menu-item @click=Href({'uri':'${tag[i].pageInfoList[j].pageUrl}','title':'${tag[i].pageInfoList[j].pageName}'}) index="${i + 1}-${j}">${tag[i].pageInfoList[j].pageName}</el-menu-item>`;
                 switch (tag.length) {  //启用本地路由
                     case 9:
-                        _tag += `<el-menu-item u="${_lists._system[num]}" @click=Href({'uri':'../${_lists._system[num]}.html?hash:iforx${parseInt(13 * num / j + 2)}','title':'${tag[i].pageInfoList[j].pageName}'}) index="${i + 1}-${j}">${tag[i].pageInfoList[j].pageName}</el-menu-item>`;
+                        _tag += `<el-menu-item u="${_lists._system[num]}" v-on:click=Href({'uri':'../${_lists._system[num]}.html?hash:iforx${parseInt(13 * num / j + 2)}','title':'${tag[i].pageInfoList[j].pageName}'}) index="${i + 1}-${j}">${tag[i].pageInfoList[j].pageName}</el-menu-item>`;
                         break;
                     case 2:
-                        _tag += `<el-menu-item @click=Href({'uri':'../${_lists._admin[num]}.html?hash:iforx${parseInt(13 * num / j + 2)}','title':'${tag[i].pageInfoList[j].pageName}'}) index="${i + 1}-${j}">${tag[i].pageInfoList[j].pageName}</el-menu-item>`;
+                        _tag += `<el-menu-item v-on:click=Href({'uri':'../${_lists._admin[num]}.html?hash:iforx${parseInt(13 * num / j + 2)}','title':'${tag[i].pageInfoList[j].pageName}'}) index="${i + 1}-${j}">${tag[i].pageInfoList[j].pageName}</el-menu-item>`;
                         break;
                     default:
-                        _tag += `<el-menu-item @click=Href({'uri':'../${_lists._shop[num]}.html?hash:iforx${parseInt(13 * num / j + 2)}','title':'${tag[i].pageInfoList[j].pageName}'}) index="${i + 1}-${j}">${tag[i].pageInfoList[j].pageName}</el-menu-item>`;
+                        _tag += `<el-menu-item v-on:click=Href({'uri':'../${_lists._shop[num]}.html?hash:iforx${parseInt(13 * num / j + 2)}','title':'${tag[i].pageInfoList[j].pageName}'}) index="${i + 1}-${j}">${tag[i].pageInfoList[j].pageName}</el-menu-item>`;
                         break;
                 };
                 num++;
@@ -113,7 +113,7 @@ new Vue({
         Error(err) {
             this.$message.error('错了哦，' + err);
         },
-        Href(e) {
+        Href:function(e) {
             jQuery('#tagHref').attr('src', e.uri);
             let c = [], local = JSON.parse('[' + localStorage.getItem('uri') + ']');
             if (localStorage.getItem('uri')) {
@@ -135,7 +135,7 @@ new Vue({
                 <use xlink:href="#ym-icon-guanbi"></use>
             </svg></i></li>`
             );
-            tag();  //
+            tag();
         }
     }
 });

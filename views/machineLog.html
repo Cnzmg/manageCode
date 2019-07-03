@@ -19,7 +19,7 @@
 
 
 <body class="_scrollbar">
-    <div id="c-container-list" style="height: 100%;" data-uri="find_machine_poi_list">
+    <div id="c-container-list" style="height: 100%;" data-uri="machine_runtime_list">
         <el-container>
             <el-main>
                 <el-form>
@@ -34,24 +34,14 @@
                 </el-form>
                 <template>
                     <el-table :data="tableData" stripe style="width: 100%">
-                        <el-table-column prop="poiId" label="ID"></el-table-column>
-                        <el-table-column prop="longitude" label="机器SN号"></el-table-column>
-                        <el-table-column prop="latitude" label="机器编号"></el-table-column>
-                        <el-table-column prop="addr" label="设备类型"></el-table-column>
-                        <el-table-column prop="mapMarkerIcon" label="创建时间"></el-table-column>
-                        <el-table-column prop="province" label="结束时间"></el-table-column>
-                        <el-table-column prop="city" label="时间间隔（S）"></el-table-column>
-                        <el-table-column prop="district" label="时间间隔（天）"></el-table-column>
-                        <el-table-column prop="machineUrl" label="状态"></el-table-column>
-                        <el-table-column prop="hide" label="是否完成"></el-table-column>
-
-                        <el-table-column fixed="right" label="操作">
-                            <template slot-scope="scope">
-                                <el-button type="text" size="small">
-                                    编辑
-                                </el-button>
-                            </template>
-                        </el-table-column>
+                        <el-table-column prop="runtimeId" label="ID"></el-table-column>
+                        <el-table-column prop="machineSn" label="机器SN号"></el-table-column>
+                        <el-table-column prop="machineNumber" label="机器编号"></el-table-column>
+                        <el-table-column prop="machineType" label="设备类型"></el-table-column>
+                        <el-table-column prop="createTime" label="创建时间"></el-table-column>
+                        <el-table-column prop="endTime" label="结束时间"></el-table-column>
+                        <el-table-column prop="limitShow" label="时间间隔"></el-table-column>
+                        <el-table-column prop="status" label="状态"></el-table-column>
                     </el-table>
                 </template>
 
@@ -64,29 +54,4 @@
     </div>
 </body>
 
-</html> 
-<script type="text/javascript">
-    jzm.getmachine_log = function(page){
-        jzm.paraMessage('loadAjaxdata',{url:"machine_runtime_list",xmldata:"&page=" + (page ? page : 1),callbackfn:function(reg){
-            RegCode(statusCode).test(reg.statusCode.status) ? void function(e){
-                let str = '';
-                for(var i = 0; i < reg.runtimeList.length; i ++){
-                    str += '<tr>'+
-                                '<td>'+ reg.runtimeList[i].runtimeId +'</td>'+
-                                '<td>'+ reg.runtimeList[i].machineSn +'</td>'+
-                                '<td>'+ reg.runtimeList[i].machineNumber +'</td>'+
-                                '<td>'+ (reg.runtimeList[i].machineType == 1 ? '大型柜式机' : '小型桌面机') +'</td>'+
-                                '<td>'+ jzm.getDateTime(reg.runtimeList[i].createTime) +'</td>'+
-                                '<td>'+ jzm.getDateTime(reg.runtimeList[i].endTime) +'</td>'+
-                                '<td>'+ reg.runtimeList[i].timeLimit +'</td>'+
-                                '<td>'+ reg.runtimeList[i].limitShow +'</td>'+
-                                '<td>'+ (reg.runtimeList[i].status == 1 ? '正常' : ( reg.runtimeList[i].status == 2 ? '故障' : '未知' )) +'</td>'+
-                                '<td>'+ (reg.runtimeList[i].isDone == 1 ? '已完成' : '未完成') +'</td></tr>';
-                    };
-                $("#pageNums").val(reg.pageCount * 20);
-                $('#tbodyhtml').html(str);
-            }() : jzm.Error(reg);
-        },type:"POST",trcny:false});
-    };
-    jzm.getmachine_log();
-</script>
+</html>

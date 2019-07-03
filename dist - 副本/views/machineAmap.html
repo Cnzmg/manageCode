@@ -1,0 +1,28 @@
+<!DOCTYPE html><!--[if IE 9 ]><html class="ie9"><![endif]--><head><meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1"><meta name=format-detection content="telephone=no"><meta charset=UTF-8><meta name=description content=共享咖啡管理后台><meta name=keywords content=yuanmeng,ym,圆梦,系统,后台系统,咖啡蜗,蜗牛,大正集团><meta name=renderer content=webkit><title>广东圆梦实业发展有限公司</title><link href=../javascripts/../stylesheets/configration_23_aKvs-b8bW2Vg3fwHozO.css?7d0651bfbaf28805f363 rel=stylesheet></head><body class=_scrollbar style=margin:0;><div id=c-container-list style="height: 100%;" data-uri=find_machine_poi_list><div id=allmap style="height: 100%;width: 100%"></div></div><style>#allmap img {
+            width: 50px;
+        }</style><!-- 加载地图JSAPI脚本 --><script src=../../public/javascripts/plugin/jquery.min.js></script><script src="https://webapi.amap.com/maps?v=1.4.10&key=97434082798d9b20459f18d679bcbdf3&plugin=AMap.Geocoder"></script><script type=text/javascript src=https://a.amap.com/jsapi_demos/static/demo-center/js/underscore-min.js></script><script type=text/javascript src=https://a.amap.com/jsapi_demos/static/demo-center/js/backbone-min.js></script><script type=text/javascript src=https://a.amap.com/jsapi_demos/static/demo-center/js/prety-json.js></script><script type=text/javascript>setTimeout(()=>{
+             //初始化地图对象，加载地图
+             var map = new AMap.Map("allmap", {
+                resizeEnable: true,
+                center: [113.259931, 23.126562], //初始化地图中心点
+                zoom: 12 //地图显示的缩放级别
+            });
+            //加载云图层插件
+            jQuery.ajax({
+                url: 'https://yuntuapi.amap.com/datasearch/local?tableid=5bebdd4a2376c1673406f6dc&city=全国&keywords=&limit=50&page=1&key=8d7d4594c6fdff4624696ba71f9e4c8a',
+                type: 'post',
+                dataType: 'jsonp'
+            })
+                .done(function (res) {
+                    for (var i = 0; i < res.datas.length; i++) {
+                        // 创建点覆盖物
+                        var marker = new AMap.Marker({
+                            position: new AMap.LngLat(res.datas[i]._location.split(',')[0], res.datas[i]._location.split(',')[1]),
+                            icon: res.datas[i].marker,
+                            offset: new AMap.Pixel(-13, -30)
+                        });
+                        map.add(marker);
+                    }
+
+                })
+        }, 1000)</script><script type=text/javascript src=../javascripts/configration._23_aKvs-b8bW2Vg3fwHozO.js?7d0651bfbaf28805f363></script></body>

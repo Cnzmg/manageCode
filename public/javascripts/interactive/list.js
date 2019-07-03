@@ -41,7 +41,7 @@ new Vue({
                 name: '',
                 mUpdateUrl: ''  //应用更新
             },
-            imageList:{
+            imageList: {
                 mUpdateUrl: [] //图片li
             },
             TableAndVisible: false,
@@ -449,6 +449,20 @@ new Vue({
                                     })
                                 }
                                 break;
+                            case `machine_runtime_list`:
+                                for (let i = 0; i < res.runtimeList.length; i++) {
+                                    xml.push({
+                                        runtimeId: res.runtimeList[i].runtimeId,
+                                        machineSn: res.runtimeList[i].machineSn,
+                                        machineNumber: res.runtimeList[i].machineNumber,
+                                        machineType: res.runtimeList[i].machineType,
+                                        createTime: res.runtimeList[i].createTime,
+                                        endTime: res.runtimeList[i].endTime,
+                                        limitShow: res.runtimeList[i].limitShow,
+                                        status: res.runtimeList[i].status
+                                    })
+                                }
+                                break;
                             default:
                                 break;
                         }
@@ -616,7 +630,7 @@ new Vue({
                                     try {
                                         ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
                                             it.ISuccessfull(res.statusCode.msg);
-                                            it.listoperation({ _tag: 'manage_prodcut_list_list', _evt: { listId: it.listId }, _type: 'S' });  //刷新列表
+                                            it.list()  //刷新列表
                                         })() :
                                             (() => {
                                                 throw "收集到错误：\n\n" + res.statusCode.msg;
@@ -809,7 +823,7 @@ new Vue({
             _data['machineNumber'] = e.enitId.machineNumber;
             ym.init.XML({
                 method: 'POST',
-                uri: token._j.URLS.Development_Server_ + 'manage_machine',  
+                uri: token._j.URLS.Development_Server_ + 'manage_machine',
                 async: true,
                 xmldata: _data,
                 done: function (res) {
@@ -822,7 +836,7 @@ new Vue({
                 }
             })
         },
-        fileChange(e){ //上传结构
+        fileChange(e) { //上传结构
             _data['type'] = 4;
             _data['mUpdateVersion'] = this.formData.mUpdateVersion;
             this.dialogImageUrl = '../images/Android.svg';
@@ -840,7 +854,7 @@ new Vue({
             this.dialogImageUrl = '../images/Android.svg';
             this.dialogVisible = true;
         },
-        machineVersion(_idata){
+        machineVersion(_idata) {
             const it = this;
             _data['type'] = _idata._type;
             _data['machineType'] = _idata._machineType;
@@ -850,7 +864,7 @@ new Vue({
             _data['mUpdateUrl'] = this.formData.mUpdateUrl;
             ym.init.XML({
                 method: 'POST',
-                uri: token._j.URLS.Development_Server_ + _idata._uri,  
+                uri: token._j.URLS.Development_Server_ + _idata._uri,
                 async: true,
                 xmldata: _data,
                 done: function (res) {
@@ -858,10 +872,33 @@ new Vue({
                         it.ISuccessfull(res.statusCode.msg);
                         it.detailTableAndVisible = false;
                         it.list();
-                    })() : 
-                    it.IError(res.statusCode.msg);
+                    })() :
+                        it.IError(res.statusCode.msg);
                 }
             })
+        },
+        deleteData(_del) {  //删除操作
+            switch (_del._uri) {
+                case "manage_poi":
+                    _data['poiIds'] = _del._delete.poiId
+                    _data['type'] = _del._type
+                    ym.init.XML({
+                        method: 'POST',
+                        uri: token._j.URLS.Development_Server_ + _del._uri,
+                        async: true,
+                        xmldata: _data,
+                        done: function (res) {
+                            ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
+                                it.ISuccessfull(res.statusCode.msg);
+                                it.list();
+                            })() :
+                                it.IError(res.statusCode.msg);
+                        }
+                    })
+                    break;
+                default:
+                    break;
+            }
         }
     }
 });

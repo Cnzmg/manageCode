@@ -22,6 +22,27 @@ const _data = {
 new Vue({
     el: '#c-container-list',
     data() {
+        const querySearchAsyncMachineNumber = _ => {
+            const data = []
+            _data['machineType'] = 2;
+            ym.init.XML({
+                method: 'POST',
+                uri: token._j.URLS.Development_Server_ + 'get_machine_number_arr',
+                async: true,
+                xmldata: _data,
+                done: function (res) {
+                    res.list.forEach(element => {
+                        data.push({
+                            value: element,
+                            desc: element
+                        })
+                    });
+                }
+            });
+
+            this.searchAMap();
+            return data;
+        }
         return {
             loading: false,
             boxshow: false,
@@ -155,7 +176,11 @@ new Vue({
                 mapMarkerIcon: '', //地图图标
                 planePicUrl: '', //楼层平面图
                 machineUrl: '', //大楼外景图
-                machineAddrDesc: '' //设备详情地址
+                machineAddrDesc: '', //设备详情地址
+                machineNumber: [],
+                addr: '',
+                hide: 1,
+                poiId: '' //修改得时候
 
             },
             rules: {
@@ -194,7 +219,8 @@ new Vue({
                 { color: '#1989fa', percentage: 80 },
                 { color: '#6f7ad3', percentage: 100 }
             ],
-            longStatus: []
+            longStatus: [],
+            SearchAsyncMachineNumber: querySearchAsyncMachineNumber()
         }
     },
     created: function () {
@@ -225,7 +251,7 @@ new Vue({
                 break;
             default:
                 break;
-        }
+        };
     },
     methods: {
         IError(err) {
@@ -324,6 +350,10 @@ new Vue({
                 case 'remote_operation':
                     _data['type'] = 1;
                     _data['machineNumber'] = JSON.parse(e).machineNumber;
+                case 'manage_poi':
+                    _data['type'] = 1;
+                    delete _data['machineType']
+                    _data['poiIds'] = JSON.parse(e).poiId;
                 default:
                     break;
             }
@@ -494,7 +524,7 @@ new Vue({
                                     machineStatus: res.machineStatus.machineStatus,
                                     failureStatus: res.machineStatus.failureStatus,
                                     bootTime: res.machineStatus.bootTime,
-                                    canister:{
+                                    canister: {
                                         at: [+parseFloat(res.canister[0] / res.canister[1] * 100).toFixed(2), res.canister[1]],
                                         bt: [+parseFloat(res.canister[2] / res.canister[3] * 100).toFixed(2), res.canister[3]],
                                         ct: [+parseFloat(res.canister[4] / res.canister[5] * 100).toFixed(2), res.canister[5]],
@@ -508,6 +538,27 @@ new Vue({
                                         machineNumber: JSON.parse(e).machineNumber
                                     }
                                 })
+                                break;
+                            case 'manage_poi':
+                                it.ruleForm.machineLongitude = res.poi.longitude;
+                                it.ruleForm.machineLatitude = res.poi.latitude;
+                                it.ruleForm.addr = res.poi.addr;
+                                it.ruleForm.hide = res.poi.hide;
+                                it.ruleForm.mapMarkerIcon = res.poi.mapMarkerIcon;  //地图图标
+                                it.ruleForm.machineUrl = res.poi.machineUrl;  //大楼外景图
+                                it.ruleForm.poiId = res.poi.poiId;
+
+                                res.poi.numberList.split(',').forEach(el =>{  //执行已选择设备回显
+                                    it.ruleForm.machineNumber.push(el)
+                                });
+
+                                it.ruleForm.province.push(TextToCode[res.poi.province].code);
+                                it.ruleForm.province.push(TextToCode[res.poi.province][res.poi.city].code);
+                                it.ruleForm.province.push(TextToCode[res.poi.province][res.poi.city][res.poi.district].code);
+
+                                it.imageList.mapMarkerIcon.push({ name: 'mapMarkerIcon', url: res.poi.mapMarkerIcon }); //楼层平面图
+                                it.imageList.machineUrl.push({ name: 'machineUrl', url: res.poi.machineUrl }); //大楼外景图
+
                                 break;
                             default:
                                 break;
@@ -547,16 +598,16 @@ new Vue({
             this.ruleForm.productMachineDetailPicurl = e.realPath;
         },
         machineSceneSuccess(e) {
-            this.ruleForm.machineScenePicUrl = e.machineScenePicUrl; //..
+            this.ruleForm.machineScenePicUrl = e.realPath; //..
         },
         mapMarkerSuccess(e) {
-            this.ruleForm.mapMarkerIcon = e.mapMarkerIcon;
+            this.ruleForm.mapMarkerIcon = e.realPath;
         },
         planeSuccess(e) {
-            this.ruleForm.planePicUrl = e.planePicUrl;
+            this.ruleForm.planePicUrl = e.realPath;
         },
         machineUrlSuccess(e) {
-            this.ruleForm.machineUrl = e.machineUrl;
+            this.ruleForm.machineUrl = e.realPath;
         },
         submitForm(formName) {
             const it = this;
@@ -579,6 +630,42 @@ new Vue({
                     _data['mapMarkerIcon'] = formName.mapMarkerIcon || '';
                     _data['planePicUrl'] = formName.planePicUrl || '';
                     _data['machineUrl'] = formName.machineUrl || '';
+                    ym.init.XML({
+                        method: 'POST',
+                        uri: token._j.URLS.Development_Server_ + uri,
+                        async: false,
+                        xmldata: _data,
+                        done: function (res) {
+                            try {
+                                ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
+                                    it.ISuccessfull(res.statusCode.msg);
+                                    setTimeout(() => {
+                                        parent.document.getElementById('tagHref').setAttribute('src', callBackHtml);
+                                    }, 500);
+                                })() : (() => {
+                                    throw "收集到错误：\n\n" + res.statusCode.msg;
+                                })();
+                            } catch (error) {
+                                it.IError(error);
+                            }
+                        }
+                    })
+                    break;
+                case 'manage_poi':
+                    if (dataHref.split('*').length > 1) {
+                        _data['type'] = 3;
+                        _data['poiId'] = it.ruleForm.poiId;
+                    }
+                    _data['machineNumbers'] = formName.machineNumber;
+                    _data['hide'] = formName.hide;
+                    _data['province'] = CodeToText[formName.province[0]] || '';
+                    _data['city'] = CodeToText[formName.province[1]] || '';
+                    _data['district'] = CodeToText[formName.province[2]] || '';
+                    _data['mapMarkerIcon'] = it.ruleForm.mapMarkerIcon || '';
+                    _data['machineUrl'] = it.ruleForm.machineUrl || '';
+                    _data['addr'] = formName.addr || '';
+                    _data['latitude'] = it.ruleForm.machineLatitude || '';
+                    _data['longitude'] = formName.machineLongitude || '';
                     ym.init.XML({
                         method: 'POST',
                         uri: token._j.URLS.Development_Server_ + uri,
@@ -719,7 +806,7 @@ new Vue({
                 })
             })
         },
-        sendMachine(_){  //发送控制指令
+        sendMachine(_) {  //发送控制指令
             const it = this;
             _data['type'] = 2;
             _data['operationType'] = _._operationType;
@@ -732,6 +819,27 @@ new Vue({
                     it.ISuccessfull(res.statusCode.msg);
                 }
             });
+        },
+        autoTransfers(value, direction, movedKeys) {
+            this.ruleForm.machineNumber = [];
+            value.forEach(element => {
+                this.ruleForm.machineNumber.push(element)
+            });
+        },
+        searchAMap() {
+            const it = this;
+            setTimeout(() => {
+                var map = new AMap.Map('cityg', {
+                    resizeEnable: true, //是否监控地图容器尺寸变化
+                    zoom: 11, //初始化地图层级
+                    center: [113.264385, 23.129112] //初始化地图中心点
+                });
+                map.on('click', function (e) {
+                    it.ruleForm.machineLatitude = e.lnglat.lat;  //纬度
+                    it.ruleForm.machineLongitude = e.lnglat.lng; //经度
+                });
+            }, 500)
+
         }
     }
 })
