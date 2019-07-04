@@ -39,10 +39,15 @@ new Vue({
             formData: {
                 machineType: 1,
                 name: '',
-                mUpdateUrl: ''  //应用更新
+                mUpdateUrl: '',  //应用更新
+                madTitle: '',
+                madOrder: '',
+                madUrl: '',
+                madId: ''
             },
             imageList: {
-                mUpdateUrl: [] //图片li
+                mUpdateUrl: [], //图片li
+                madUrl: [],     //视频广告
             },
             TableAndVisible: false,
             TableFormData: [],
@@ -71,7 +76,9 @@ new Vue({
             fileData: _data,
             num: 1,
             dialogVisible: false,
-            dialogImageUrl: ''
+            dialogImageUrl: '',
+            adevtmodel: false,  //视频添加/编辑
+            adIds: []
         }
     },
     created: function () {
@@ -82,14 +89,14 @@ new Vue({
             setTimeout(() => {
                 this.loading = false;
             }, 1000);
-            this.$message.error('错了哦，' + err);
+            this.$message.error('错了哦!' + err);
         },
         ISuccessfull(e) {
             setTimeout(() => {
                 this.loading = false;
             }, 1000);
             this.$message({
-                message: 'ok 了哦,' + e,
+                message: '成功了哦!,' + e,
                 type: 'success'
             });
         },
@@ -499,6 +506,7 @@ new Vue({
                                     try {
                                         ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
                                             it.ISuccessfull(res.statusCode.msg);
+                                            it.InputAndVisible = false
                                             it.list();  //刷新列表
                                         })() :
                                             (() => {
@@ -645,6 +653,165 @@ new Vue({
                             break;
                     }
                     break;
+                case 'manage_advertisement_list_list':   //视频广告清单
+                    switch (e._type) {
+                        case "A":
+                            _data['type'] = 6;
+                            _data['name'] = e._evt.name;
+                            ym.init.XML({
+                                method: 'POST',
+                                uri: token._j.URLS.Development_Server_ + uri,
+                                async: false,
+                                xmldata: _data,
+                                done: function (res) {
+                                    try {
+                                        ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
+                                            it.ISuccessfull(res.statusCode.msg);
+                                            it.InputAndVisible = false
+                                            delete _data['name']
+                                            it.list();  //刷新列表
+                                        })() :
+                                            (() => {
+                                                throw "收集到错误：\n\n" + res.statusCode.msg;
+                                            })()
+                                    } catch (error) {
+                                        it.IError(error);
+                                    }
+                                }
+                            });
+                            break;
+                        case "S":
+                            _data['type'] = 2;
+                            _data['page'] = 1;
+                            _data['listId'] = e._evt.listId;
+                            it.listId = e._evt.listId;
+                            ym.init.XML({
+                                method: 'POST',
+                                uri: token._j.URLS.Development_Server_ + uri,
+                                async: false,
+                                xmldata: _data,
+                                done: function (res) {
+                                    try {
+                                        it.TableFormData = [];
+                                        ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
+                                            res.advertisementList.forEach(element => {
+                                                it.TableFormData.push({
+                                                    madId: element.madId,
+                                                    madOrder: element.madOrder,
+                                                    madSize: element.madSize,
+                                                    madStatus: element.madStatus,
+                                                    madTime: element.madTime,
+                                                    madTitle: element.madTitle,
+                                                    madType: element.madType,
+                                                    madUrl: element.madUrl
+                                                });
+                                            });
+                                        })() :
+                                            (() => {
+                                                throw "收集到错误：\n\n" + res.statusCode.msg;
+                                            })()
+                                    } catch (error) {
+                                        it.IError(error);
+                                    }
+                                }
+                            });
+                            break;
+                        case "E":
+                            _data['type'] = 3;
+                            _data['listId'] = it.listId;
+                            ym.init.XML({
+                                method: 'POST',
+                                uri: token._j.URLS.Development_Server_ + uri,
+                                async: false,
+                                xmldata: _data,
+                                done: function (res) {
+                                    try {
+                                        it.UpdateTableFormData = [];
+                                        ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
+                                            res.advertisementInfoList.forEach((element, index) => {
+                                                it.UpdateTableFormData.push({
+                                                    madId: element.madId,
+                                                    madOrder: element.madOrder,
+                                                    madSize: element.madSize,
+                                                    madStatus: element.madStatus,
+                                                    madTime: element.madTime,
+                                                    madTitle: element.madTitle,
+                                                    madType: element.madType,
+                                                    madUrl: element.madUrl
+                                                });
+                                                if (res.adIdList) {
+                                                    res.adIdList.forEach(e => {
+                                                        if (e == element.madId) {
+                                                            it.$nextTick(function () {
+                                                                it.tableChecked(index);  //每次更新了数据，触发这个函数即可。
+                                                            });
+                                                        }
+                                                    })
+                                                };
+                                            });
+                                        })() :
+                                            (() => {
+                                                throw "收集到错误：\n\n" + res.statusCode.msg;
+                                            })()
+                                    } catch (error) {
+                                        it.IError(error);
+                                    }
+                                }
+                            });
+                            break;
+                        case "P":  //编辑清单
+                            _data['type'] = 4;
+                            _data['listId'] = it.listId;
+                            _data['adId'] = it.adIds;
+                            ym.init.XML({
+                                method: 'POST',
+                                uri: token._j.URLS.Development_Server_ + uri,
+                                async: false,
+                                xmldata: _data,
+                                done: function (res) {
+                                    try {
+                                        it.UpdateTableFormData = [];
+                                        ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
+                                            it.ISuccessfull(res.statusCode.msg);
+                                            it.UpdateTableAndVisible = false;
+                                            it.listoperation({ _tag: 'manage_advertisement_list_list', _evt: { listId: it.listId }, _type: 'S' });  //刷新列表
+                                        })() :
+                                            (() => {
+                                                throw "收集到错误：\n\n" + res.statusCode.msg;
+                                            })()
+                                    } catch (error) {
+                                        it.IError(error);
+                                    }
+                                }
+                            });
+                            break;
+                        case "D":
+                            _data['type'] = 5;
+                            _data['listId'] = e._evt.listId;
+                            ym.init.XML({
+                                method: 'POST',
+                                uri: token._j.URLS.Development_Server_ + uri,
+                                async: true,
+                                xmldata: _data,
+                                done: function (res) {
+                                    try {
+                                        ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
+                                            it.ISuccessfull(res.statusCode.msg);
+                                            it.list()  //刷新列表
+                                        })() :
+                                            (() => {
+                                                throw "收集到错误：\n\n" + res.statusCode.msg;
+                                            })()
+                                    } catch (error) {
+                                        it.IError(error);
+                                    }
+                                }
+                            });
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
                 default:
                     break;
             }
@@ -653,10 +820,14 @@ new Vue({
             this.multipleSelection = val;
             this.productCount = val.length;
             this.productId = [];
+            this.adIds = [];
             this.machineNumber = [];
+            this.adminIds = [];
             val.forEach(e => {
                 this.productId.push(e.productId)
                 this.machineNumber.push(e.machineNumber)
+                this.adminIds.push(e.adminId)
+                this.adIds.push(e.madId)
                 e.userId != "无" ? this.userIdts.push(e.userId) : null;
             });
         },
@@ -762,6 +933,56 @@ new Vue({
                         }
                     })
                     break;
+                case 'manage_advertisement_list_relation':  //广告视频清单
+                        _v._type.forEach(e => {
+                            _data['type'] = e;
+                            _data['adminId'] = it.adminIds || [];
+                            _data['listId'] = _v._listid || '';
+                            ym.init.XML({
+                                method: 'POST',
+                                uri: token._j.URLS.Development_Server_ + _v._uri,
+                                async: false,
+                                xmldata: _data,
+                                done: function (res) {
+                                    try {
+                                        ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
+                                            switch (e) {
+                                                case 1:
+                                                    it.listIds = [];
+                                                    res.advertisementListList.forEach(data => {
+                                                        it.listIds.push({
+                                                            value: data.listId,
+                                                            label: data.listName
+                                                        });
+                                                    })
+                                                    break;
+                                                case 2:
+                                                    it.UnFormData = [];
+                                                    res.userList.forEach(data => {
+                                                        it.UnFormData.push({
+                                                            adminId: data.adminId,
+                                                            adListId: data.adListId,
+                                                            listName: data.listName,
+                                                            adminName: data.adminName
+                                                        });
+                                                    })
+                                                    break;
+                                                default:
+                                                    it.ISuccessfull(res.statusCode.msg);
+                                                    it.detailTableAndVisible = false;
+                                                    break;
+                                            }
+                                        })() :
+                                            (() => {
+                                                throw "收集到错误：\n\n" + res.statusCode.msg;
+                                            })()
+                                    } catch (error) {
+                                        it.IError(error);
+                                    }
+                                }
+                            });
+                        })
+                    break;
                 default:
                     break
             }
@@ -807,7 +1028,7 @@ new Vue({
             _data['userIds'] = (e._id ? this.userIdts : this.userIds);
             ym.init.XML({
                 method: 'GET',
-                uri: token._j.URLS.Development_Server_ + e._uri,  //查询绑定关系
+                uri: token._j.URLS.Development_Server_ + e._uri,
                 async: false,
                 xmldata: _data,
                 done: function (res) {
@@ -841,11 +1062,15 @@ new Vue({
             _data['mUpdateVersion'] = this.formData.mUpdateVersion;
             this.dialogImageUrl = '../images/Android.svg';
         },
+        filemadUrlChange(e) {
+            _data['type'] = 9;
+        },
         fileExceed() {
             this.IError('只允许一张图片')
         },
         machineSceneSuccess(e) {
             this.formData.mUpdateUrl = e.realPath;
+            this.formData.madUrl = e.realPath;
         },
         handleRemove(file, fileList) {
             console.log(file, fileList);
@@ -878,6 +1103,7 @@ new Vue({
             })
         },
         deleteData(_del) {  //删除操作
+            const it = this;
             switch (_del._uri) {
                 case "manage_poi":
                     _data['poiIds'] = _del._delete.poiId
@@ -895,6 +1121,100 @@ new Vue({
                                 it.IError(res.statusCode.msg);
                         }
                     })
+                    break;
+                case 'manage_machine_advertisement':
+                    _data['madId'] = _del._parameter
+                    _data['type'] = _del._type
+                    ym.init.XML({
+                        method: 'POST',
+                        uri: token._j.URLS.Development_Server_ + _del._uri,
+                        async: true,
+                        xmldata: _data,
+                        done: function (res) {
+                            ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
+                                it.ISuccessfull(res.statusCode.msg);
+                                it.list();
+                            })() :
+                                it.IError(res.statusCode.msg);
+                        }
+                    })
+                    break;
+                default:
+                    break;
+            }
+        },
+        addEventData(_event) {
+            const it = this;
+            switch (_event._uri) {
+                case 'manage_machine_advertisement':
+                    _data['madOrder'] = _event._parameter.madOrder;
+                    _data['madTitle'] = _event._parameter.madTitle;
+                    _data['madUrl'] = _event._parameter.madUrl;
+                    _data['type'] = _event._type;
+                    if (it.formData.madId) {
+                        _data['madId'] = it.formData.madId;
+                        _data['type'] = 4;
+                    };
+                    ym.init.XML({
+                        method: 'POST',
+                        uri: token._j.URLS.Development_Server_ + _event._uri,
+                        async: true,
+                        xmldata: _data,
+                        done: function (res) {
+                            ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
+                                it.ISuccessfull(res.statusCode.msg);
+                                it.adevtmodel = false;
+                                it.list();
+                            })() :
+                                it.IError(res.statusCode.msg);
+                        }
+                    })
+                    break;
+                default:
+                    break;
+            }
+        },
+        enitEventData(_event) {
+            const it = this;
+            switch (_event._uri) {
+                case 'manage_machine_advertisement':
+                    if (!_event._status) {
+                        _data['madId'] = _event._parameter
+                        _data['type'] = _event._type
+                        ym.init.XML({
+                            method: 'POST',
+                            uri: token._j.URLS.Development_Server_ + _event._uri,
+                            async: true,
+                            xmldata: _data,
+                            done: function (res) {
+                                ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
+                                    it.ISuccessfull(res.statusCode.msg);
+                                    it.formData.madTitle = res.machineAdvertisementInfo.madTitle
+                                    it.formData.madUrl = res.machineAdvertisementInfo.madUrl
+                                    it.formData.madOrder = res.machineAdvertisementInfo.madOrder
+                                    it.formData.madId = res.machineAdvertisementInfo.madId
+                                    it.imageList.madUrl.push({ name: 'madUrl', url: res.machineAdvertisementInfo.madUrl })
+                                })() :
+                                    it.IError(res.statusCode.msg);
+                            }
+                        })
+                    } else { //madStatus
+                        _data['madId'] = _event._parameter
+                        _data['type'] = _event._type
+                        _data['madStatus'] = _event._status
+                        ym.init.XML({
+                            method: 'POST',
+                            uri: token._j.URLS.Development_Server_ + _event._uri,
+                            async: true,
+                            xmldata: _data,
+                            done: function (res) {
+                                ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
+                                    it.list()
+                                })() :
+                                    it.IError(res.statusCode.msg);
+                            }
+                        })
+                    }
                     break;
                 default:
                     break;
