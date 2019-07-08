@@ -187,7 +187,32 @@ ym.init = {
 	},
 	RegCode(e){
 		return new RegExp(e);
+	},
+	getAllDate(begin, end) {   //提取指定日期
+		var dtemp = [];
+		var ab = begin.split("-");
+		var ae = end.split("-");
+		var db = new Date();
+		db.setUTCFullYear(ab[0], ab[1] - 1, ab[2]);
+		var de = new Date();
+		de.setUTCFullYear(ae[0], ae[1] - 1, ae[2]);
+		var unixDb = db.getTime();
+		var unixDe = de.getTime();
+		for (var k = unixDb; k <= unixDe;) {
+			dtemp.push((new Date(parseInt(k))).format());
+			k = k + 24 * 60 * 60 * 1000;
+		}
+		return dtemp;
 	}
+};
+Date.prototype.format = function() {  //原型
+	var s = '';
+	var mouth = (this.getMonth() + 1)>=10?(this.getMonth() + 1):('0'+(this.getMonth() + 1));
+	var day = this.getDate()>=10?this.getDate():('0'+this.getDate());
+	s += this.getFullYear() + '-'; // 获取年份。
+	s += mouth + "-"; // 获取月份。
+	s += day; // 获取日。
+	return (s); // 返回日期。
 };
 
 //<% for(let i=0; i < data.supplies.length; i++) { %>

@@ -64,7 +64,8 @@ new Vue({
                     }
                 }]
             },
-            userCharts: [new Date(), (new Date().setDate(new Date().getDate() - 6))]
+            userCharts: [ym.init.getDateTime(new Date().setDate(new Date().getDate() - 6)).split(' ')[0], ym.init.getDateTime(new Date()).split(' ')[0]],
+            sum: 0
         }
     },
     created: function () {
@@ -104,15 +105,27 @@ new Vue({
                     }
                     _data['startTime'] = it.userCharts[0];
                     _data['endTime'] = it.userCharts[1];
+                    let _content = [], _DayTime = [];  //时间对应值
                     ym.init.XML({
                         method: 'GET',
-                        uri: token._j.URLS.Development_Server_ + uri,
+                        // uri: token._j.URLS.Development_Server_ + uri,
+                        uri: 'http://mapi.cbcoffee.cn/' + uri,
                         async: false,
                         xmldata: _data,
                         done: function (res) {
                             try {
                                 ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
-
+                                    it.sum = res.package.sum;  //总金额
+                                    let _date = ym.init.getAllDate(it.userCharts[0].split(' ')[0], it.userCharts[1].split(' ')[0]);
+                                    for (let i = 0; i < _date.length; i++) {
+                                        _DayTime.push(_date[i]);  //记录日期
+                                        for (let j of res.package.content) {
+                                            if (_date[i] == j.moneyDay) {
+                                                _content.push(j.money); //对应的数值
+                                                break;
+                                            }
+                                        }
+                                    }
                                 })() :
                                     (() => {
                                         throw "收集到错误：\n\n" + res.statusCode.msg;
@@ -134,7 +147,7 @@ new Vue({
                                 }
                             },
                             legend: {
-                                data: ['邮件营销']
+                                data: ['收入金额']
                             },
                             grid: {
                                 left: '3%',
@@ -146,9 +159,7 @@ new Vue({
                                 {
                                     type: 'category',
                                     boundaryGap: false,
-                                    data: (()=>{
-                                        return ['周一', '周二', '周三', '周四', '周五', '周六', '周日']
-                                    })()
+                                    data: _DayTime
                                 }
                             ],
                             yAxis: [
@@ -162,14 +173,32 @@ new Vue({
                                     type: 'line',
                                     stack: '总量',
                                     areaStyle: {},
-                                    data: [parseInt(Math.random() * 120), parseInt(Math.random() * 132), parseInt(Math.random() * 101), parseInt(Math.random() * 134), parseInt(Math.random() * 90), parseInt(Math.random() * 230), parseInt(Math.random() * 210)]
+                                    data: _content
                                 }
                             ]
                         };
                         myChart.setOption(_, true);
                         // this.autoHeight = (reg.package.package.machineSoldAnalyzeList == null ? 0 : reg.package.package.machineSoldAnalyzeList.length * 35 + 200);
                         // myChart.getDom().style.height = this.autoHeight + "px";
-                    }, 500)
+                    }, 500);
+
+                    window.onload = function(){
+                        let ech = echarts.init(document.getElementById('echartsCanvasNumber')), _ = {
+                            xAxis: {
+                                type: 'category',
+                                data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+                            },
+                            yAxis: {
+                                type: 'value'
+                            },
+                            series: [{
+                                data: [120, 200, 150, 80, 70, 110, 130],
+                                type: 'bar'
+                            }]
+                        };
+                        ech.setOption(_, true)
+                    }
+
                     break;
                 default:
                     break;
