@@ -137,6 +137,9 @@ new Vue({
                     });
                     setTimeout(() => {
                         let myChart = echarts.init(document.getElementById('echartsCanvas')), _ = {
+                            title:{
+                                text: '收入金额曲线图'
+                            },
                             tooltip: {
                                 trigger: 'axis',
                                 axisPointer: {
@@ -169,7 +172,7 @@ new Vue({
                             ],
                             series: [
                                 {
-                                    name: '邮件营销',
+                                    name: '收入金额',
                                     type: 'line',
                                     stack: '总量',
                                     areaStyle: {},
@@ -182,22 +185,83 @@ new Vue({
                         // myChart.getDom().style.height = this.autoHeight + "px";
                     }, 500);
 
-                    window.onload = function(){
-                        let ech = echarts.init(document.getElementById('echartsCanvasNumber')), _ = {
-                            xAxis: {
-                                type: 'category',
-                                data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
-                            },
-                            yAxis: {
-                                type: 'value'
-                            },
-                            series: [{
-                                data: [120, 200, 150, 80, 70, 110, 130],
-                                type: 'bar'
-                            }]
-                        };
-                        ech.setOption(_, true)
-                    }
+                    setTimeout(function () {
+                        let _content = [], _DayTime = [];  //时间对应值
+                        ym.init.XML({
+                            method: 'GET',
+                            // uri: token._j.URLS.Development_Server_ + uri,
+                            uri: 'http://mapi.cbcoffee.cn/statistics_adduser',
+                            async: false,
+                            xmldata: _data,
+                            done: function (res) {
+                                try {
+                                    ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
+                                        // it.sum = res.package.sum;  //总金额
+                                        let _date = ym.init.getAllDate(it.userCharts[0].split(' ')[0], it.userCharts[1].split(' ')[0]);
+                                        for (let i = 0; i < _date.length; i++) {
+                                            _DayTime.push(_date[i]);  //记录日期
+                                            for (let j of res.package.userContent) {
+                                                if (_date[i] == j.registerDate) {
+                                                    _content.push(j.userCount); //对应的数值
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                    })() :
+                                        (() => {
+                                            throw "收集到错误：\n\n" + res.statusCode.msg;
+                                        })()
+                                } catch (error) {
+                                    it.IError(error);
+                                }
+                            }
+                        });
+                        setTimeout(() => {
+                            let ech = echarts.init(document.getElementById('echartsCanvasNumber')), _ = {
+                                title : {
+                                    text: '新增人数柱状图'
+                                },
+                                tooltip : {
+                                    trigger: 'axis'
+                                },
+                                legend: {
+                                    data:['新增人数']
+                                },
+                                calculable : true,
+                                xAxis : [
+                                    {
+                                        type : 'category',
+                                        data : _DayTime
+                                    }
+                                ],
+                                yAxis : [
+                                    {
+                                        type : 'value'
+                                    }
+                                ],
+                                series : [
+                                    {
+                                        name:'新增人数',
+                                        type:'bar',
+                                        data: _content,
+                                        markPoint : {
+                                            data : [
+                                                {type : 'max', name: '最大值'},
+                                                {type : 'min', name: '最小值'}
+                                            ]
+                                        },
+                                        markLine : {
+                                            data : [
+                                                {type : 'average', name: '平均值'}
+                                            ]
+                                        }
+                                    }
+                                ]
+                            };
+
+                            ech.setOption(_, true)
+                        }, 1000)
+                    }, 1000)
 
                     break;
                 default:

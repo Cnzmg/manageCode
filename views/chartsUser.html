@@ -23,12 +23,15 @@
         <el-container>
             <el-main>
                 <el-form id="dom">
-                    <el-date-picker v-model="userCharts" type="daterange" align="right" unlink-panels range-separator="至"
-                        start-placeholder="开始日期" end-placeholder="结束日期" :picker-options="pickerOptions" @change="getTime">
+                    <el-date-picker v-model="userCharts" type="daterange" align="right" unlink-panels
+                        range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期"
+                        :picker-options="pickerOptions" @change="getTime">
                     </el-date-picker>
+                    <div style="margin:10px auto;"><el-button type="primary"> 总的收入金额 RMB： {{ sum }} 元</el-button></div>
                 </el-form>
-                
-                <div id="echartsCanvasNumber" style="height: 600px"></div>
+                <el-form>
+                    <div id="echartsCanvasNumber" style="height: 600px"></div>
+                </el-form>
             </el-main>
         </el-container>
     </div>

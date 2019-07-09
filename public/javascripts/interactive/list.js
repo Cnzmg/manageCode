@@ -131,6 +131,7 @@ new Vue({
             if (uri == 'manage_advertisement_list_list') _data['type'] = 1;
             if (uri == 'client_user_list') _data['type'] = 1;
             if (uri == 'manage_dividend_list') _data['type'] = 1;
+            if (uri == 'statistics_machinelist') _data['url'] = '/manage/chartsFinance.html';
             _data['page'] = it.page;
             ym.init.XML({
                 method: (uri == 'find_machine_poi_list' || uri == 'get_activity_list' || uri == 'statistics_list' || uri == 'maintainer_list' ? "GET" : 'POST'),
@@ -467,6 +468,19 @@ new Vue({
                                         endTime: res.runtimeList[i].endTime,
                                         limitShow: res.runtimeList[i].limitShow,
                                         status: res.runtimeList[i].status
+                                    })
+                                }
+                                break;
+                            case `statistics_machinelist`:
+                                for (let i = 0; i < res.package.MachineCountList.length; i++) {
+                                    xml.push({
+                                        machineNumber: res.package.MachineCountList[i].machineNumber,
+                                        addr: res.package.MachineCountList[i].addr,
+                                        machineType: res.package.MachineCountList[i].machineType,
+                                        payMoney: res.package.MachineCountList[i].payMoney,
+                                        payCount: res.package.MachineCountList[i].payCount,
+                                        longitude: res.package.MachineCountList[i].longitude,
+                                        latitude: res.package.MachineCountList[i].latitude
                                     })
                                 }
                                 break;
@@ -934,54 +948,54 @@ new Vue({
                     })
                     break;
                 case 'manage_advertisement_list_relation':  //广告视频清单
-                        _v._type.forEach(e => {
-                            _data['type'] = e;
-                            _data['adminId'] = it.adminIds || [];
-                            _data['listId'] = _v._listid || '';
-                            ym.init.XML({
-                                method: 'POST',
-                                uri: token._j.URLS.Development_Server_ + _v._uri,
-                                async: false,
-                                xmldata: _data,
-                                done: function (res) {
-                                    try {
-                                        ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
-                                            switch (e) {
-                                                case 1:
-                                                    it.listIds = [];
-                                                    res.advertisementListList.forEach(data => {
-                                                        it.listIds.push({
-                                                            value: data.listId,
-                                                            label: data.listName
-                                                        });
-                                                    })
-                                                    break;
-                                                case 2:
-                                                    it.UnFormData = [];
-                                                    res.userList.forEach(data => {
-                                                        it.UnFormData.push({
-                                                            adminId: data.adminId,
-                                                            adListId: data.adListId,
-                                                            listName: data.listName,
-                                                            adminName: data.adminName
-                                                        });
-                                                    })
-                                                    break;
-                                                default:
-                                                    it.ISuccessfull(res.statusCode.msg);
-                                                    it.detailTableAndVisible = false;
-                                                    break;
-                                            }
-                                        })() :
-                                            (() => {
-                                                throw "收集到错误：\n\n" + res.statusCode.msg;
-                                            })()
-                                    } catch (error) {
-                                        it.IError(error);
-                                    }
+                    _v._type.forEach(e => {
+                        _data['type'] = e;
+                        _data['adminId'] = it.adminIds || [];
+                        _data['listId'] = _v._listid || '';
+                        ym.init.XML({
+                            method: 'POST',
+                            uri: token._j.URLS.Development_Server_ + _v._uri,
+                            async: false,
+                            xmldata: _data,
+                            done: function (res) {
+                                try {
+                                    ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
+                                        switch (e) {
+                                            case 1:
+                                                it.listIds = [];
+                                                res.advertisementListList.forEach(data => {
+                                                    it.listIds.push({
+                                                        value: data.listId,
+                                                        label: data.listName
+                                                    });
+                                                })
+                                                break;
+                                            case 2:
+                                                it.UnFormData = [];
+                                                res.userList.forEach(data => {
+                                                    it.UnFormData.push({
+                                                        adminId: data.adminId,
+                                                        adListId: data.adListId,
+                                                        listName: data.listName,
+                                                        adminName: data.adminName
+                                                    });
+                                                })
+                                                break;
+                                            default:
+                                                it.ISuccessfull(res.statusCode.msg);
+                                                it.detailTableAndVisible = false;
+                                                break;
+                                        }
+                                    })() :
+                                        (() => {
+                                            throw "收集到错误：\n\n" + res.statusCode.msg;
+                                        })()
+                                } catch (error) {
+                                    it.IError(error);
                                 }
-                            });
-                        })
+                            }
+                        });
+                    })
                     break;
                 default:
                     break
