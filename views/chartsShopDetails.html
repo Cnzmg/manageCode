@@ -55,8 +55,10 @@
 
                 <el-form>
                     <div style="margin:10px auto;">
-                        <el-button type="primary"> 总的收入金额 RMB： {{ sum }} 元</el-button>
+                        <el-button type="primary"> 总的销售：{{ sum }}  元</el-button>
+                        <el-button type="primary"> 总的收入金额 RMB：{{ paySum }}  元</el-button>
                     </div>
+                    <div id="echartsCanvasNumber" style="height: 600px"></div>
                 </el-form>
             </el-main>
         </el-container>
