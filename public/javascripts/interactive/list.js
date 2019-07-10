@@ -78,7 +78,51 @@ new Vue({
             dialogVisible: false,
             dialogImageUrl: '',
             adevtmodel: false,  //视频添加/编辑
-            adIds: []
+            adIds: [],
+            html: '',
+            pickerOptions: {  //时间节点
+                shortcuts: [{
+                    text: '最近一周',
+                    onClick(picker) {
+                        const end = new Date();
+                        const start = new Date();
+                        start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+                        picker.$emit('pick', [start, end]);
+                    }
+                }, {
+                    text: '最近一个月',
+                    onClick(picker) {
+                        const end = new Date();
+                        const start = new Date();
+                        start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+                        picker.$emit('pick', [start, end]);
+                    }
+                }, {
+                    text: '最近三个月',
+                    onClick(picker) {
+                        const end = new Date();
+                        const start = new Date();
+                        start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
+                        picker.$emit('pick', [start, end]);
+                    }
+                }, {
+                    text: '最近半年',
+                    onClick(picker) {
+                        const end = new Date();
+                        const start = new Date();
+                        start.setTime(start.getTime() - 3600 * 1000 * 24 * 180);
+                        picker.$emit('pick', [start, end]);
+                    }
+                }, {
+                    text: '最近一年',
+                    onClick(picker) {
+                        const end = new Date();
+                        const start = new Date();
+                        start.setTime(start.getTime() - 3600 * 1000 * 24 * 365);
+                        picker.$emit('pick', [start, end]);
+                    }
+                }]
+            },
         }
     },
     created: function () {
@@ -131,7 +175,6 @@ new Vue({
             if (uri == 'manage_advertisement_list_list') _data['type'] = 1;
             if (uri == 'client_user_list') _data['type'] = 1;
             if (uri == 'manage_dividend_list') _data['type'] = 1;
-            if (uri == 'statistics_machinelist') _data['url'] = '/manage/chartsFinance.html';
             _data['page'] = it.page;
             ym.init.XML({
                 method: (uri == 'find_machine_poi_list' || uri == 'get_activity_list' || uri == 'statistics_list' || uri == 'maintainer_list' ? "GET" : 'POST'),
@@ -310,6 +353,30 @@ new Vue({
                                 }
                                 break;
                             case `client_user_list`:
+                                // ym.init.XML({ //会员类型
+                                //     method: 'POST',
+                                //     uri: token._j.URLS.Development_Server_ + 'find_client_user_list',
+                                //     async: false,
+                                //     xmldata: _data,
+                                //     done: function (res) {
+                                //         try {
+                                //             ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
+                                //               it.html = `<el-button>用户类型</el-button>
+                                //               <el-select v-model="select" slot="prepend" placeholder="请选择">
+                                //                   <el-option label="不限" value="userType:"></el-option>
+                                //                   <el-option label="普通用户" value="userType:1"></el-option>
+                                //                   <el-option label="测试用户" value="userType:2"></el-option>
+                                //                   <el-option label="免单用户" value="userType:3"></el-option>
+                                //               </el-select>`
+                                //             })() :
+                                //                 (() => {
+                                //                     throw "收集到错误：\n\n" + res.statusCode.msg;
+                                //                 })()
+                                //         } catch (error) {
+                                //             it.IError(error);
+                                //         }
+                                //     }
+                                // });
                                 for (let i = 0; i < res.clientUserList.length; i++) {
                                     xml.push({
                                         userId: res.clientUserList[i].userId,
@@ -468,19 +535,6 @@ new Vue({
                                         endTime: res.runtimeList[i].endTime,
                                         limitShow: res.runtimeList[i].limitShow,
                                         status: res.runtimeList[i].status
-                                    })
-                                }
-                                break;
-                            case `statistics_machinelist`:
-                                for (let i = 0; i < res.package.MachineCountList.length; i++) {
-                                    xml.push({
-                                        machineNumber: res.package.MachineCountList[i].machineNumber,
-                                        addr: res.package.MachineCountList[i].addr,
-                                        machineType: res.package.MachineCountList[i].machineType,
-                                        payMoney: res.package.MachineCountList[i].payMoney,
-                                        payCount: res.package.MachineCountList[i].payCount,
-                                        longitude: res.package.MachineCountList[i].longitude,
-                                        latitude: res.package.MachineCountList[i].latitude
                                     })
                                 }
                                 break;
@@ -1233,6 +1287,10 @@ new Vue({
                 default:
                     break;
             }
-        }
+        },
+        getTime(e) {
+            this.userCharts[0] = ym.init.getDateTime(e[0]);
+            this.userCharts[1] = ym.init.getDateTime(e[1]);
+        },
     }
 });
