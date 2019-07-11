@@ -1,5 +1,5 @@
 import { regionData, CodeToText, TextToCode } from 'element-china-area-data'
-const [
+var [
     $,
     token,
     uri,
@@ -180,8 +180,20 @@ new Vue({
                 machineNumber: [],
                 addr: '',
                 hide: 1,
-                poiId: '' //修改得时候
-
+                poiId: '', //修改得时候
+                memberRuleName: '', //会员编辑实例
+                memberLevel: '',
+                duration: '',
+                memberPicUrl: '',
+                memberHeadPic: '',
+                payMoney: '',
+                discount: '',
+                milliliter: '',
+                memberType: 0,
+                timeLim: '',
+                timeLim1: '',
+                discountsStartTime: '',
+                discountsEndTime: ''
             },
             rules: {
                 productName: [
@@ -208,7 +220,9 @@ new Vue({
                 machineScenePicUrl: [],
                 mapMarkerIcon: [],
                 planePicUrl: [],
-                machineUrl: []
+                machineUrl: [],
+                memberPicUrl: [],
+                memberHeadPic: []
             },
             address: regionData,   // 地址选择
             percentage: 90,   //进度条数值0-100
@@ -220,7 +234,9 @@ new Vue({
                 { color: '#6f7ad3', percentage: 100 }
             ],
             longStatus: [],
-            SearchAsyncMachineNumber: querySearchAsyncMachineNumber()
+            SearchAsyncMachineNumber: (uri == 'manage_poi' ? querySearchAsyncMachineNumber() : []),
+            timeLimShow: false,   //会员添加
+            numLength: 1
         }
     },
     created: function () {
@@ -354,6 +370,10 @@ new Vue({
                     _data['type'] = 1;
                     delete _data['machineType']
                     _data['poiIds'] = JSON.parse(e).poiId;
+                case 'add_or_update_member':   //查找会员详情
+                    _data['memberId'] = JSON.parse(e).memberRuleId;
+                    uri = 'get_member_detail'
+                    break;
                 default:
                     break;
             }
@@ -548,7 +568,7 @@ new Vue({
                                 it.ruleForm.machineUrl = res.poi.machineUrl;  //大楼外景图
                                 it.ruleForm.poiId = res.poi.poiId;
 
-                                res.poi.numberList.split(',').forEach(el =>{  //执行已选择设备回显
+                                res.poi.numberList.split(',').forEach(el => {  //执行已选择设备回显
                                     it.ruleForm.machineNumber.push(el)
                                 });
 
@@ -558,6 +578,29 @@ new Vue({
 
                                 it.imageList.mapMarkerIcon.push({ name: 'mapMarkerIcon', url: res.poi.mapMarkerIcon }); //楼层平面图
                                 it.imageList.machineUrl.push({ name: 'machineUrl', url: res.poi.machineUrl }); //大楼外景图
+
+                                break;
+                            case 'get_member_detail':  //会员详情
+                                it.ruleForm.memberRuleName = res.member.memberRuleName;
+                                it.ruleForm.memberLevel = res.member.memberLevel;
+                                it.ruleForm.duration = res.member.duration;
+
+                                it.ruleForm.memberPicUrl = res.member.memberPicUrl;
+                                it.ruleForm.memberHeadPic = res.member.memberHeadPic;
+                                it.imageList.memberPicUrl.push({ name: 'memberPicUrl', url: res.member.memberPicUrl }); //会员列表
+                                it.imageList.memberHeadPic.push({ name: 'memberHeadPic', url: res.member.memberHeadPic }); //TAG 图片
+
+                                it.ruleForm.payMoney = res.member.payMoney;
+                                it.ruleForm.discount = res.member.discount;
+                                it.ruleForm.milliliter = res.member.milliliter;
+                                if (res.member.memberType == 2) {
+                                    it.ruleForm.memberType = true;
+                                    it.timeLimShow = true;
+                                }
+                                it.ruleForm.timeLim = new Date(2019, 7, 11, res.member.timeLimit.split('-')[0].split(':')[0], res.member.timeLimit.split('-')[0].split(':')[1],res.member.timeLimit.split('-')[0].split(':')[2]);
+                                it.ruleForm.timeLim1 = new Date(2019, 7, 11, res.member.timeLimit.split('-')[1].split(':')[0], res.member.timeLimit.split('-')[1].split(':')[1],res.member.timeLimit.split('-')[1].split(':')[2]);;
+                                it.ruleForm.discountsEndTime = [ym.init.getDateTime(res.member.discountsStartTime), ym.init.getDateTime(res.member.discountsEndTime)];
+                                uri = 'add_or_update_member'  //完成后重新把uri 复原
 
                                 break;
                             default:
@@ -587,6 +630,18 @@ new Vue({
         },
         filePicChange() {
             this.fileData['type'] = 2;  //动态配置
+        },
+        filememberPicUrlChange() {
+            this.fileData['type'] = 3;  //动态配置
+        },
+        filememberHeadPicChange() {
+            this.fileData['type'] = 16;  //动态配置
+        },
+        filememberPicUrlSuccess(e) {
+            this.ruleForm.memberPicUrl = e.realPath;
+        },
+        filememberHeadPicSuccess(e) {
+            this.ruleForm.memberHeadPic = e.realPath;
         },
         fileMachineSuccess(e) {
             this.ruleForm.productMachinePicurl = e.realPath;
@@ -666,6 +721,51 @@ new Vue({
                     _data['addr'] = formName.addr || '';
                     _data['latitude'] = it.ruleForm.machineLatitude || '';
                     _data['longitude'] = formName.machineLongitude || '';
+                    ym.init.XML({
+                        method: 'POST',
+                        uri: token._j.URLS.Development_Server_ + uri,
+                        async: false,
+                        xmldata: _data,
+                        done: function (res) {
+                            try {
+                                ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
+                                    it.ISuccessfull(res.statusCode.msg);
+                                    setTimeout(() => {
+                                        parent.document.getElementById('tagHref').setAttribute('src', callBackHtml);
+                                    }, 500);
+                                })() : (() => {
+                                    throw "收集到错误：\n\n" + res.statusCode.msg;
+                                })();
+                            } catch (error) {
+                                it.IError(error);
+                            }
+                        }
+                    })
+                    break;
+                case 'add_or_update_member':  //添加会员信息
+                    if (dataHref.split('*').length > 1) {
+                        _data['memberRuleId'] = JSON.parse(decodeURI(dataHref.split('*')[1])).memberRuleId;
+                        uri = 'add_or_update_member';
+                    }
+                    delete _data['type']
+                    _data['memberRuleName'] = formName.memberRuleName;
+                    _data['memberLevel'] = formName.memberLevel;
+                    _data['duration'] = formName.duration || '';
+
+                    _data['memberPicUrl'] = it.ruleForm.memberPicUrl || '';
+                    _data['memberHeadPic'] = it.ruleForm.memberHeadPic || '';
+
+                    _data['payMoney'] = formName.payMoney || '';
+                    _data['discount'] = it.ruleForm.discount || '';
+                    _data['milliliter'] = formName.milliliter || '';
+                    _data['discountsStartTime'] = ym.init.getDateTime(formName.discountsEndTime[0]);
+                    _data['discountsEndTime'] = ym.init.getDateTime(formName.discountsEndTime[1]);
+
+                    if (formName.memberType) {
+                        _data['timeLimit'] = ym.init.getDateTime(formName.timeLim).split(' ')[1] + "-" + ym.init.getDateTime(formName.timeLim1).split(' ')[1];  //待定
+                    }
+                    _data['memberType'] = (+formName.memberType) + 1;
+                    _data['milliliter'] = formName.milliliter || '';
                     ym.init.XML({
                         method: 'POST',
                         uri: token._j.URLS.Development_Server_ + uri,

@@ -71,6 +71,7 @@ new Vue({
             timeout: null,
             userIds: [],
             userIdts: [],
+            userMode: [],
             machineLogs: [],  //设备日志
             machineLogViews: false,
             fileData: _data,
@@ -123,6 +124,16 @@ new Vue({
                     }
                 }]
             },
+            select_user: '', //用户列表的批量操作
+            user_type: 1,  //用户类型
+            statues: {
+                user: false,
+                flow: false,
+                state: false
+            }, // 状态的显示/f
+            overdueTime: '',
+            grantCount: '',
+            user_state: 1
         }
     },
     created: function () {
@@ -404,7 +415,8 @@ new Vue({
                                         discountsStartTime: res.memberRuleList[i].discountsStartTime,
                                         discountsEndTime: res.memberRuleList[i].discountsEndTime,
                                         milliliter: res.memberRuleList[i].milliliter,
-                                        memberPicUrl: res.memberRuleList[i].memberPicUrl
+                                        memberPicUrl: res.memberRuleList[i].memberPicUrl,
+                                        status: res.memberRuleList[i].status
                                     })
                                 }
                                 break;
@@ -891,12 +903,14 @@ new Vue({
             this.adIds = [];
             this.machineNumber = [];
             this.adminIds = [];
+            this.userMode = [];
             val.forEach(e => {
                 this.productId.push(e.productId)
                 this.machineNumber.push(e.machineNumber)
                 this.adminIds.push(e.adminId)
                 this.adIds.push(e.madId)
                 e.userId != "无" ? this.userIdts.push(e.userId) : null;
+                this.userMode.push(e); //批量操作用户类型
             });
         },
         filterTag(value, row) {
@@ -1051,6 +1065,53 @@ new Vue({
                         });
                     })
                     break;
+                case 'find_user_milliliter_log':  //用户列表的毫升数日志
+                    delete _data['type']
+                    _data['userId'] = _v._id;
+                    _data['page'] = 1;
+                    _data['start'] = '';
+                    _data['end'] = '';
+                    ym.init.XML({
+                        method: 'GET',
+                        uri: token._j.URLS.Development_Server_ + 'find_user_milliliter_log',  //查询绑定关系
+                        async: false,
+                        xmldata: _data,
+                        done: function (res) {
+                            res.logList.forEach(e => {
+                                it.TableFormData.push({
+                                    logId: e.logId,
+                                    userId: e.userId,
+                                    userName: e.userName,
+                                    createTime: e.createTime,
+                                    milliliterChange: e.milliliterChange,
+                                    stateComment: e.stateComment
+                                })
+                            })
+                        }
+                    })
+                    break;
+                case 'find_user_couponList':  //用户列表的毫升数日志
+                    _data['userId'] = _v._id;
+                    _data['page'] = 1;
+                    ym.init.XML({
+                        method: 'POST',
+                        uri: token._j.URLS.Development_Server_ + 'find_user_couponList',  //查询绑定关系
+                        async: false,
+                        xmldata: _data,
+                        done: function (res) {
+                            res.logList.forEach(e => {
+                                it.TableFormData.push({
+                                    logId: e.logId,
+                                    userId: e.userId,
+                                    userName: e.userName,
+                                    createTime: e.createTime,
+                                    milliliterChange: e.milliliterChange,
+                                    stateComment: e.stateComment
+                                })
+                            })
+                        }
+                    })
+                    break;
                 default:
                     break
             }
@@ -1072,6 +1133,8 @@ new Vue({
                             _id: e.userId
                         })
                     })
+                    it.UnFormData = res.list; //用户批量操作
+
                     var results = queryString ? _arr.filter(it.createStateFilter(queryString)) : _arr;
                     clearTimeout(it.timeout);
                     it.timeout = setTimeout(() => {
@@ -1088,22 +1151,93 @@ new Vue({
         },
         handleSelect(item) {  //取得选择的用户ID
             this.userIds.push(item._id);
+            this.UserTableData.push(item); //用户批量操作
         },
         bindUser(e) {  //执行绑定/解绑
             const it = this;
-            _data['machineNumber'] = this.machineNumber;
-            _data['type'] = e._type;
-            _data['userIds'] = (e._id ? this.userIdts : this.userIds);
-            ym.init.XML({
-                method: 'GET',
-                uri: token._j.URLS.Development_Server_ + e._uri,
-                async: false,
-                xmldata: _data,
-                done: function (res) {
-                    it.detailTableAndVisible = false;
-                    it.ISuccessfull(res.statusCode.msg);
-                }
-            })
+            switch (e._uri) {
+                case 'client_user_list':
+                    e._session != '' ? null : it.IError('缺少参数！');
+                    let _sess = JSON.parse(e._session);
+                    switch (_sess._uri) {
+                        case 'manage_client_user':
+                            _data['userType'] = it.user_type;  //用户类型
+                            _data['type'] = _sess._type;  //用户
+                            it.userMode.forEach(_evnt => {
+                                _data['userId'] = _evnt.userId;
+                                _data['nickName'] = _evnt.nickName;
+                                ym.init.XML({
+                                    method: 'POST',
+                                    uri: token._j.URLS.Development_Server_ + _sess._uri,
+                                    async: false,
+                                    xmldata: _data,
+                                    done: function (res) {
+                                        it.detailTableAndVisible = false;
+                                        it.ISuccessfull(res.statusCode.msg);
+                                    }
+                                })
+                            })
+                            delete _data['userType']
+                            delete _data['userId']
+                            delete _data['nickName']
+                            it.list(); //刷新列表
+                            break;
+                        case 'grant_compensate_milliliter': //补偿流量
+                            //grant_compensate_milliliter
+                            _data['grantCount'] = it.grantCount;
+                            _data['overdueTime'] = it.overdueTime;
+                            _data['type'] = _sess._type;  //用户
+                            it.userMode.forEach(_evnt => {
+                                _data['userId'] = _evnt.userId;
+                                _data['nickName'] = _evnt.nickName;
+                                ym.init.XML({
+                                    method: 'GET',
+                                    uri: token._j.URLS.Development_Server_ + _sess._uri,
+                                    async: false,
+                                    xmldata: _data,
+                                    done: function (res) {
+                                        it.detailTableAndVisible = false;
+                                        it.ISuccessfull(res.statusCode.msg);
+                                    }
+                                })
+                            })
+                            delete _data['grantCount']
+                            delete _data['overdueTime']
+                            it.list(); //刷新列表
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                case 'batch_free_user':
+                    _data['type'] = 2;
+                    ym.init.XML({
+                        method: 'POST',
+                        uri: token._j.URLS.Development_Server_ + 'batch_free_user',
+                        async: false,
+                        xmldata: _data,
+                        done: function (res) {
+                            it.detailTableAndVisible = false;
+                            it.ISuccessfull(res.statusCode.msg);
+                        }
+                    })
+                    break;
+                default:
+                    _data['machineNumber'] = this.machineNumber;
+                    _data['type'] = e._type;
+                    _data['userIds'] = (e._id ? this.userIdts : this.userIds);
+                    ym.init.XML({
+                        method: 'GET',
+                        uri: token._j.URLS.Development_Server_ + e._uri,
+                        async: false,
+                        xmldata: _data,
+                        done: function (res) {
+                            it.detailTableAndVisible = false;
+                            it.ISuccessfull(res.statusCode.msg);
+                        }
+                    })
+                    break;
+            }
         },
         machineLog(e) {
             const it = this;
@@ -1292,5 +1426,51 @@ new Vue({
             this.userCharts[0] = ym.init.getDateTime(e[0]);
             this.userCharts[1] = ym.init.getDateTime(e[1]);
         },
+        userSelect(_event) {  //用户批量操作
+            _event = JSON.parse(_event);
+            const it = this;
+            switch (_event._uri) {
+                case 'manage_client_user':
+                    if (_event._type == 2) {   //更改用户类型 
+                        it.statues.user = true;
+                        it.statues.state = false;
+                        it.statues.flow = false;
+                    } else {  //更改用户状态
+                        it.statues.user = false;
+                        it.statues.state = true;
+                        it.statues.flow = false;
+                    }
+                    break;
+                case 'grant_compensate_milliliter':  //更改用户毫升数
+                    it.statues.user = false;
+                    it.statues.state = false;
+                    it.statues.flow = true;
+                    break;
+                default:
+                    break;
+            }
+        },
+        statusVip(e){ // 更改会员状态
+            const it = this;
+            _data['memberId'] = e;
+            ym.init.XML({
+                method: 'GET',
+                uri: token._j.URLS.Development_Server_ + 'change_member_status',
+                async: false,
+                xmldata: _data,
+                done: function (res) {
+                    try {
+                        ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
+                            it.ISuccessfull(res.statusCode.msg);
+                            it.list();
+                        })() : (() => {
+                            throw "收集到错误：\n\n" + res.statusCode.msg;
+                        })();
+                    } catch (error) {
+                        it.IError(error);
+                    }
+                }
+            })
+        }
     }
 });

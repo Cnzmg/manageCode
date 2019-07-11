@@ -14,6 +14,11 @@
     <script src="../../public/javascripts/plugin/vue.js"></script>
     <script src="../../public/javascripts/plugin/element.min.js"></script>
 
+    <style>
+        .el-image img {
+            width: 50%;
+        }
+    </style>
     <title>广东圆梦实业发展有限公司</title>
 </head>
 
@@ -25,8 +30,8 @@
                 <el-form>
                     <div style="margin: 10px 0">
                         <el-button type="primary"
-                            @click="detailTableAndVisible = true;UnFormData = [];unbinadmin = {}; state = ''; searchAPIs({_uri: 'get_machine_number_arr'})">
-                            批量修改免单用户
+                            @click="detailTableAndVisible = true;UnFormData = tableData;unbinadmin = {};select_user = '';user_type = 1; grantCount = '';overdueTime = '';user_state = 1;">
+                            操作用户
                         </el-button>
                     </div>
                     <el-input placeholder="请输入内容" v-model="searchVal" class="_searchVal">
@@ -83,8 +88,12 @@
 
                         <el-table-column fixed="right" label="操作">
                             <template slot-scope="scope">
-                                <el-button type="text" size="small">
-                                    编辑
+                                <el-button type="text" size="small"
+                                    @click="TableAndVisible = true; searchAPIs({ _uri:  'find_user_milliliter_log', _id: scope.row.userId})">
+                                    毫升日志
+                                </el-button>
+                                <el-button type="text" size="small" @click="UpdateTableAndVisible = true;">
+                                    礼券明细
                                 </el-button>
                             </template>
                         </el-table-column>
@@ -95,6 +104,88 @@
                     :current-page="currentPage" :page-sizes="[10, 20, 30, 40]" :page-size="pageSize"
                     layout="total, sizes, prev, pager, next, jumper" :total="total">
                 </el-pagination>
+
+                <el-dialog title="批量操作用户" :visible.sync="detailTableAndVisible">
+                    <el-form :model="unbinadmin">
+                        <el-autocomplete v-model="state" :fetch-suggestions="querySearchAsync"
+                            placeholder="请输入绑定/解绑的用户名" @select="handleSelect"></el-autocomplete>
+
+                        <el-table :data="UnFormData" height="300px" style="margin: 10px 0" tooltip-effect="dark"
+                            @selection-change="handleSelectionChange" ref="multipleTable">
+                            <el-table-column type="selection"></el-table-column>
+                            <el-table-column type="index" fixed></el-table-column>
+                            <el-table-column property="userId" label="用户ID"></el-table-column>
+                            <el-table-column property="nickName" label="昵称"></el-table-column>
+                        </el-table>
+
+                        <div class="_search_centent">
+                            <el-select v-model="select_user" slot="prepend" placeholder="请选择操作类型"
+                                @change="userSelect(select_user)">
+                                <el-option label="用户类型" value='{"_uri": "manage_client_user", "_type": "2"}'>
+                                </el-option>
+                                <el-option label="补偿流量" value='{"_uri": "grant_compensate_milliliter", "_type": "2"}'>
+                                </el-option>
+                                <el-option label="用户状态" value='{"_uri": "manage_client_user", "_type": "3"}'>
+                                </el-option>
+                                <!-- <el-option label="开通会员" value='{"_uri": "manage_client_user", "_type": "3"}'></el-option> -->
+                            </el-select>
+                        </div>
+                        <template>
+                            <div v-show="statues.user">
+                                <el-radio-group v-model="user_type">
+                                    <el-radio :label="1">普通用户</el-radio>
+                                    <el-radio :label="2">测试用户</el-radio>
+                                    <el-radio :label="3">免单用户</el-radio>
+                                </el-radio-group>
+                            </div>
+                            <div v-show="statues.flow">
+                                <el-input placeholder="请输入流量数值" name="grantCount" v-model="grantCount"></el-input>
+                                <el-input placeholder="请输入时间数值" name="overdueTime" v-model="overdueTime"></el-input>
+                            </div>
+                            <div v-show="statues.state">
+                                <el-radio-group v-model="user_state">
+                                    <el-radio :label="1">正常</el-radio>
+                                    <el-radio :label="2">冻结</el-radio>
+                                </el-radio-group>
+                            </div>
+                        </template>
+
+                        <template>
+                            <div style="margin-top: 10px">
+                                <el-button type="primary"
+                                    @click="bindUser({_uri: 'client_user_list', _session: select_user})">
+                                    提交
+                                </el-button>
+                                <el-button type="primary" fixed=right
+                                    @click="bindUser({_uri: 'batch_free_user', _type:2})">
+                                    点击清除所有免单用户
+                                </el-button>
+                            </div>
+                        </template>
+                    </el-form>
+                </el-dialog>
+
+                <el-dialog title="毫升数日志" :visible.sync="TableAndVisible">
+                    <el-table :data="TableFormData" height="600px">
+                        <el-table-column property="logId" label="ID"></el-table-column>
+                        <el-table-column property="userId" label="用户ID"></el-table-column>
+                        <el-table-column property="userName" label="用户昵称"></el-table-column>
+                        <el-table-column property="createTime" label="创建时间"></el-table-column>
+                        <el-table-column property="milliliterChange" label="流量增减值"></el-table-column>
+                        <el-table-column property="stateComment" label="说明"></el-table-column>
+                    </el-table>
+                </el-dialog>
+
+                <el-dialog title="礼券明细" :visible.sync="UpdateTableAndVisible">
+                    <el-form :model="unbinadmin">
+                        <el-table :data="UnFormData" height="300px" style="margin: 10px 0">
+                            <el-table-column property="userId" label="类型码"></el-table-column>
+                            <el-table-column property="userId" label="类型名称"></el-table-column>
+                        </el-table>
+
+                    </el-form>
+                </el-dialog>
+
             </el-main>
         </el-container>
     </div>

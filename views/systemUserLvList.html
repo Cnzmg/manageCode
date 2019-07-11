@@ -23,6 +23,10 @@
         <el-container>
             <el-main>
                 <el-form>
+                    <div style="width: 100%;margin-bottom:10px;">
+                        <el-button @click="crud({uri:'systemUserLvAdd'})" type="primary">添加<i
+                                class="el-icon-plus el-icon--right"></i></el-button>
+                    </div>
                     <el-input placeholder="请输入内容" v-model="searchVal" class="_searchVal">
                         <el-select v-model="searchName" class="_searchVal_select" slot="prepend" placeholder="请选择">
                             <el-option label="用户昵称/ID" value="name"></el-option>
@@ -43,7 +47,14 @@
                         <el-table-column prop="discountsStartTime" label="折扣开始时间"></el-table-column>
                         <el-table-column prop="discountsEndTime" label="折扣结束时间"></el-table-column>
                         <el-table-column prop="milliliter" label="发放流量"></el-table-column>
-                        
+                        <el-table-column prop="status" label="状态">
+                            <template slot-scope="scope">
+                                <el-tag>
+                                    {{ scope.row.status == 0 ? '下架' : '上架' }}
+                                </el-tag>
+                            </template>
+                        </el-table-column>
+
                         <el-table-column prop="memberPicUrl" label="会员底图">
                             <template slot-scope="scope">
                                 <el-image :src="scope.row.memberPicUrl"></el-image>
@@ -52,7 +63,10 @@
 
                         <el-table-column fixed="right" label="操作">
                             <template slot-scope="scope">
-                                <el-button type="text" size="small">    
+                                <el-button type="text" size="small" @click="statusVip(scope.row.memberRuleId)">
+                                    更改状态
+                                </el-button>
+                                <el-button type="text" size="small" @click="crud({uri:'systemUserLvAdd',enitId:scope.row})">
                                     编辑
                                 </el-button>
                             </template>
