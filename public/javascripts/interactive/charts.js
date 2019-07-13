@@ -1,4 +1,19 @@
-var echarts = require('echarts');
+// var echarts = require('echarts');
+// 引入 ECharts 主模块
+var echarts = require('echarts/lib/echarts');
+// 引入柱状图
+require('echarts/lib/chart/bar');
+// 引入柱状图
+require('echarts/lib/chart/line');
+//引入饼状图
+require('echarts/lib/chart/pie');
+// 引入提示框和标题组件
+require('echarts/lib/component/tooltip');
+require('echarts/lib/component/toolbox');
+require('echarts/lib/component/title');
+require('echarts/lib/component/markPoint');
+require('echarts/lib/component/markLine');
+
 const [
     $,
     token,
@@ -129,14 +144,14 @@ new Vue({
                             try {
                                 ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
                                     it.sum = res.package.sum;  //总金额
-                                    let _date = ym.init.getAllDate(it.userCharts[0].split(' ')[0], it.userCharts[1].split(' ')[0]);
-                                    for (let i = 0; i < _date.length; i++) {
-                                        _DayTime.push(_date[i]);  //记录日期
+                                    let _ate = ym.init.getAllDate(it.userCharts[0].split(' ')[0], it.userCharts[1].split(' ')[0]);
+                                    for (let i = 0; i < _ate.length; i++) {
+                                        _DayTime.push(_ate[i]);  //记录日期
                                         _content.push(0); //先赋值 0
+                                        if(res.package.content == 0) continue
                                         for (let j of res.package.content) {
-                                            if (_date[i] == j.moneyDay) {
-                                                _content[i] = j.money; //对应的数值
-                                                break;
+                                            if (_ate[i] == j.moneyDay) {
+                                                _content[i] = 666; //对应的数值
                                             }
                                         }
                                     }
@@ -220,10 +235,10 @@ new Vue({
                                         let _date = ym.init.getAllDate(it.userCharts[0].split(' ')[0], it.userCharts[1].split(' ')[0]);
                                         for (let i = 0; i < _date.length; i++) {
                                             _DayTime.push(_date[i]);  //记录日期
+                                            _content.push(0); //先赋值 0
                                             for (let j of res.package.userContent) {
                                                 if (_date[i] == j.registerDate) {
-                                                    _content.push(j.userCount); //对应的数值
-                                                    break;
+                                                    _content[i] = j.userCount; //对应的数值
                                                 }
                                             }
                                         }
@@ -313,6 +328,7 @@ new Vue({
                                         _DayTime.push(_date[i]);  //记录日期
                                         _content.payMoney.push(0); //总金额数值
                                         _content.countNum.push(0); //总销售数值
+                                        if(res.package.adminSoldGraphList == null)  continue
                                         for (let j of res.package.adminSoldGraphList) {
                                             if (_date[i] == j.date) {
                                                 _content.payMoney[i] = j.payMoney; //总金额数值
@@ -439,6 +455,7 @@ new Vue({
                                         _DayTime.push(_date[i]);  //记录日期
                                         _content.payMoney.push(0); //总金额数值
                                         _content.countNum.push(0); //总销售数值
+                                        if(res.package.machineSoldGraphList == null) continue
                                         for (let j of res.package.machineSoldGraphList) {
                                             if (_date[i] == j.date) {
                                                 _content.payMoney[i] = j.payMoney; //总金额数值
@@ -464,6 +481,12 @@ new Vue({
                         done: function (res) {
                             try {
                                 ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
+                                    if(res.package.package.machineSoldAnalyzeList == null){
+                                        _content._contentNum.push('0'); //销售元
+                                        _content._contentY.push('无产品'); //产品名称
+                                        _content._contentTNum.push('0'); //销售杯
+                                        return false;
+                                    }
                                     for (var i = 0; i < res.package.package.machineSoldAnalyzeList.length; i++) {
                                         for (var j = 0; j < res.package.package.machineSoldAnalyzeList.length - 1 - i; j++) {
                                             if (res.package.package.machineSoldAnalyzeList[j].payMoney > res.package.package.machineSoldAnalyzeList[j + 1].payMoney) {

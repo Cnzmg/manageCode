@@ -193,7 +193,16 @@ new Vue({
                 timeLim: '',
                 timeLim1: '',
                 discountsStartTime: '',
-                discountsEndTime: ''
+                discountsEndTime: '',
+                couponType: 1,  //新增优惠券
+                productId: [],  //产品ID
+                couponName: '', //优惠券名称
+                couponUrl: '', //优惠券图片
+                couponTime: '', //优惠券时间
+                couponDesc: '', //优惠券说明
+                couponMoney: '', //优惠券金额
+                couponRange: '', //优惠券产品
+                shareNum: '', //优惠券分享次数
             },
             rules: {
                 productName: [
@@ -222,7 +231,8 @@ new Vue({
                 planePicUrl: [],
                 machineUrl: [],
                 memberPicUrl: [],
-                memberHeadPic: []
+                memberHeadPic: [],
+                couponUrl: []
             },
             address: regionData,   // 地址选择
             percentage: 90,   //进度条数值0-100
@@ -236,7 +246,9 @@ new Vue({
             longStatus: [],
             SearchAsyncMachineNumber: (uri == 'manage_poi' ? querySearchAsyncMachineNumber() : []),
             timeLimShow: false,   //会员添加
-            numLength: 1
+            numLength: 1,
+            cTypeShow: true,
+            tableData: []
         }
     },
     created: function () {
@@ -373,6 +385,10 @@ new Vue({
                 case 'add_or_update_member':   //查找会员详情
                     _data['memberId'] = JSON.parse(e).memberRuleId;
                     uri = 'get_member_detail'
+                    break;
+                case 'manage_coupon':
+                    _data['type'] = 0;
+                    _data['couponId'] = JSON.parse(e).couponId;
                     break;
                 default:
                     break;
@@ -597,10 +613,23 @@ new Vue({
                                     it.ruleForm.memberType = true;
                                     it.timeLimShow = true;
                                 }
-                                it.ruleForm.timeLim = new Date(2019, 7, 11, res.member.timeLimit.split('-')[0].split(':')[0], res.member.timeLimit.split('-')[0].split(':')[1],res.member.timeLimit.split('-')[0].split(':')[2]);
-                                it.ruleForm.timeLim1 = new Date(2019, 7, 11, res.member.timeLimit.split('-')[1].split(':')[0], res.member.timeLimit.split('-')[1].split(':')[1],res.member.timeLimit.split('-')[1].split(':')[2]);;
+                                it.ruleForm.timeLim = new Date(2019, 7, 11, res.member.timeLimit.split('-')[0].split(':')[0], res.member.timeLimit.split('-')[0].split(':')[1], res.member.timeLimit.split('-')[0].split(':')[2]);
+                                it.ruleForm.timeLim1 = new Date(2019, 7, 11, res.member.timeLimit.split('-')[1].split(':')[0], res.member.timeLimit.split('-')[1].split(':')[1], res.member.timeLimit.split('-')[1].split(':')[2]);;
                                 it.ruleForm.discountsEndTime = [ym.init.getDateTime(res.member.discountsStartTime), ym.init.getDateTime(res.member.discountsEndTime)];
                                 uri = 'add_or_update_member'  //完成后重新把uri 复原
+                                break;
+                            case 'manage_coupon':
+                                it.ruleForm.couponType = res.coupon.couponType; //优惠券类型
+                                it.ruleForm.couponName = res.coupon.couponName; //优惠券名称
+                                it.ruleForm.couponUrl = res.coupon.couponUrl; //优惠券图片
+                                it.ruleForm.couponTime = res.coupon.couponTime; //优惠券时间
+                                it.ruleForm.couponMoney = res.coupon.couponMoney; //优惠券类型
+                                it.ruleForm.shareNum = res.coupon.shareNum; //优惠券类型
+                                it.ruleForm.couponType = res.coupon.couponType; //优惠券类型
+                                it.ruleForm.couponDesc = res.coupon.couponDesc; //优惠券类型
+                                it.ruleForm.productId = res.coupon.productId; //优惠券类型
+                                it.imageList.couponUrl.push({ name: 'couponUrl', url: res.coupon.couponUrl }); //大楼外景图
+                                it.manageCoupon(res);
 
                                 break;
                             default:
@@ -637,8 +666,14 @@ new Vue({
         filememberHeadPicChange() {
             this.fileData['type'] = 16;  //动态配置
         },
+        filecouponUrlChange() {
+            this.fileData['type'] = 6;  //动态配置
+        },
         filememberPicUrlSuccess(e) {
             this.ruleForm.memberPicUrl = e.realPath;
+        },
+        filecouponUrlSuccess(e) {
+            this.ruleForm.couponUrl = e.realPath;
         },
         filememberHeadPicSuccess(e) {
             this.ruleForm.memberHeadPic = e.realPath;
@@ -772,6 +807,43 @@ new Vue({
                         async: false,
                         xmldata: _data,
                         done: function (res) {
+                            try {
+                                ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
+                                    it.ISuccessfull(res.statusCode.msg);
+                                    setTimeout(() => {
+                                        parent.document.getElementById('tagHref').setAttribute('src', callBackHtml);
+                                    }, 500);
+                                })() : (() => {
+                                    throw "收集到错误：\n\n" + res.statusCode.msg;
+                                })();
+                            } catch (error) {
+                                it.IError(error);
+                            }
+                        }
+                    })
+                    break;
+                case 'manage_coupon':  //添加优惠券信息
+                    _data['type'] = 2;  //选择的产品ID
+                    if (dataHref.split('*').length > 1) {
+                        _data['type'] = 6;
+                    }
+                    _data['couponType'] = formName.couponType || ''; //优惠券类型
+                    _data['couponName'] = formName.couponName || '';  //优惠券名称
+                    _data['couponUrl'] = formName.couponUrl || ''; //优惠券图片
+                    _data['couponTime'] = formName.couponTime || ''; //优惠券时间
+                    if (formName.couponType != 3) {
+                        _data['couponMoney'] = formName.couponMoney || '';  //优惠券金额
+                        _data['shareNum'] = formName.shareNum || ''; //优惠券分享次数
+                    }
+                    _data['couponDesc'] = formName.couponDesc || '';  //优惠券说明
+                    _data['couponRange'] = it.ruleForm.productId;  //选择的产品ID
+                    ym.init.XML({
+                        method: 'POST',
+                        uri: token._j.URLS.Development_Server_ + uri,
+                        async: false,
+                        xmldata: _data,
+                        done: function (res) {
+                            delete _data['couponType']
                             try {
                                 ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
                                     it.ISuccessfull(res.statusCode.msg);
@@ -940,6 +1012,53 @@ new Vue({
                 });
             }, 500)
 
-        }
+        },
+        manageCoupon(e) {
+            const it = this;
+            _data['type'] = 1;
+            ym.init.XML({
+                method: 'POST',
+                uri: token._j.URLS.Development_Server_ + uri,
+                async: false,
+                xmldata: _data,
+                done: function (res) {
+                    try {
+                        ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
+                            setTimeout(() => {
+                                it.tableData = [];
+                                res.productList.forEach((key, index) => {
+                                    it.tableData.push({
+                                        productId: key.productId,
+                                        productName: key.productName
+                                    })
+                                    if (e) {
+                                        e.coupon.couponRange.split(',').forEach(e => {
+                                            if (e == key.productId) {
+                                                it.$nextTick(function () {
+                                                    it.tableChecked(index);  //每次更新了数据，触发这个函数即可。
+                                                });
+                                            }
+                                        })
+                                    }
+                                })
+                            }, 500);
+                        })() : (() => {
+                            throw "收集到错误：\n\n" + res.statusCode.msg;
+                        })();
+                    } catch (error) {
+                        it.IError(error);
+                    }
+                }
+            })
+        },
+        handleSelectionChange(val) {  //下拉选项
+            this.ruleForm.productId = [];
+            val.forEach(e => {
+                this.ruleForm.productId.push(e.productId);  //批量操作优惠券产品
+            });
+        },
+        tableChecked(e) { //表格初显
+            this.$refs.multipleTable.toggleRowSelection(this.tableData[e], true);
+        },
     }
 })

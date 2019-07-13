@@ -133,7 +133,11 @@ new Vue({
             }, // 状态的显示/f
             overdueTime: '',
             grantCount: '',
-            user_state: 1
+            user_state: 1,
+            order: {},
+            refundMoney: {},  //订单退款
+            pathUrlExe: {}, //导出
+            optionsTime:[], //时间选择
         }
     },
     created: function () {
@@ -1341,11 +1345,28 @@ new Vue({
                         }
                     })
                     break;
+                case 'manage_coupon':
+                    _data['couponId'] = _del._parameter
+                    _data['type'] = _del._type
+                    ym.init.XML({
+                        method: 'POST',
+                        uri: token._j.URLS.Development_Server_ + _del._uri,
+                        async: true,
+                        xmldata: _data,
+                        done: function (res) {
+                            ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
+                                it.ISuccessfull(res.statusCode.msg);
+                                it.list();
+                            })() :
+                                it.IError(res.statusCode.msg);
+                        }
+                    })
+                    break;
                 default:
                     break;
             }
         },
-        addEventData(_event) {
+        addEventData(_event) {  //添加视频广告///优惠券赠送
             const it = this;
             switch (_event._uri) {
                 case 'manage_machine_advertisement':
@@ -1366,6 +1387,33 @@ new Vue({
                             ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
                                 it.ISuccessfull(res.statusCode.msg);
                                 it.adevtmodel = false;
+                                it.list();
+                            })() :
+                                it.IError(res.statusCode.msg);
+                        }
+                    })
+                    break;
+                case 'manage_coupon':  //赠送优惠券
+                    _data['grantCount'] = _event._parameter;
+                    _data['couponId'] = it.unbinadmin.couponId;
+                    _data['userId'] = [];
+                    it.userMode.forEach(e => {
+                        _data['userId'].push(e.userId);  //用户ID
+                    })
+                    _data['type'] = _event._type;
+                    ym.init.XML({
+                        method: 'POST',
+                        uri: token._j.URLS.Development_Server_ + _event._uri,
+                        async: true,
+                        xmldata: _data,
+                        done: function (res) {
+                            ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
+                                it.ISuccessfull(res.statusCode.msg);
+                                it.detailTableAndVisible = false;
+                                delete _data['name']
+                                delete _data['grantCount']
+                                delete _data['couponId']
+                                delete _data['userId']
                                 it.list();
                             })() :
                                 it.IError(res.statusCode.msg);
@@ -1450,7 +1498,7 @@ new Vue({
                     break;
             }
         },
-        statusVip(e){ // 更改会员状态
+        statusVip(e) { // 更改会员状态
             const it = this;
             _data['memberId'] = e;
             ym.init.XML({
@@ -1471,6 +1519,92 @@ new Vue({
                     }
                 }
             })
-        }
+        },
+        orderDetail(e) {  //订单详情
+            const it = this;
+            _data['orderId'] = e;
+            ym.init.XML({
+                method: 'POST',
+                uri: token._j.URLS.Development_Server_ + 'order_detail',
+                async: false,
+                xmldata: _data,
+                done: function (res) {
+                    try {
+                        ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
+                            it.order = {};
+                            it.order.orderId = res.detail.orderId
+                            it.order.userId = res.detail.userId
+                            it.order.nickName = res.detail.nickName
+                            it.order.headPicUrl = res.detail.headPicUrl
+                            it.order.machineNumber = res.detail.machineNumber
+                            it.order.machineType = res.detail.machineType
+                            it.order.adminId = res.detail.adminId
+                            it.order.adminName = res.detail.adminName
+
+                            it.order.paymentType = res.detail.paymentType
+                            it.order.spendingMoney = res.detail.spendingMoney
+                            it.order.paymentMoney = res.detail.paymentMoney
+                            it.order.productId = res.detail.productId
+                            it.order.productName = res.detail.productName
+                            it.order.flavorShow = JSON.stringify(res.detail.flavorShow)
+                            it.order.couponName = res.detail.couponName
+                            it.order.consumptionType = res.detail.consumptionType
+
+                            it.order.orderStatus = res.detail.orderStatus
+                            it.order.redeemCode = res.detail.redeemCode
+                            it.order.paymentTime = res.detail.paymentTime
+                            it.order.createTime = res.detail.createTime
+                            it.order.orderType = res.detail.orderType
+                            it.order.refundId = res.detail.refundId
+                        })() : (() => {
+                            throw "收集到错误：\n\n" + res.statusCode.msg;
+                        })();
+                    } catch (error) {
+                        it.IError(error);
+                    }
+                }
+            })
+        },
+        refundMoneyNum(_event) { //order_refund 订单导出excel
+            const it = this;
+            it.loading = true
+            _data['name'] = JSON.stringify({
+                machineNumber:_event.machineNumber || '',
+                adminName: _event.adminName || '',
+                productName: _event.productName || '',
+                couponName: _event.couponName || ''
+            }); 
+            _data['consumptionType'] = _event.consumptionType || ''; 
+            _data['orderStatus'] = _event.orderStatus || '';
+            _data['startTime'] = it.optionsTime[0] || ''; 
+            _data['endTime'] = it.optionsTime[1] || ''; 
+            _data['orderLine'] = _event.orderLine || '';
+            _data['sort'] = _event.sort || ''; 
+            _data['orderType'] = _event.orderType || '';
+            ym.init.XML({
+                method: 'POST',
+                uri: token._j.URLS.Development_Server_ + 'export_order_list',
+                async: false,
+                xmldata: _data,
+                done: function (res) {
+                    try {
+                        ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
+                            setTimeout(()=>{
+                                it.loading = false;
+                            },500)
+                            location.href = token._j.URLS.Development_Server_ + res.path;
+                        })() : (() => {
+                            throw "收集到错误：\n\n" + res.statusCode.msg;
+                        })();
+                    } catch (error) {
+                        it.IError(error);
+                    }
+                }
+            })
+        },
+        getTime(_event) {
+            this.optionsTime[0] = ym.init.getDateTime(_event[0]);
+            this.optionsTime[1] = ym.init.getDateTime(_event[1]);
+        },
     }
 });

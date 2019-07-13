@@ -23,6 +23,10 @@
         <el-container>
             <el-main>
                 <el-form>
+                    <div style="width: 100%;margin-bottom:10px;">
+                        <el-button @click="crud({uri:'couponAdd'})" type="primary">添加<i
+                                class="el-icon-plus el-icon--right"></i></el-button>
+                    </div>
                     <el-input placeholder="请输入内容" v-model="searchVal" class="_searchVal">
                         <el-select v-model="searchName" class="_searchVal_select" slot="prepend" placeholder="请选择">
                             <el-option label="商户名称/设备号" value="name"></el-option>
@@ -40,11 +44,18 @@
                         <el-table-column prop="couponRangeName" label="优惠产品"></el-table-column>
                         <el-table-column prop="couponMoney" label="优惠金额"></el-table-column>
                         <el-table-column prop="couponTime" label="可用时间"></el-table-column>
-                        
+
                         <el-table-column fixed="right" label="操作">
                             <template slot-scope="scope">
-                                <el-button type="text" size="small">    
+                                <el-button type="text" size="small"
+                                    @click="detailTableAndVisible = true; state = '';UnFormData = {};unbinadmin.couponId = scope.row.couponId">
+                                    赠送
+                                </el-button>
+                                <el-button type="text" size="small" @click="crud({uri:'couponAdd',enitId:scope.row})">
                                     编辑
+                                </el-button>
+                                <el-button type="text" size="small" @click="deleteData({_uri: 'manage_coupon', _type:3, _parameter: scope.row.couponId});">
+                                    删除
                                 </el-button>
                             </template>
                         </el-table-column>
@@ -55,6 +66,27 @@
                     :current-page="currentPage" :page-sizes="[10, 20, 30, 40]" :page-size="pageSize"
                     layout="total, sizes, prev, pager, next, jumper" :total="total">
                 </el-pagination>
+
+                <el-dialog title="赠送优惠券" :visible.sync="detailTableAndVisible">
+                    <el-form :model="unbinadmin">
+                        <el-autocomplete v-model="state" :fetch-suggestions="querySearchAsync"
+                            placeholder="请输入赠送的用户名" @select="handleSelect"></el-autocomplete>
+                        <el-table :data="UnFormData" height="300px" style="margin: 10px 0" tooltip-effect="dark"
+                            @selection-change="handleSelectionChange" ref="multipleTable">
+                            <el-table-column type="selection"></el-table-column>
+                            <el-table-column type="index" fixed></el-table-column>
+                            <el-table-column property="userId" label="用户ID"></el-table-column>
+                            <el-table-column property="nickName" label="昵称"></el-table-column>
+                        </el-table>
+                        <el-form-item>
+                            <el-input v-model="UnFormData.sum" placeholder="请输入赠送数量"></el-input>
+                        </el-form-item>
+                        <el-form-item>
+                            <el-button type="primary" @click="addEventData({_uri: 'manage_coupon', _type: 5, _parameter: UnFormData.sum})">赠送</el-button>
+                        </el-form-item>
+                    </el-form>
+                </el-dialog>
+
             </el-main>
         </el-container>
     </div>

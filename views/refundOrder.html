@@ -31,9 +31,9 @@
                     <div class="_search_centent" v-show="more">
                         <el-button>消费类型</el-button>
                         <el-select v-model="select" slot="prepend" placeholder="请选择">
-                            <el-option label="不限" value="consumptionType:"></el-option>
-                            <el-option label="人工退款" value="consumptionType:6"></el-option>
-                            <el-option label="自动退款" value="consumptionType:5"></el-option>
+                            <el-option label="不限" value="orderType:"></el-option>
+                            <el-option label="人工退款" value="orderType:6"></el-option>
+                            <el-option label="自动退款" value="orderType:5"></el-option>
                         </el-select>
                     </div>
 
@@ -72,14 +72,6 @@
                         <el-table-column prop="refundType" label="退还类型"></el-table-column>
                         <el-table-column prop="refundStatus" label="退款状态"></el-table-column>
                         <el-table-column prop="orderType" label="订单类型"></el-table-column>
-
-                        <el-table-column fixed="right" label="操作">
-                            <template slot-scope="scope">
-                                <el-button type="text" size="small">
-                                    编辑
-                                </el-button>
-                            </template>
-                        </el-table-column>
                     </el-table>
                 </template>
 
