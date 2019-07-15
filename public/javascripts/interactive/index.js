@@ -1,9 +1,21 @@
+const _data = {
+    id: ym.init.COMPILESTR.decrypt(all.json.id),
+    token: ym.init.COMPILESTR.decrypt(all.json.asset),
+    url: '/manage/systemUserList.html'
+};
 new Vue({
     el: '#c-container-body',
     data: () => {
         return {
             loading: false,
             imageShow: false,
+            UpdateVisible: false,
+            DataVisible: {
+                realName: '',
+                adminMobile: '',
+                state: ''
+            },
+            adminName: ym.init.COMPILESTR.decrypt(JSON.parse(sessionStorage.getItem('_a'))._i)
         }
     },
     created: function () {
@@ -68,20 +80,19 @@ new Vue({
                 'orderEverDayList',
                 'financialManagement',
                 'RepairPersonnelList',
-                // 'materialLog',
-                'information'
+                'materialLog',
+                // 'information'
             ],
             _shop: [
                 'RepairPersonnelList',
                 'equipmentList',
                 'machineAmap',
-                'information',
                 'chartsFinance',
                 'orderList',
                 'orderEverDayList'
             ]
         }, num = 0;
-        for (let i = 0; i < tag.length; i++) {
+        for (let i = 0; i < tag.length - 1; i++) {
             _tag += `<el-submenu index="${i + 1}">
                         <template slot="title">
                             <i class="${icons[i]}"></i>
@@ -94,7 +105,7 @@ new Vue({
                     case 9:
                         _tag += `<el-menu-item u="${_lists._system[num]}" v-on:click=Href({'uri':'../${_lists._system[num]}.html?hash:iforx${parseInt(13 * num / j + 2)}','title':'${tag[i].pageInfoList[j].pageName}'}) index="${i + 1}-${j}">${tag[i].pageInfoList[j].pageName}</el-menu-item>`;
                         break;
-                    case 2:
+                    case 3:
                         _tag += `<el-menu-item v-on:click=Href({'uri':'../${_lists._admin[num]}.html?hash:iforx${parseInt(13 * num / j + 2)}','title':'${tag[i].pageInfoList[j].pageName}'}) index="${i + 1}-${j}">${tag[i].pageInfoList[j].pageName}</el-menu-item>`;
                         break;
                     default:
@@ -113,7 +124,13 @@ new Vue({
         Error(err) {
             this.$message.error('错了哦，' + err);
         },
-        Href:function(e) {
+        IsuccessFull(e){
+            this.$message({
+                message: '成功了哦!,' + e,
+                type: 'success'
+            });
+        },
+        Href: function (e) {
             jQuery('#tagHref').attr('src', e.uri);
             let c = [], local = JSON.parse('[' + localStorage.getItem('uri') + ']');
             if (localStorage.getItem('uri')) {
@@ -136,6 +153,80 @@ new Vue({
             </svg></i></li>`
             );
             tag();
+        },
+        querySearchAsync(queryString, cb) {  //动态查询用户
+            const it = this;
+            _data['type'] = 1;
+            _data['name'] = queryString || '拉';
+            ym.init.XML({
+                method: 'POST',
+                uri: all.json._j.URLS.Development_Server_ + 'find_user_for_bind',  //查询绑定关系
+                async: false,
+                xmldata: _data,
+                done: function (res) {
+                    let _arr = [];
+                    res.list.forEach(e => {
+                        _arr.push({
+                            value: e.nickName,
+                            _id: e.userId
+                        })
+                    })
+                    it.UnFormData = res.list; //用户批量操作
+
+                    var results = queryString ? _arr.filter(it.createStateFilter(queryString)) : _arr;
+                    clearTimeout(it.timeout);
+                    it.timeout = setTimeout(() => {
+                        cb(results);
+                    }, 3000 * Math.random());
+                }
+            })
+
+        },
+        createStateFilter(queryString) {  //
+            return (state) => {
+                return (state.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0);
+            };
+        },
+        handleSelect(item) {  //取得选择的用户ID
+            this.DataVisible.userId = item._id;
+        },
+        submit(_event) {
+            const it = this;
+            if (_event.en == 'post') {
+                _data['adminMobile'] = _event.DataVisible.adminMobile || '';
+                _data['adminPwd'] = _event.DataVisible.adminPwd || '';
+                _data['oldPwd'] = _event.DataVisible.oldPwd || '';
+                _data['realName'] = _event.DataVisible.realName || '';
+                _data['userId'] = it.DataVisible.userId;
+                _data['type'] = 2;
+            }else{
+                _data['type'] = 1;
+            }
+            _data['url'] = '/manage/information.html';
+            ym.init.XML({
+                method: 'POST',
+                uri: all.json._j.URLS.Development_Server_ + 'edit_information',  //查询绑定关系
+                async: false,
+                xmldata: _data,
+                done: function (res) {
+                    if(_event.en == 'pull'){
+                        it.DataVisible.adminMobile = res.adminUser.adminMobile; 
+                        it.DataVisible.realName = res.adminUser.realName; 
+                        it.DataVisible.userId = res.adminUser.userId;
+                        it.DataVisible.state = res.adminUser.nickName;
+                    }else{
+                        let i = 4, delay = 1000;
+                        setInterval(() => {
+                            i--;
+                            it.IsuccessFull(res.statusCode.msg + `${i}s 后自动跳转到登陆页面`);
+                            if(i < 1){
+                                window.location.href = `../../login.htm?:hash(-kill-1)`;
+                            }
+                        },delay)
+                        it.UpdateVisible = false;
+                    }
+                }
+            })
         }
     }
 });
@@ -154,6 +245,7 @@ new Vue({
     }
     tag();
 })();
+
 function tag() {
     jQuery('#tagMenu').show();
     let _tag = document.getElementById('tagMenu'), _href = document.getElementById('tagHref');

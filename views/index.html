@@ -26,21 +26,23 @@
     <div id="c-container-body" class="c-container-body">
         <header id="header" class="header">
             <a href="" id="menu-toggle" class="pull-left">
-                <img src="../public/images/icons/logo.jpg" alt="">
+                <img src="http://test.cbcoffee.cn/manage/images/logo.jpg" alt="">
             </a>
             <a class="logo pull-left" href="./index.htm?hash:###">咖啡蜗后台管理系统</a>
-            <!-- <a class="logo pull-right" style="margin: 0 20px" href="../../login.htm?hash:goback(-1)"><i>退出登陆</a> -->
-            <el-menu class="el-menu-demo" mode="horizontal" style="float: right"> 
+            <el-menu class="el-menu-demo" mode="horizontal" style="float: right">
                 <el-submenu index="1">
-                    <template slot="title"><i class="el-icon-user"></i>coffeeadmin</template>
-                    <el-menu-item index="1-1">切换主题</el-menu-item>
-                    <el-menu-item index="1-2">个人信息</el-menu-item>
-                    <el-menu-item index="1-3">退出登陆</el-menu-item>
+                    <template slot="title"><i class="el-icon-user"></i>{{ adminName }}</template>
+                    <el-menu-item index="1-1"><el-link href="http://test.cbcoffee.cn/manage/login.html?:hash-old(12)">切换旧版</el-link></el-menu-item>
+                    <el-menu-item index="1-1" @click="Error('该功能正在测试中')">更改主题</el-menu-item>
+                    <el-menu-item index="1-2" @click="UpdateVisible = true; submit({en: 'pull'})">个人信息</el-menu-item>
+                    <el-menu-item index="1-3">
+                        <el-link style="text-decoration:none;" href="../../login.htm?hash:goback(-hash*)">退出登陆</el-link>
+                    </el-menu-item>
                 </el-submenu>
             </el-menu>
         </header>
         <section id="main" class="main" role="main">
-            <a id="settings" @click="imageShow = !imageShow" style="display: none"><i class="fa fa-gear"></i></a>
+            <!-- <a id="settings" @click="imageShow = !imageShow" style="display: none"><i class="fa fa-gear"></i></a>
             <div id="changeSkin" v-show="imageShow" @click="imageShow = !imageShow" style="display: none">
                 <div class="modal-dialog modal-lg">
                     <div class="modal-content">
@@ -96,7 +98,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> -->
 
             <el-container>
                 <el-menu default-active="1" class="el-menu-vertical-demo menu"></el-menu>
@@ -116,6 +118,29 @@
 
             </el-container>
         </section>
+        <el-dialog title="修改用户信息" :visible.sync="UpdateVisible">
+            <el-form :model="DataVisible" label-width="100px">
+                <el-form-item label="真实姓名">
+                    <el-input v-model="DataVisible.realName" class="w400"></el-input>
+                </el-form-item>
+                <el-form-item label="客服电话">
+                    <el-input v-model="DataVisible.adminMobile" class="w400"></el-input>
+                </el-form-item>
+                <el-form-item label="微信用户">
+                    <el-autocomplete v-model="DataVisible.state" :fetch-suggestions="querySearchAsync" placeholder="请输入的用户名"
+                        @select="handleSelect"></el-autocomplete>
+                </el-form-item>
+                <el-form-item label="旧密码">
+                    <el-input v-model="DataVisible.oldPwd" class="w400" show-password></el-input>
+                </el-form-item>
+                <el-form-item label="新密码">
+                    <el-input v-model="DataVisible.adminPwd" class="w400" show-password></el-input>
+                </el-form-item>
+                <el-form-item>
+                    <el-button type="primary" @click="submit({en: 'post', DataVisible})">提交修改</el-button>
+                </el-form-item>
+            </el-form>
+        </el-dialog>
     </div>
     <script>
         var all = {

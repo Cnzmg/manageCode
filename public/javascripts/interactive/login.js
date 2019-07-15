@@ -65,6 +65,7 @@ let vue = new Vue({
                             xmldata: { id: _e.id, token: _e.token, url: "/manage/index.html" },
                             done: function (res) {
                                 //ym.init._COLUMN.varel(res.adminInfo.roleInfo.permissionInfoList,'.menu'); //暂时不用此方法
+                                sessionStorage.setItem('_a', JSON.stringify({_u: ':hash(iox*)', _i: ym.init.COMPILESTR.encryption(res.adminInfo.adminName)}))  //管理员信息
                                 sessionStorage.setItem('tag', JSON.stringify(res.adminInfo.roleInfo.permissionInfoList));
                             }
                         });

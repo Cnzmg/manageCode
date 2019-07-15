@@ -43,7 +43,13 @@ new Vue({
                 madTitle: '',
                 madOrder: '',
                 madUrl: '',
-                madId: ''
+                madId: '',
+                adminName: '', //超级管理员
+                adminPwd: '',
+                realName: '',
+                adminMobile: '',
+                named: '',
+                roleId: '',
             },
             imageList: {
                 mUpdateUrl: [], //图片li
@@ -60,7 +66,11 @@ new Vue({
             detailTableFormData: [],
             options: [],
             unbinadmin: {
-                adminIds: ''
+                adminIds: '',
+                maintainerName: '',  //这里是运维
+                maintainerPhone: '',
+                bindMachine: '',
+                state: ''
             },
             UnFormData: [],
             adminIds: [],
@@ -137,7 +147,8 @@ new Vue({
             order: {},
             refundMoney: {},  //订单退款
             pathUrlExe: {}, //导出
-            optionsTime:[], //时间选择
+            optionsTime: [], //时间选择
+            bool: ''
         }
     },
     created: function () {
@@ -536,7 +547,16 @@ new Vue({
                                         productName: res.materialLog[i].productName,
                                         orderId: res.materialLog[i].orderId,
                                         createTime: res.materialLog[i].createTime,
-                                        materialDeductionList: res.materialLog[i].materialDeductionList
+                                        materialDeductionList: (() => {
+                                            let _arr = [];
+                                            res.materialLog[i].materialDeductionList.forEach(_val => {
+                                                _arr.push({
+                                                    '料仓': _val.bunkerName,
+                                                    '扣减': _val.deduraction
+                                                });
+                                            })
+                                            return JSON.stringify(_arr)
+                                        })()
                                     })
                                 }
                                 break;
@@ -1154,8 +1174,8 @@ new Vue({
             };
         },
         handleSelect(item) {  //取得选择的用户ID
-            this.userIds.push(item._id);
-            this.UserTableData.push(item); //用户批量操作
+            this.userIds= item._id;
+            //this.UserTableData.push(item); //用户批量操作
         },
         bindUser(e) {  //执行绑定/解绑
             const it = this;
@@ -1569,17 +1589,17 @@ new Vue({
             const it = this;
             it.loading = true
             _data['name'] = JSON.stringify({
-                machineNumber:_event.machineNumber || '',
+                machineNumber: _event.machineNumber || '',
                 adminName: _event.adminName || '',
                 productName: _event.productName || '',
                 couponName: _event.couponName || ''
-            }); 
-            _data['consumptionType'] = _event.consumptionType || ''; 
+            });
+            _data['consumptionType'] = _event.consumptionType || '';
             _data['orderStatus'] = _event.orderStatus || '';
-            _data['startTime'] = it.optionsTime[0] || ''; 
-            _data['endTime'] = it.optionsTime[1] || ''; 
+            _data['startTime'] = it.optionsTime[0] || '';
+            _data['endTime'] = it.optionsTime[1] || '';
             _data['orderLine'] = _event.orderLine || '';
-            _data['sort'] = _event.sort || ''; 
+            _data['sort'] = _event.sort || '';
             _data['orderType'] = _event.orderType || '';
             ym.init.XML({
                 method: 'POST',
@@ -1589,9 +1609,9 @@ new Vue({
                 done: function (res) {
                     try {
                         ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
-                            setTimeout(()=>{
+                            setTimeout(() => {
                                 it.loading = false;
-                            },500)
+                            }, 500)
                             location.href = token._j.URLS.Development_Server_ + res.path;
                         })() : (() => {
                             throw "收集到错误：\n\n" + res.statusCode.msg;
@@ -1602,9 +1622,138 @@ new Vue({
                 }
             })
         },
-        getTime(_event) {
+        getTime(_event) {   //时间区间
             this.optionsTime[0] = ym.init.getDateTime(_event[0]);
             this.optionsTime[1] = ym.init.getDateTime(_event[1]);
         },
+        submit(_event, _type = 'POST') {
+            const it = this;
+            if (_event.en == 'pull') {  //编辑
+                if (_event.d) {
+                    _data['maintainerId'] = _event.d;
+                    _type = 'GET';
+                } else {
+                    if(_event.unbinadmin.secc){  //执行不同的操作
+                        _data['operaType'] = 2
+                        _data['operaVal'] = _event.unbinadmin.secc
+                    }else if(_event.unbinadmin.bindMachine){
+                        _data['operaType'] = 5
+                        _data['operaVal'] = _event.unbinadmin.bindMachine
+                    }else{
+                        _data['operaType'] = 4
+                        _data['operaVal'] = it.userIds;
+                    }
+                }
+            } else {   //添加
+                _data['maintainerName'] = _event.formData.maintainerName || '';
+                _data['maintainerPhone'] = _event.formData.maintainerPhone || '';
+                _data['password'] = _event.formData.password || '';
+                _data['userId'] = it.userIds;
+            }
+            ym.init.XML({
+                method: _type,
+                uri: token._j.URLS.Development_Server_ + _event.uri,
+                async: false,
+                xmldata: _data,
+                done: function (res) {
+                    try {
+                        ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
+                            if (_event.en == 'pull' && _event.d) {
+                                it.unbinadmin.maintainerName = res.maintainer.maintainerName;
+                                it.unbinadmin.maintainerPhone = res.maintainer.maintainerPhone;
+                                // it.unbinadmin.secc = res.maintainer.maintainerStatus;
+                                it.unbinadmin.bindMachine = (res.maintainer.bindMachine == -1 ? '' : res.maintainer.bindMachine);
+                                it.unbinadmin.state = (res.maintainer.nickName != '无' ? res.maintainer.nickName : '');
+                                it.userIds = res.maintainer.userId;
+                            } else {
+                                it.ISuccessfull(res.statusCode.msg);
+                                delete _data['name']
+                                setTimeout(() => {
+                                    it.TableAndVisible = false;
+                                    it.detailTableAndVisible = false;
+                                    it.loading = false;
+                                }, 500)
+                                it.list();
+                            }
+                        })() : (() => {
+                            throw "收集到错误：\n\n" + res.statusCode.msg;
+                        })();
+                    } catch (error) {
+                        it.IError(error);
+                    }
+                }
+            })
+        },
+        adminSubmit(_event){  //超级管理员
+            const it = this;
+            if(_event.en == "pull"){
+                _data['type'] = 1;
+                _data['toAdminId'] = _event._d;
+            }else{
+                _data['type'] = 5;
+                if(it.bool != '') {
+                    delete _data['toAdminId']
+                    delete _data['page']
+                    _data['adminToken'] = it.bool.adminToken
+                    _data['type'] = 6
+                    _data['registerTime'] = it.bool.registerTime
+                    _data['manageId'] = it.bool.manageId
+                    _data['adminStatus'] = it.bool.adminStatus
+                    _data['adminId'] = it.bool.adminId
+                };
+                _data['adminName'] = _event.formData.adminName;
+                _data['adminPwd'] = _event.formData.adminPwd;
+                _data['roleId'] = _event.formData.roleId;
+                _data['realName'] = _event.formData.realName;
+                _data['adminMobile'] = _event.formData.adminMobile;
+                _data['userId'] = it.userIds;
+                _data['named'] = _event.formData.named;
+            }
+            ym.init.XML({
+                method: 'POST',
+                uri: token._j.URLS.Development_Server_ + _event.uri,
+                async: false,
+                xmldata: _data,
+                done: function (res) {
+                    try {
+                        ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
+                            if (_event.en == 'pull' && _event._d) {
+                                it.formData.adminName = res.adminUser.adminName;
+                                it.formData.adminPwd = res.adminUser.adminPwd;
+                                it.formData.roleId = res.adminUser.roleId;
+                                it.formData.realName = res.adminUser.realName;
+                                it.formData.adminMobile = res.adminUser.adminMobile;
+                                it.formData.named = res.adminUser.named;
+                                it.formData.state = (res.adminUser.nickName != '无' ? res.adminUser.nickName : '');
+                                it.userIds = (res.adminUser.userId != -1 ? res.adminUser.userId : []);
+                                it.bool = {
+                                    adminToken: res.adminUser.adminToken || '',
+                                    registerTime: ym.init.getDateTime(res.adminUser.registerTime) || '',
+                                    manageId: res.adminUser.manageId || '',
+                                    adminStatus: res.adminUser.adminStatus || '',
+                                    adminId: res.adminUser.adminId
+                                };
+                            } else {
+                                it.ISuccessfull(res.statusCode.msg);
+                                delete _data['roleId']
+                                delete _data['adminName']
+                                delete _data['adminId']
+                                delete _data['realName']
+                                setTimeout(() => {
+                                    it.TableAndVisible = false;
+                                    it.detailTableAndVisible = false;
+                                    it.loading = false;
+                                }, 500)
+                                it.list();
+                            }
+                        })() : (() => {
+                            throw "收集到错误：\n\n" + res.statusCode.msg;
+                        })();
+                    } catch (error) {
+                        it.IError(error);
+                    }
+                }
+            })
+        }
     }
 });
