@@ -148,7 +148,20 @@ new Vue({
             refundMoney: {},  //订单退款
             pathUrlExe: {}, //导出
             optionsTime: [], //时间选择
-            bool: ''
+            bool: '',
+            statusName: new Map([
+                [1,`{
+                    user: [
+                        [1, '超级管理员'],
+                        [2, '系统管理员'],
+                        [3, '商户管理员']
+                    ],
+                    statues: [
+                        [0, '冻结'],
+                        [1, '正常']
+                    ],
+                }`]
+            ])
         }
     },
     created: function () {
@@ -179,6 +192,7 @@ new Vue({
             this.list();
         },
         list(...arg) {
+            console.log(this.statusName.get(1))
             let it = this, xml = [];
             it.loading = true;
             arg == '' ? null : ~function () {
@@ -219,7 +233,7 @@ new Vue({
                                         roleId: res.adminShowList[i].roleId,
                                         adminStatus: res.adminShowList[i].adminStatus,
                                         nickName: res.adminShowList[i].nickName + '/' + res.adminShowList[i].userId,
-                                        registerTime: res.adminShowList[i].registerTime,
+                                        registerTime: ym.init.getDateTime(res.adminShowList[i].registerTime),
                                         parentAdminName: res.adminShowList[i].parentAdminName
                                     })
                                 }
@@ -1174,7 +1188,7 @@ new Vue({
             };
         },
         handleSelect(item) {  //取得选择的用户ID
-            this.userIds= item._id;
+            this.userIds = item._id;
             //this.UserTableData.push(item); //用户批量操作
         },
         bindUser(e) {  //执行绑定/解绑
@@ -1633,13 +1647,13 @@ new Vue({
                     _data['maintainerId'] = _event.d;
                     _type = 'GET';
                 } else {
-                    if(_event.unbinadmin.secc){  //执行不同的操作
+                    if (_event.unbinadmin.secc) {  //执行不同的操作
                         _data['operaType'] = 2
                         _data['operaVal'] = _event.unbinadmin.secc
-                    }else if(_event.unbinadmin.bindMachine){
+                    } else if (_event.unbinadmin.bindMachine) {
                         _data['operaType'] = 5
                         _data['operaVal'] = _event.unbinadmin.bindMachine
-                    }else{
+                    } else {
                         _data['operaType'] = 4
                         _data['operaVal'] = it.userIds;
                     }
@@ -1684,14 +1698,14 @@ new Vue({
                 }
             })
         },
-        adminSubmit(_event){  //超级管理员
+        adminSubmit(_event) {  //超级管理员
             const it = this;
-            if(_event.en == "pull"){
+            if (_event.en == "pull") {
                 _data['type'] = 1;
                 _data['toAdminId'] = _event._d;
-            }else{
+            } else {
                 _data['type'] = 5;
-                if(it.bool != '') {
+                if (it.bool != '') {
                     delete _data['toAdminId']
                     delete _data['page']
                     _data['adminToken'] = it.bool.adminToken

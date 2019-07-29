@@ -137,6 +137,7 @@ new Vue({
                 for (let i = 0; i < local.length; i++) {
                     if (local[i].uri == e.uri) {
                         c.push(localStorage.getItem('uri'));
+                        tag();
                         return c;
                     }
                 }

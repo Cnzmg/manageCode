@@ -236,6 +236,7 @@ new Vue({
                                         for (let i = 0; i < _date.length; i++) {
                                             _DayTime.push(_date[i]);  //记录日期
                                             _content.push(0); //先赋值 0
+                                            if(res.package.userContent == +false) continue; 
                                             for (let j of res.package.userContent) {
                                                 if (_date[i] == j.registerDate) {
                                                     _content[i] = j.userCount; //对应的数值
