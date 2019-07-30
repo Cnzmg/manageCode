@@ -19,7 +19,7 @@
 
 
 <body class="_scrollbar">
-    <div id="c-container-list" style="height: 100%;" data-uri="find_log_list">
+    <div id="c-container-list" style="height: 100%;" data-uri="find_log_list" v-loading.fullscreen.lock="loading">
         <el-container>
             <el-main>
                 <el-form>
@@ -60,15 +60,12 @@
                         <el-table-column prop="permissionName" label="模块"></el-table-column>
                         <el-table-column prop="logContent" label="操作行为">
                             <template slot-scope="scope">
-                                <el-tag size="medium">{{ scope.row.logContent }}</el-tag>
-                            </template>
-                        </el-table-column>
-
-                        <el-table-column fixed="right" label="操作">
-                            <template slot-scope="scope">
-                                <el-button type="text" size="small">
-                                    编辑
-                                </el-button>
+                                <el-popover trigger="hover" placement="top">
+                                    <p>{{ scope.row.logContent }}</p>
+                                    <div slot="reference" class="name-wrapper">
+                                      <el-tag size="medium">{{ scope.row.logContent }}</el-tag>
+                                    </div>
+                                  </el-popover>
                             </template>
                         </el-table-column>
                     </el-table>

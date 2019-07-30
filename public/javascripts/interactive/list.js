@@ -149,18 +149,23 @@ new Vue({
             pathUrlExe: {}, //导出
             optionsTime: [], //时间选择
             bool: '',
-            statusName: new Map([
-                [1,`{
-                    user: [
+            StatusName: new Map([
+                ['free',{
+                    user: new Map([
                         [1, '超级管理员'],
                         [2, '系统管理员'],
                         [3, '商户管理员']
-                    ],
-                    statues: [
+                    ]),
+                    statues: new Map([
                         [0, '冻结'],
                         [1, '正常']
-                    ],
-                }`]
+                    ]),
+                    machineType: new Map([
+                        [1, '大型柜式机'],
+                        [2, '小型桌面机'],
+                        [3, '无网单机']
+                    ])
+                }]
             ])
         }
     },
@@ -192,7 +197,6 @@ new Vue({
             this.list();
         },
         list(...arg) {
-            console.log(this.statusName.get(1))
             let it = this, xml = [];
             it.loading = true;
             arg == '' ? null : ~function () {
@@ -224,66 +228,66 @@ new Vue({
                 done: function (res) {
                     ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
                         switch (uri) {
-                            case `find_user_list`:
+                            case `find_user_list`:   //管理员列表
                                 for (let i = 0; i < res.adminShowList.length; i++) {
                                     xml.push({
                                         adminId: res.adminShowList[i].adminId,
                                         realName: res.adminShowList[i].realName,
                                         adminName: res.adminShowList[i].adminName,
-                                        roleId: res.adminShowList[i].roleId,
-                                        adminStatus: res.adminShowList[i].adminStatus,
+                                        roleId: it.StatusName.get('free').user.get(res.adminShowList[i].roleId),
+                                        adminStatus: it.StatusName.get('free').statues.get(res.adminShowList[i].adminStatus),
                                         nickName: res.adminShowList[i].nickName + '/' + res.adminShowList[i].userId,
                                         registerTime: ym.init.getDateTime(res.adminShowList[i].registerTime),
                                         parentAdminName: res.adminShowList[i].parentAdminName
                                     })
                                 }
                                 break;
-                            case `find_log_list`:
+                            case `find_log_list`:  //管理员日志列表
                                 for (let i = 0; i < res.logInfoList.length; i++) {
                                     xml.push({
                                         adminName: res.logInfoList[i].adminName,
                                         logContent: res.logInfoList[i].logContent,
-                                        logTime: res.logInfoList[i].logTime,
+                                        logTime: ym.init.getDateTime(res.logInfoList[i].logTime),
                                         permissionName: res.logInfoList[i].permissionName,
                                         realName: res.logInfoList[i].realName,
-                                        roleId: res.logInfoList[i].roleId
+                                        roleId: it.statusName.get('free').user.get(res.logInfoList[i].roleId)
                                     })
                                 }
                                 break;
-                            case `find_formula_list`:
+                            case `find_formula_list`: //配方列表
                                 for (let i = 0; i < res.formulaInfoList.length; i++) {
                                     xml.push({
                                         formulaId: res.formulaInfoList[i].formulaId,
                                         formulaName: res.formulaInfoList[i].formulaName,
-                                        createTime: res.formulaInfoList[i].createTime,
-                                        machineType: res.formulaInfoList[i].machineType,
+                                        createTime: ym.init.getDateTime(res.formulaInfoList[i].createTime),
+                                        machineType: it.StatusName.get('free').machineType.get(res.formulaInfoList[i].machineType),
                                         formulaTemperature: res.formulaInfoList[i].formulaTemperature
                                     })
                                 }
                                 break;
-                            case `find_product_list`:
+                            case `find_product_list`:  //产品列表
                                 for (let i = 0; i < res.productShowList.length; i++) {
                                     xml.push({
                                         productId: res.productShowList[i].productId,
                                         productName: res.productShowList[i].productName,
-                                        productPrice: res.productShowList[i].productPrice,
+                                        productPrice: parseFloat(res.productShowList[i].productPrice / 100).toFixed(2),
                                         productPicurl: res.productShowList[i].productPicurl,
-                                        machineType: res.productShowList[i].machineType,
+                                        machineType: it.StatusName.get('free').machineType.get(res.productShowList[i].machineType),
 
                                         formulaName: res.productShowList[i].formulaName,
                                         bunkerNumber: res.productShowList[i].bunkerNumber,
-                                        createTime: res.productShowList[i].createTime,
+                                        createTime: ym.init.getDateTime(res.productShowList[i].createTime).split(' ')[0],
                                         productRank: res.productShowList[i].productRank,
                                         productComment: res.productShowList[i].productComment
                                     })
                                 }
                                 break;
-                            case `manage_prodcut_list_list`:
+                            case `manage_prodcut_list_list`:   //产品清单列表
                                 for (let i = 0; i < res.productListList.length; i++) {
                                     xml.push({
                                         listId: res.productListList[i].listId,
                                         listName: res.productListList[i].listName,
-                                        machineType: res.productListList[i].machineType
+                                        machineType: it.StatusName.get('free').machineType.get(res.productListList[i].machineType)
                                     })
                                 }
                                 break;
@@ -594,7 +598,9 @@ new Vue({
                         it.total = parseInt(res.pageCount * 20);
                         // it.currentPage = parseInt(res.pageCount);  数据总条数
                         it.tableData = xml;
-                        it.loading = false;
+                        setTimeout(()=>{
+                            it.loading = false;
+                        },500)
                     })()
                         :
                         it.IError(res.statusCode.msg);
@@ -698,11 +704,10 @@ new Vue({
                                                     productComment: element.productComment
                                                 });
                                                 if (res.productIdList) {
-                                                    console.log(res.productIdList != '');
                                                     res.productIdList.forEach(e => {
                                                         if (e == element.productId) {
                                                             it.$nextTick(function () {
-                                                                it.tableChecked(index);  //每次更新了数据，触发这个函数即可。
+                                                                it.tableChecked(3);  //每次更新了数据，触发这个函数即可。
                                                             });
                                                         }
                                                     })

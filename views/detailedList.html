@@ -19,7 +19,8 @@
 
 
 <body class="_scrollbar">
-	<div id="c-container-list" style="height: 100%;" data-uri="manage_prodcut_list_list">
+	<div id="c-container-list" style="height: 100%;" data-uri="manage_prodcut_list_list"
+		v-loading.fullscreen.lock="loading">
 		<el-container>
 			<el-main>
 				<el-form>
@@ -57,8 +58,10 @@
 						<el-table-column label="设备类型">
 							<template slot-scope="scope">
 								<div slot="reference" class="name-wrapper">
-									<el-tag size="medium">{{ (scope.row.machineType == 1 ? "大型柜式机" : "小型桌面机" ) }}
-									</el-tag>
+									<el-badge :value="scope.row.machineType[0] == '大' ? 'B' : 'S'"
+										:type="scope.row.machineType[0] == '大' ? 'danger' : 'primary'" class="item">
+										<el-tag size="medium">{{ scope.row.machineType }}</el-tag>
+									</el-badge>
 								</div>
 							</template>
 						</el-table-column>
@@ -69,7 +72,8 @@
 									@click="listoperation({_tag:'manage_prodcut_list_list',_evt: scope.row,_type: 'S'}); TableAndVisible = true">
 									清单详情
 								</el-button>
-								<el-button type="text" size="small" @click="listoperation({_tag:'manage_prodcut_list_list',_evt: scope.row,_type: 'D'});">
+								<el-button type="text" size="small"
+									@click="listoperation({_tag:'manage_prodcut_list_list',_evt: scope.row,_type: 'D'});">
 									删除
 								</el-button>
 							</template>
@@ -188,10 +192,12 @@
 						</el-select>
 						<template>
 							<div style="margin-top: 10px">
-								<el-button type="primary" @click="searchAPIs({_id: unbinadmin.adminId,_listid: unbinadmin.listId, _uri: 'manage_machine_product_relation',_type:[4]})">
+								<el-button type="primary"
+									@click="searchAPIs({_id: unbinadmin.adminId,_listid: unbinadmin.listId, _uri: 'manage_machine_product_relation',_type:[4]})">
 									绑定
 								</el-button>
-								<el-button type="primary" @click="searchAPIs({_id: unbinadmin.adminId,_uri: 'manage_machine_product_relation',_type:[5]})">
+								<el-button type="primary"
+									@click="searchAPIs({_id: unbinadmin.adminId,_uri: 'manage_machine_product_relation',_type:[5]})">
 									解绑
 								</el-button>
 							</div>

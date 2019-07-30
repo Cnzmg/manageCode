@@ -253,7 +253,7 @@ ul,ol{
 	left: 0;
 	height: 40px;
 	line-height: 40px;
-	background:rgba(208, 208, 208, .5);
+	background:#5e636d;
 	/* overflow-x: auto; */
 	cursor: pointer;
   }
@@ -262,12 +262,14 @@ ul,ol{
 	height:40px;
 	position: relative;
 	padding: 0 !important;
+	overflow-x: auto;
   }
   .tag ul li{
 	  position: relative;
 	  color: #000;
 	  padding: 0 40px;
-	  display: inline-block;
+	//   display: inline-block;
+	float: left;
 	  background: #d4d6da;
 	  border-right: 1px solid #fff;
   }
@@ -373,3 +375,13 @@ ul,ol{
 	// .el-table__row td:nth-last-child(1) .cell{
 	// 	text-align: right;
 	// } 
+	.has-gutter tr th, .el-table th {
+		background-color: #d4d6da !important;
+		color:#fff;
+	}
+	.el-image__inner{
+		width: 50%;
+	}
+	.el-badge__content.is-fixed{
+		top:8px;
+	}

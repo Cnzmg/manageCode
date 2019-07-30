@@ -19,12 +19,13 @@
 
 
 <body class="_scrollbar">
-	<div id="c-container-list" style="height: 100%;" data-uri="find_product_list">
+	<div id="c-container-list" style="height: 100%;" data-uri="find_product_list" v-loading.fullscreen.lock="loading">
 		<el-container>
 			<el-main>
 				<el-form>
 					<div style="width: 100%;margin-bottom:10px;">
-						<el-button @click="crud({uri:'userAddProduct'})" type="primary">添加<i class="el-icon-plus el-icon--right"></i></el-button>
+						<el-button @click="crud({uri:'userAddProduct'})" type="primary">添加<i
+								class="el-icon-plus el-icon--right"></i></el-button>
 					</div>
 					<el-input placeholder="请输入内容" v-model="searchVal" class="_searchVal">
 						<el-select v-model="searchName" class="_searchVal_select" slot="prepend" placeholder="请选择">
@@ -49,6 +50,14 @@
 						<el-table-column prop="productId" label="产品ID">
 						</el-table-column>
 						<el-table-column prop="productName" label="产品名称">
+							<template slot-scope="scope">
+								<el-popover trigger="hover" placement="top">
+									<p>产品全称: {{ scope.row.productName }}</p>
+									<div slot="reference" class="name-wrapper">
+										<el-tag size="medium">{{ scope.row.productName.split(',')[0] }}</el-tag>
+									</div>
+								</el-popover>
+							</template>
 						</el-table-column>
 						<el-table-column prop="productPrice" label="产品价格">
 						</el-table-column>
@@ -62,8 +71,10 @@
 						<el-table-column label="设备类型">
 							<template slot-scope="scope">
 								<div slot="reference" class="name-wrapper">
-									<el-tag size="medium">{{ (scope.row.machineType == 1 ? "大型柜式机" : "小型桌面机" ) }}
-									</el-tag>
+									<el-badge :value="scope.row.machineType[0] == '大' ? 'B' : 'S'"
+										:type="scope.row.machineType[0] == '大' ? 'danger' : 'primary'" class="item">
+										<el-tag size="medium">{{ scope.row.machineType }}</el-tag>
+									</el-badge>
 								</div>
 							</template>
 						</el-table-column>
@@ -75,7 +86,8 @@
 
 						<el-table-column fixed="right" label="操作">
 							<template slot-scope="scope">
-								<el-button type="text" size="small" @click="crud({uri:'userAddProduct',enitId:scope.row})">
+								<el-button type="text" size="small"
+									@click="crud({uri:'userAddProduct',enitId:scope.row})">
 									编辑
 								</el-button>
 							</template>
