@@ -57,8 +57,30 @@
                 <template>
 
                     <el-table :data="tableData" stripe style="width: 100%">
-                        <el-table-column prop="orderId" label="原订单号"></el-table-column>
-                        <el-table-column prop="refundId" label="退款订单号"></el-table-column>
+                        <el-table-column prop="orderId" label="原订单号">
+                            <template slot-scope="scope">
+                                <el-popover trigger="hover" placement="top">
+                                    <p>订单号: {{ scope.row.orderId }}</p>
+                                    <div slot="reference" class="name-wrapper">
+                                        <el-tag size="medium">
+                                            {{ `...` + scope.row.orderId.substr(scope.row.orderId.length - 8,scope.row.orderId.length) }}
+                                        </el-tag>
+                                    </div>
+                                </el-popover>
+                            </template>
+                        </el-table-column>
+                        <el-table-column prop="refundId" label="退款订单号">
+                            <template slot-scope="scope">
+                                <el-popover trigger="hover" placement="top">
+                                    <p>订单号: {{ scope.row.refundId }}</p>
+                                    <div slot="reference" class="name-wrapper">
+                                        <el-tag size="medium">
+                                            {{ `...` + scope.row.refundId.substr(scope.row.refundId.length - 8,scope.row.refundId.length) }}
+                                        </el-tag>
+                                    </div>
+                                </el-popover>
+                            </template>
+                        </el-table-column>
                         <el-table-column prop="createTime" label="原订单创建时间"></el-table-column>
 
                         <el-table-column prop="paymentTime" label="原订单支付时间"></el-table-column>

@@ -203,6 +203,7 @@ new Vue({
                 couponMoney: '', //优惠券金额
                 couponRange: '', //优惠券产品
                 shareNum: '', //优惠券分享次数
+                timeUnit: '', //时间单位
             },
             rules: {
                 productName: [
@@ -248,7 +249,8 @@ new Vue({
             timeLimShow: false,   //会员添加
             numLength: 1,
             cTypeShow: true,
-            tableData: []
+            tableData: [],
+            SearchProduct: dataHref.split('*').length > 1 ? false : true
         }
     },
     created: function () {
@@ -363,30 +365,32 @@ new Vue({
         Ienit(e) {
             const it = this;
             switch (uri) {
-                case 'manage_formula':
+                case 'manage_formula':   //formula edit
                     _data['type'] = 1;
                     _data['formulaId'] = JSON.parse(e).formulaId;
                     break;
-                case 'manage_product':
+                case 'manage_product':  //product edit
                     _data['type'] = 1;
                     _data['productId'] = JSON.parse(e).productId;
                     break;
-                case 'manage_machine':
+                case 'manage_machine':   //machine edit
                     _data['type'] = 3;
                     _data['machineNumber'] = JSON.parse(e).machineNumber;
                     break;
-                case 'remote_operation':
+                case 'remote_operation':  
                     _data['type'] = 1;
                     _data['machineNumber'] = JSON.parse(e).machineNumber;
-                case 'manage_poi':
+                    break;
+                case 'manage_poi':  //small machine map edit
                     _data['type'] = 1;
                     delete _data['machineType']
                     _data['poiIds'] = JSON.parse(e).poiId;
+                    break;
                 case 'add_or_update_member':   //查找会员详情
                     _data['memberId'] = JSON.parse(e).memberRuleId;
                     uri = 'get_member_detail'
                     break;
-                case 'manage_coupon':
+                case 'manage_coupon':  //coupon edit
                     _data['type'] = 0;
                     _data['couponId'] = JSON.parse(e).couponId;
                     break;
@@ -584,9 +588,11 @@ new Vue({
                                 it.ruleForm.machineUrl = res.poi.machineUrl;  //大楼外景图
                                 it.ruleForm.poiId = res.poi.poiId;
 
-                                res.poi.numberList.split(',').forEach(el => {  //执行已选择设备回显
-                                    it.ruleForm.machineNumber.push(el)
-                                });
+                                if(res.poi.machineList){
+                                    res.poi.numberList.split(',').forEach(el => {  //执行已选择设备回显
+                                        it.ruleForm.machineNumber.push(el)
+                                    });
+                                }
 
                                 it.ruleForm.province.push(TextToCode[res.poi.province].code);
                                 it.ruleForm.province.push(TextToCode[res.poi.province][res.poi.city].code);
@@ -620,15 +626,18 @@ new Vue({
                                 break;
                             case 'manage_coupon':
                                 it.ruleForm.couponType = res.coupon.couponType; //优惠券类型
+                                res.coupon.couponType == 3 ? it.cTypeShow = false : it.cTypeShow = true; // 是否出现优惠金额
                                 it.ruleForm.couponName = res.coupon.couponName; //优惠券名称
                                 it.ruleForm.couponUrl = res.coupon.couponUrl; //优惠券图片
                                 it.ruleForm.couponTime = res.coupon.couponTime; //优惠券时间
-                                it.ruleForm.couponMoney = res.coupon.couponMoney; //优惠券类型
+                                it.ruleForm.couponMoney = parseFloat(res.coupon.couponMoney / 100).toFixed(2); //优惠券类型
                                 it.ruleForm.shareNum = res.coupon.shareNum; //优惠券类型
                                 it.ruleForm.couponType = res.coupon.couponType; //优惠券类型
                                 it.ruleForm.couponDesc = res.coupon.couponDesc; //优惠券类型
                                 it.ruleForm.productId = res.coupon.productId; //优惠券类型
-                                it.imageList.couponUrl.push({ name: 'couponUrl', url: res.coupon.couponUrl }); //大楼外景图
+                                
+                                it.ruleForm.timeUnit = res.coupon.timeUnit;//时间节点
+                                it.imageList.couponUrl.push({ name: 'couponUrl', url: res.coupon.couponUrl }); //优惠券图片
                                 it.manageCoupon(res);
 
                                 break;
@@ -832,11 +841,12 @@ new Vue({
                     _data['couponUrl'] = formName.couponUrl || ''; //优惠券图片
                     _data['couponTime'] = formName.couponTime || ''; //优惠券时间
                     if (formName.couponType != 3) {
-                        _data['couponMoney'] = formName.couponMoney || '';  //优惠券金额
-                        _data['shareNum'] = formName.shareNum || ''; //优惠券分享次数
+                        _data['couponMoney'] = parseFloat(formName.couponMoney * 100).toFixed(0) || '';  //优惠券金额
+                        _data['shareNum'] = formName.shareNum; //优惠券分享次数
                     }
                     _data['couponDesc'] = formName.couponDesc || '';  //优惠券说明
-                    _data['couponRange'] = it.ruleForm.productId;  //选择的产品ID
+                    _data['couponRange'] = it.ruleForm.productId || -1;  //选择的产品ID
+                    _data['timeUnit'] = it.ruleForm.timeUnit;  //时间单位
                     ym.init.XML({
                         method: 'POST',
                         uri: token._j.URLS.Development_Server_ + uri,

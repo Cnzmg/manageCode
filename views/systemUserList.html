@@ -19,7 +19,7 @@
 
 
 <body class="_scrollbar">
-    <div id="c-container-list" style="height: 100%;" data-uri="client_user_list">
+    <div id="c-container-list" style="height: 100%;" data-uri="client_user_list" v-loading.fullscreen.lock="loading">
         <el-container>
             <el-main>
                 <el-form>
@@ -84,7 +84,7 @@
                         <el-table-column fixed="right" label="操作">
                             <template slot-scope="scope">
                                 <el-button type="text" size="small"
-                                    @click="TableAndVisible = true; searchAPIs({ _uri:  'find_user_milliliter_log', _id: scope.row.userId})">
+                                    @click="TableAndVisible = true; searchAPIs({ _uri:  'find_user_milliliter_log', _id: scope.row.userId}); TableFormData = [];">
                                     毫升日志
                                 </el-button>
                                 <el-button type="text" size="small" @click="UpdateTableAndVisible = true;">
@@ -103,7 +103,7 @@
                 <el-dialog title="批量操作用户" :visible.sync="detailTableAndVisible">
                     <el-form :model="unbinadmin">
                         <el-autocomplete v-model="state" :fetch-suggestions="querySearchAsync"
-                            placeholder="请输入绑定/解绑的用户名" @select="handleSelect"></el-autocomplete>
+                            placeholder="请输入用户名" @select="handleSelect"></el-autocomplete>
 
                         <el-table :data="UnFormData" height="300px" style="margin: 10px 0" tooltip-effect="dark"
                             @selection-change="handleSelectionChange" ref="multipleTable">

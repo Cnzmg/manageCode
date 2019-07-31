@@ -19,7 +19,7 @@
 
 
 <body class="_scrollbar">
-    <div id="c-container-list" style="height: 100%;" data-uri="find_machine_poi_list">
+    <div id="c-container-list" style="height: 100%;" data-uri="find_machine_poi_list" v-loading.fullscreen.lock="loading">
         <el-container>
             <el-main>
                 <el-form>
@@ -47,15 +47,17 @@
                                 <el-image :src="scope.row.mapMarkerIcon"></el-image>
                             </template>
                         </el-table-column>
-                        <el-table-column prop="province" label="省"></el-table-column>
-                        <el-table-column prop="city" label="市"></el-table-column>
-                        <el-table-column prop="district" label="区"></el-table-column>
+                        <el-table-column prop="province" label="省/市/区"></el-table-column>
                         <el-table-column prop="machineUrl" label="大楼外景图">
                             <template slot-scope="scope">
                                 <el-image :src="scope.row.machineUrl"></el-image>
                             </template>
                         </el-table-column>
-                        <el-table-column prop="hide" label="是否显示"></el-table-column>
+                        <el-table-column prop="hide" label="是否显示">
+                            <template slot-scope="scope">
+                                {{ scope.row.hide == +true ? '否' : '是' }}
+                            </template>
+                        </el-table-column>
                         <el-table-column prop="machineCount" label="设备数量"></el-table-column>
                         <el-table-column prop="numberList" label="设备"></el-table-column>
 

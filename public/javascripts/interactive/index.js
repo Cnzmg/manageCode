@@ -84,12 +84,12 @@ new Vue({
                 // 'information'
             ],
             _shop: [
-                'RepairPersonnelList',
                 'equipmentList',
                 'machineAmap',
                 'chartsFinance',
                 'orderList',
-                'orderEverDayList'
+                'orderEverDayList',
+                'RepairPersonnelList'
             ]
         }, num = 0;
         for (let i = 0; i < tag.length - 1; i++) {

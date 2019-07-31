@@ -56,19 +56,19 @@
                         <el-table-column prop="statisticsMachine" label="机器编号"></el-table-column>
 
                         <el-table-column prop="adminName" label="商户名称"></el-table-column>
-                        <el-table-column prop="refundMoney" label="当日订单总数">
+                        <el-table-column prop="orderCount" label="当日订单总数">
                             <template slot-scope="scope">
-                                <el-tag size="medium">{{ scope.row.refundMoney }}</el-tag>
+                                <el-tag size="medium">{{ scope.row.orderCount }}</el-tag>
                             </template>
                         </el-table-column>
                         <el-table-column prop="orderCount" label="当日完成订单数"></el-table-column>
                         <el-table-column prop="cancelOrderCount" label="当日取消订单数"></el-table-column>
                         <el-table-column prop="refundOrderCount" label="当日退款订单数"></el-table-column>
-                        <el-table-column prop="sendCount" label="完成订单金额"></el-table-column>
+                        <el-table-column prop="completeAmount" label="完成订单金额"></el-table-column>
                         <el-table-column prop="refundAmount" label="退款订单金额"></el-table-column>
-                        <el-table-column prop="sendUsers" label="完成订单用户数"></el-table-column>
-                        <el-table-column prop="userCount" label="发送目标总数"></el-table-column>
-                        <el-table-column prop="completeAmount" label="发送目标用户"></el-table-column>
+                        <el-table-column prop="userCount" label="当日完成订单用户数"></el-table-column>
+                        <el-table-column prop="sendCount" label="发送目标总数"></el-table-column>
+                        <el-table-column prop="sendUsers" label="发送目标用户"></el-table-column>
 
                     </el-table>
                 </template>

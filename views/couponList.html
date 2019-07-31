@@ -41,7 +41,16 @@
                         <el-table-column prop="couponId" label="ID"></el-table-column>
                         <el-table-column prop="couponName" label="优惠券名称"></el-table-column>
                         <el-table-column prop="couponType" label="优惠券类型"></el-table-column>
-                        <el-table-column prop="couponRangeName" label="优惠产品"></el-table-column>
+                        <el-table-column prop="couponRangeName" label="优惠产品">
+                            <template slot-scope="scope">
+                                <el-popover trigger="hover" placement="top">
+                                    <p>{{ scope.row.couponRangeName }}</p>
+                                    <div slot="reference" class="name-wrapper">
+                                        <el-tag size="medium">详细信息</el-tag>
+                                    </div>
+                                </el-popover>
+                            </template>
+                        </el-table-column>
                         <el-table-column prop="couponMoney" label="优惠金额"></el-table-column>
                         <el-table-column prop="couponTime" label="可用时间"></el-table-column>
 
@@ -54,7 +63,8 @@
                                 <el-button type="text" size="small" @click="crud({uri:'couponAdd',enitId:scope.row})">
                                     编辑
                                 </el-button>
-                                <el-button type="text" size="small" @click="deleteData({_uri: 'manage_coupon', _type:3, _parameter: scope.row.couponId});">
+                                <el-button type="text" size="small"
+                                    @click="deleteData({_uri: 'manage_coupon', _type:3, _parameter: scope.row.couponId});">
                                     删除
                                 </el-button>
                             </template>
@@ -69,8 +79,8 @@
 
                 <el-dialog title="赠送优惠券" :visible.sync="detailTableAndVisible">
                     <el-form :model="unbinadmin">
-                        <el-autocomplete v-model="state" :fetch-suggestions="querySearchAsync"
-                            placeholder="请输入赠送的用户名" @select="handleSelect"></el-autocomplete>
+                        <el-autocomplete v-model="state" :fetch-suggestions="querySearchAsync" placeholder="请输入赠送的用户名"
+                            @select="handleSelect"></el-autocomplete>
                         <el-table :data="UnFormData" height="300px" style="margin: 10px 0" tooltip-effect="dark"
                             @selection-change="handleSelectionChange" ref="multipleTable">
                             <el-table-column type="selection"></el-table-column>
@@ -82,7 +92,9 @@
                             <el-input v-model="UnFormData.sum" placeholder="请输入赠送数量"></el-input>
                         </el-form-item>
                         <el-form-item>
-                            <el-button type="primary" @click="addEventData({_uri: 'manage_coupon', _type: 5, _parameter: UnFormData.sum})">赠送</el-button>
+                            <el-button type="primary"
+                                @click="addEventData({_uri: 'manage_coupon', _type: 5, _parameter: UnFormData.sum})">赠送
+                            </el-button>
                         </el-form-item>
                     </el-form>
                 </el-dialog>

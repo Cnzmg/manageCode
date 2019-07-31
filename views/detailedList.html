@@ -113,19 +113,37 @@
 					<template>
 						<el-button
 							@click="listoperation({_tag:'manage_prodcut_list_list',_type: 'E'}); UpdateTableAndVisible = true"
-							type="primary">
+							type="primary" style="margin-bottom: 10px;">
 							更新
 						</el-button>
 					</template>
 					<el-table :data="TableFormData" height="500px">
 						<el-table-column property="productId" label="ID" fixed></el-table-column>
-						<el-table-column property="productName" label="产品名称"></el-table-column>
+						<el-table-column property="productName" label="产品名称">
+							<template slot-scope="scope">
+								<el-popover trigger="hover" placement="top">
+									<p>产品全称: {{ scope.row.productName }}</p>
+									<div slot="reference" class="name-wrapper">
+										<el-tag size="medium">{{ scope.row.productName.split(',')[0] }}</el-tag>
+									</div>
+								</el-popover>
+							</template>
+						</el-table-column>
 						<el-table-column property="productPrice" label="产品价格"></el-table-column>
 						<el-table-column property="formulaName" label="配方名称"></el-table-column>
 						<el-table-column property="bunkerNumber" label="料仓"></el-table-column>
 						<el-table-column property="createTime" label="创建时间"></el-table-column>
 						<el-table-column property="productRank" label="排序"></el-table-column>
-						<el-table-column property="machineType" label="设备类型"></el-table-column>
+						<el-table-column property="machineType" label="设备类型">
+							<template slot-scope="scope">
+								<div slot="reference" class="name-wrapper">
+									<el-badge :value="scope.row.machineType[0] == '大' ? 'B' : 'S'"
+										:type="scope.row.machineType[0] == '大' ? 'danger' : 'primary'" class="item">
+										<el-tag size="medium">{{ scope.row.machineType }}</el-tag>
+									</el-badge>
+								</div>
+							</template>
+						</el-table-column>
 					</el-table>
 				</el-dialog>
 
@@ -138,7 +156,16 @@
 						<el-table-column type="selection" width="55">
 						</el-table-column>
 						<el-table-column property="productId" label="ID" fixed></el-table-column>
-						<el-table-column property="productName" label="产品名称"></el-table-column>
+						<el-table-column property="productName" label="产品名称">
+							<template slot-scope="scope">
+								<el-popover trigger="hover" placement="top">
+									<p>产品全称: {{ scope.row.productName }}</p>
+									<div slot="reference" class="name-wrapper">
+										<el-tag size="medium">{{ scope.row.productName.split(',')[0] }}</el-tag>
+									</div>
+								</el-popover>
+							</template>
+						</el-table-column>
 						<el-table-column property="productPrice" label="产品价格"></el-table-column>
 						<el-table-column property="productPicurl" label="产品图片">
 							<template slot-scope="scope">
@@ -151,14 +178,14 @@
 						<el-table-column property="bunkerNumber" label="料仓"></el-table-column>
 						<el-table-column property="createTime" label="创建时间"></el-table-column>
 						<el-table-column property="productRank" label="排序"></el-table-column>
-						<el-table-column property="machineType" label="设备类型"
+						<!-- <el-table-column property="machineType" label="设备类型"
 							:filters="[{ text: '大型柜式机', value: '大型柜式机' }, { text: '小型桌面机', value: '小型桌面机' }]"
 							:filter-method="filterTag" filter-placement="bottom-end">
 							<template slot-scope="scope">
 								<el-tag :type="scope.row.machineType === '大型柜式机' ? 'primary' : 'success'"
 									disable-transitions>{{scope.row.machineType}}</el-tag>
 							</template>
-						</el-table-column>
+						</el-table-column> -->
 						<el-table-column property="productComment" label="说明"></el-table-column>
 					</el-table>
 					<template>

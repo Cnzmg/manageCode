@@ -165,6 +165,22 @@ new Vue({
                         [2, '小型桌面机'],
                         [3, '无网单机']
                     ])
+                }],
+                ['time',{
+                    machineRun: new Map([
+                        [1, '正常'],
+                        [2, '故障'],
+                        [3, '离线'],
+                        [4, '维护'],
+                        [5, '维修'],
+                        [6, '维修完成']
+                    ]),
+                    couponTime: new Map([
+                        [1, '年'],
+                        [2, '月'],
+                        [3, '日'],
+                        [4, '周']
+                    ])
                 }]
             ])
         }
@@ -228,7 +244,7 @@ new Vue({
                 done: function (res) {
                     ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
                         switch (uri) {
-                            case `find_user_list`:   //管理员列表
+                            case `find_user_list`:   //admin users list
                                 for (let i = 0; i < res.adminShowList.length; i++) {
                                     xml.push({
                                         adminId: res.adminShowList[i].adminId,
@@ -242,7 +258,7 @@ new Vue({
                                     })
                                 }
                                 break;
-                            case `find_log_list`:  //管理员日志列表
+                            case `find_log_list`:  //admin logs list
                                 for (let i = 0; i < res.logInfoList.length; i++) {
                                     xml.push({
                                         adminName: res.logInfoList[i].adminName,
@@ -250,11 +266,11 @@ new Vue({
                                         logTime: ym.init.getDateTime(res.logInfoList[i].logTime),
                                         permissionName: res.logInfoList[i].permissionName,
                                         realName: res.logInfoList[i].realName,
-                                        roleId: it.statusName.get('free').user.get(res.logInfoList[i].roleId)
+                                        roleId: it.StatusName.get('free').user.get(res.logInfoList[i].roleId)
                                     })
                                 }
                                 break;
-                            case `find_formula_list`: //配方列表
+                            case `find_formula_list`: //formula list
                                 for (let i = 0; i < res.formulaInfoList.length; i++) {
                                     xml.push({
                                         formulaId: res.formulaInfoList[i].formulaId,
@@ -265,7 +281,7 @@ new Vue({
                                     })
                                 }
                                 break;
-                            case `find_product_list`:  //产品列表
+                            case `find_product_list`:  //product list
                                 for (let i = 0; i < res.productShowList.length; i++) {
                                     xml.push({
                                         productId: res.productShowList[i].productId,
@@ -282,7 +298,7 @@ new Vue({
                                     })
                                 }
                                 break;
-                            case `manage_prodcut_list_list`:   //产品清单列表
+                            case `manage_prodcut_list_list`:   //product detailed list
                                 for (let i = 0; i < res.productListList.length; i++) {
                                     xml.push({
                                         listId: res.productListList[i].listId,
@@ -291,8 +307,8 @@ new Vue({
                                     })
                                 }
                                 break;
-                            case `find_machine_list`:
-                                ym.init.XML({
+                            case `find_machine_list`:   //machine list
+                                ym.init.XML({   //machine sum、now state..
                                     method: 'POST',
                                     uri: token._j.URLS.Development_Server_ + 'find_machine_number',
                                     async: true,
@@ -306,14 +322,15 @@ new Vue({
                                         it.machineNumbers['offLineNum'] = res.offLineNum;
                                         it.machineNumbers['starvingNum'] = res.starvingNum;
                                         it.machineNumbers['faultNum'] = res.faultNum;
+                                        it.machineNumbers['maintainNum'] = res.maintainNum;
                                     }
                                 })
-                                for (let i = 0; i < res.machineShowList.length; i++) {
+                                for (let i = 0; i < res.machineShowList.length; i++) { 
                                     xml.push({
                                         machineNumber: res.machineShowList[i].machineNumber,
                                         adminName: res.machineShowList[i].adminName,
                                         machineAddrDesc: res.machineShowList[i].machineAddrDesc,
-                                        machineType: res.machineShowList[i].machineType,
+                                        machineType: it.StatusName.get('free').machineType.get(res.machineShowList[i].machineType),
                                         machineSn: res.machineShowList[i].machineSn,
                                         machineScenePicUrl: res.machineShowList[i].machineScenePicUrl,
                                         wxacode: res.machineShowList[i].wxacode,
@@ -323,20 +340,20 @@ new Vue({
                                     })
                                 }
                                 break;
-                            case `manage_machine_version`:
+                            case `manage_machine_version`:   //apk versions
                                 for (let i = 0; i < res.machineUpdateList.length; i++) {
                                     xml.push({
                                         mUpdateId: res.machineUpdateList[i].mUpdateId,
                                         mUpdateVersion: res.machineUpdateList[i].mUpdateVersion,
                                         versionCode: res.machineUpdateList[i].versionCode,
-                                        mUpdateTime: res.machineUpdateList[i].mUpdateTime,
+                                        mUpdateTime: ym.init.getDateTime(res.machineUpdateList[i].mUpdateTime),
                                         mUpdateDes: res.machineUpdateList[i].mUpdateDes,
                                         machineType: res.machineUpdateList[i].machineType,
                                         mUpdateUrl: res.machineUpdateList[i].mUpdateUrl
                                     })
                                 }
                                 break;
-                            case `find_machine_poi_list`:
+                            case `find_machine_poi_list`:  //small machine map setup
                                 for (let i = 0; i < res.poiList.length; i++) {
                                     xml.push({
                                         poiId: res.poiList[i].poiId,
@@ -344,9 +361,7 @@ new Vue({
                                         latitude: res.poiList[i].latitude,
                                         addr: res.poiList[i].addr,
                                         mapMarkerIcon: res.poiList[i].mapMarkerIcon,
-                                        province: res.poiList[i].province,
-                                        city: res.poiList[i].city,
-                                        district: res.poiList[i].district,
+                                        province: res.poiList[i].province +'/'+ res.poiList[i].city +'/'+ res.poiList[i].district,  //省市区组合
                                         machineUrl: res.poiList[i].machineUrl,
                                         hide: res.poiList[i].hide,
                                         machineCount: res.poiList[i].machineCount,
@@ -354,19 +369,19 @@ new Vue({
                                     })
                                 }
                                 break;
-                            case `find_machine_advertisement_list`:
+                            case `find_machine_advertisement_list`:    //machine vedio advertisement list
                                 for (let i = 0; i < res.machineAdvertisementList.length; i++) {
                                     xml.push({
                                         madId: res.machineAdvertisementList[i].madId,
                                         madTitle: res.machineAdvertisementList[i].madTitle,
                                         madUrl: res.machineAdvertisementList[i].madUrl,
                                         madStatus: res.machineAdvertisementList[i].madStatus,
-                                        madTime: res.machineAdvertisementList[i].madTime,
+                                        madTime: ym.init.getDateTime(res.machineAdvertisementList[i].madTime),
                                         madOrder: res.machineAdvertisementList[i].madOrder
                                     })
                                 }
                                 break;
-                            case `manage_advertisement_list_list`:
+                            case `manage_advertisement_list_list`:  //machine vedio detail list
                                 for (let i = 0; i < res.advertisementListList.length; i++) {
                                     xml.push({
                                         listId: res.advertisementListList[i].listId,
@@ -374,7 +389,7 @@ new Vue({
                                     })
                                 }
                                 break;
-                            case `statistics_shop`:
+                            case `statistics_shop`:  
                                 for (let i = 0; i < res.package.ShopMachine.length; i++) {
                                     xml.push({
                                         adminID: res.package.ShopMachine[i].adminID,
@@ -386,13 +401,13 @@ new Vue({
                                     })
                                 }
                                 break;
-                            case `get_activity_list`:
-                                for (let i = 0; i < res.activityList.length; i++) {
+                            case `get_activity_list`:    // activity charts
+                                for (let i = 0; i < res.activityList.length; i++) { 
                                     xml.push({
                                         id: res.activityList[i].id,
                                         comment: res.activityList[i].comment,
                                         name: res.activityList[i].name,
-                                        startTime: res.activityList[i].startTime
+                                        startTime: ym.init.getDateTime(res.activityList[i].startTime)
                                     })
                                 }
                                 break;
@@ -421,7 +436,7 @@ new Vue({
                                 //         }
                                 //     }
                                 // });
-                                for (let i = 0; i < res.clientUserList.length; i++) {
+                                for (let i = 0; i < res.clientUserList.length; i++) {  //client user list
                                     xml.push({
                                         userId: res.clientUserList[i].userId,
                                         headPicUrl: res.clientUserList[i].headPicUrl,
@@ -436,7 +451,7 @@ new Vue({
                                     })
                                 }
                                 break;
-                            case `get_member_list`:
+                            case `get_member_list`:  // client user member list
                                 for (let i = 0; i < res.memberRuleList.length; i++) {
                                     xml.push({
                                         memberRuleId: res.memberRuleList[i].memberRuleId,
@@ -445,45 +460,45 @@ new Vue({
                                         duration: res.memberRuleList[i].duration,
                                         payMoney: res.memberRuleList[i].payMoney,
                                         discount: res.memberRuleList[i].discount,
-                                        discountsStartTime: res.memberRuleList[i].discountsStartTime,
-                                        discountsEndTime: res.memberRuleList[i].discountsEndTime,
+                                        discountsStartTime: ym.init.getDateTime(res.memberRuleList[i].discountsStartTime).split(' ')[0],
+                                        discountsEndTime: ym.init.getDateTime(res.memberRuleList[i].discountsEndTime).split(' ')[0],
                                         milliliter: res.memberRuleList[i].milliliter,
                                         memberPicUrl: res.memberRuleList[i].memberPicUrl,
                                         status: res.memberRuleList[i].status
                                     })
                                 }
                                 break;
-                            case `find_fault_feedback_list`:
+                            case `find_fault_feedback_list`:  //feedback list
                                 for (let i = 0; i < res.faultFeedbackShowList.length; i++) {
                                     xml.push({
                                         nickName: res.faultFeedbackShowList[i].nickName,
                                         faultPhone: res.faultFeedbackShowList[i].faultPhone,
                                         machineNumber: res.faultFeedbackShowList[i].machineNumber,
-                                        machineAddr: res.faultFeedbackShowList[i].machineAddr,
-                                        faultTime: res.faultFeedbackShowList[i].faultTime,
+                                        // machineAddr: res.faultFeedbackShowList[i].machineAddr,
+                                        faultTime: ym.init.getDateTime(res.faultFeedbackShowList[i].faultTime),
                                         faultContent: res.faultFeedbackShowList[i].faultContent,
                                         orderId: res.faultFeedbackShowList[i].orderId
                                     })
                                 }
                                 break;
-                            case `find_coupon_list`:
+                            case `find_coupon_list`:  //coupon list
                                 for (let i = 0; i < res.couponInfoList.length; i++) {
                                     xml.push({
                                         couponId: res.couponInfoList[i].couponId,
                                         couponName: res.couponInfoList[i].couponName,
                                         couponType: res.couponInfoList[i].couponType,
                                         couponRangeName: res.couponInfoList[i].couponRangeName,
-                                        couponMoney: res.couponInfoList[i].couponMoney,
-                                        couponTime: res.couponInfoList[i].couponTime
+                                        couponMoney: parseFloat(res.couponInfoList[i].couponMoney / 100).toFixed(2),
+                                        couponTime: res.couponInfoList[i].couponTime +`( `+ it.StatusName.get('time').couponTime.get(res.couponInfoList[i].timeUnit)+ ` )` 
                                     })
                                 }
                                 break;
-                            case `find_order_list`:
+                            case `find_order_list`:  //order list
                                 for (let i = 0; i < res.orders.length; i++) {
                                     xml.push({
                                         orderId: res.orders[i].orderId,
-                                        spendingMoney: res.orders[i].spendingMoney,
-                                        paymentMoney: res.orders[i].paymentMoney,
+                                        spendingMoney: parseFloat(res.orders[i].spendingMoney).toFixed(2),
+                                        paymentMoney: parseFloat(res.orders[i].paymentMoney).toFixed(2),
                                         paymentType: res.orders[i].paymentType,
                                         consumptionType: res.orders[i].consumptionType,
                                         orderStatus: res.orders[i].orderStatus,
@@ -491,7 +506,7 @@ new Vue({
                                     })
                                 }
                                 break;
-                            case `refund_order_list`:
+                            case `refund_order_list`:  // refund order
                                 for (let i = 0; i < res.list.length; i++) {
                                     xml.push({
                                         orderId: res.list[i].orderId,
@@ -499,18 +514,18 @@ new Vue({
                                         createTime: res.list[i].createTime,
                                         paymentTime: res.list[i].paymentTime,
                                         refundTime: res.list[i].refundTime,
-                                        refundMoney: res.list[i].refundMoney,
-                                        refundType: res.list[i].refundType,
+                                        refundMoney: parseFloat(res.list[i].refundMoney).toFixed(2),
+                                        refundType: (res.list[i].refundType == -1 ? '未知' : res.list[i].refundType),
                                         refundStatus: res.list[i].refundStatus,
                                         orderType: res.list[i].orderType
                                     })
                                 }
                                 break;
-                            case `statistics_list`:
+                            case `statistics_list`:  //order charts list
                                 for (let i = 0; i < res.statisticsList.length; i++) {
                                     xml.push({
                                         statisticsId: res.statisticsList[i].statisticsId,
-                                        statisticsTime: res.statisticsList[i].statisticsTime,
+                                        statisticsTime: ym.init.getDateTime(res.statisticsList[i].statisticsTime).split(' ')[0],
                                         statisticsDate: res.statisticsList[i].statisticsDate,
                                         statisticsMachine: res.statisticsList[i].statisticsMachine,
                                         adminName: res.statisticsList[i].adminName,
@@ -526,7 +541,7 @@ new Vue({
                                     })
                                 }
                                 break;
-                            case `manage_dividend_list`:
+                            case `manage_dividend_list`:  //share in the benefit or profit
                                 for (let i = 0; i < res.dList.length; i++) {
                                     xml.push({
                                         dId: res.dList[i].dId,
@@ -540,7 +555,7 @@ new Vue({
                                     })
                                 }
                                 break;
-                            case `maintainer_list`:
+                            case `maintainer_list`:  //maintainer users list
                                 for (let i = 0; i < res.maintainerList.length; i++) {
                                     xml.push({
                                         maintainerId: res.maintainerList[i].maintainerId,
@@ -551,11 +566,12 @@ new Vue({
                                         maintainerStatus: res.maintainerList[i].maintainerStatus,
                                         auditStatus: res.maintainerList[i].auditStatus,
                                         royaltyRate: res.maintainerList[i].royaltyRate,
-                                        auditAdminName: res.maintainerList[i].auditAdminName
+                                        auditAdminName: res.maintainerList[i].auditAdminName,
+                                        bindMachine: (res.maintainerList[i].bindMachine == -1 ? '无' : res.maintainerList[i].bindMachine)
                                     })
                                 }
                                 break;
-                            case `material_log_list`:
+                            case `material_log_list`:  //material logs
                                 for (let i = 0; i < res.materialLog.length; i++) {
                                     xml.push({
                                         materialLogId: res.materialLog[i].materialLogId,
@@ -564,31 +580,31 @@ new Vue({
                                         productId: res.materialLog[i].productId,
                                         productName: res.materialLog[i].productName,
                                         orderId: res.materialLog[i].orderId,
-                                        createTime: res.materialLog[i].createTime,
+                                        createTime: ym.init.getDateTime(res.materialLog[i].createTime),
                                         materialDeductionList: (() => {
-                                            let _arr = [];
-                                            res.materialLog[i].materialDeductionList.forEach(_val => {
-                                                _arr.push({
-                                                    '料仓': _val.bunkerName,
-                                                    '扣减': _val.deduraction
-                                                });
+                                            let _arr = [], productlogs = JSON.parse(res.materialLog[i].materialDeductionList);
+                                            productlogs.forEach(_val => {
+                                                _arr.push(
+                                                    '名称：'+ _val.bunkerName,
+                                                    '---扣减量：'+ _val.deduraction +'---'
+                                                );
                                             })
-                                            return JSON.stringify(_arr)
+                                            return _arr
                                         })()
                                     })
                                 }
                                 break;
-                            case `machine_runtime_list`:
+                            case `machine_runtime_list`:  // machine run time logs
                                 for (let i = 0; i < res.runtimeList.length; i++) {
                                     xml.push({
                                         runtimeId: res.runtimeList[i].runtimeId,
                                         machineSn: res.runtimeList[i].machineSn,
                                         machineNumber: res.runtimeList[i].machineNumber,
-                                        machineType: res.runtimeList[i].machineType,
-                                        createTime: res.runtimeList[i].createTime,
-                                        endTime: res.runtimeList[i].endTime,
+                                        machineType: it.StatusName.get('free').machineType.get(res.runtimeList[i].machineType),
+                                        createTime: ym.init.getDateTime(res.runtimeList[i].createTime),
+                                        endTime: (res.runtimeList[i].endTime ? ym.init.getDateTime(res.runtimeList[i].endTime) : '无'),
                                         limitShow: res.runtimeList[i].limitShow,
-                                        status: res.runtimeList[i].status
+                                        status: it.StatusName.get('time').machineRun.get(res.runtimeList[i].status)
                                     })
                                 }
                                 break;
@@ -660,12 +676,12 @@ new Vue({
                                                 it.TableFormData.push({
                                                     productId: element.productId,
                                                     productName: element.productName,
-                                                    productPrice: element.productPrice,
+                                                    productPrice: parseFloat(element.productPrice / 100).toFixed(2),
                                                     formulaName: element.formulaName,
                                                     bunkerNumber: element.bunkerNumber,
-                                                    createTime: element.createTime,
+                                                    createTime: ym.init.getDateTime(element.createTime).split(' ')[0],
                                                     productRank: element.productRank,
-                                                    machineType: element.machineType
+                                                    machineType: it.StatusName.get('free').machineType.get(element.machineType)
                                                 });
                                             });
                                         })() :
@@ -694,20 +710,20 @@ new Vue({
                                                 it.UpdateTableFormData.push({
                                                     productId: element.productId,
                                                     productName: element.productName,
-                                                    productPrice: element.productPrice,
+                                                    productPrice: parseFloat(element.productPrice / 100).toFixed(2),
                                                     productPicurl: element.productPicurl,
                                                     formulaName: element.formulaName,
                                                     bunkerNumber: element.bunkerNumber,
-                                                    createTime: element.createTime,
+                                                    createTime: ym.init.getDateTime(element.createTime).split(' ')[0],
                                                     productRank: element.productRank,
-                                                    machineType: (element.machineType != 1 ? "小型桌面机" : "大型柜式机"),
+                                                    machineType: it.StatusName.get('free').machineType.get(element.machineType),
                                                     productComment: element.productComment
                                                 });
                                                 if (res.productIdList) {
                                                     res.productIdList.forEach(e => {
                                                         if (e == element.productId) {
                                                             it.$nextTick(function () {
-                                                                it.tableChecked(3);  //每次更新了数据，触发这个函数即可。
+                                                                it.tableChecked(index);  //每次更新了数据，触发这个函数即可。
                                                             });
                                                         }
                                                     })
@@ -776,7 +792,7 @@ new Vue({
                             break;
                     }
                     break;
-                case 'manage_advertisement_list_list':   //视频广告清单
+                case 'manage_advertisement_list_list':   //machine vedio detail list
                     switch (e._type) {
                         case "A":
                             _data['type'] = 6;
@@ -821,11 +837,11 @@ new Vue({
                                                 it.TableFormData.push({
                                                     madId: element.madId,
                                                     madOrder: element.madOrder,
-                                                    madSize: element.madSize,
-                                                    madStatus: element.madStatus,
-                                                    madTime: element.madTime,
+                                                    // madSize: element.madSize,  //视频大小
+                                                    madStatus: (element.madStatus ? '上架' : '下架'),
+                                                    madTime: ym.init.getDateTime(element.madTime).split(' ')[0],
                                                     madTitle: element.madTitle,
-                                                    madType: element.madType,
+                                                    // madType: element.madType,  //广告类型
                                                     madUrl: element.madUrl
                                                 });
                                             });
@@ -855,11 +871,11 @@ new Vue({
                                                 it.UpdateTableFormData.push({
                                                     madId: element.madId,
                                                     madOrder: element.madOrder,
-                                                    madSize: element.madSize,
-                                                    madStatus: element.madStatus,
-                                                    madTime: element.madTime,
+                                                    // madSize: element.madSize,
+                                                    madStatus: (element.madStatus ? '上架' : '下架'),
+                                                    madTime: ym.init.getDateTime(element.madTime).split(' ')[0],
                                                     madTitle: element.madTitle,
-                                                    madType: element.madType,
+                                                    // madType: element.madType,
                                                     madUrl: element.madUrl
                                                 });
                                                 if (res.adIdList) {
@@ -942,6 +958,7 @@ new Vue({
         handleSelectionChange(val) {  //下拉选项
             this.multipleSelection = val;
             this.productCount = val.length;
+            if(uri == 'manage_prodcut_list_list') return false;   //阻止继续渲染清单的操作
             this.productId = [];
             this.adIds = [];
             this.machineNumber = [];
@@ -1467,7 +1484,7 @@ new Vue({
             const it = this;
             switch (_event._uri) {
                 case 'manage_machine_advertisement':
-                    if (!_event._status) {
+                    if (!_event.hasOwnProperty('_status')) {
                         _data['madId'] = _event._parameter
                         _data['type'] = _event._type
                         ym.init.XML({
@@ -1490,7 +1507,7 @@ new Vue({
                     } else { //madStatus
                         _data['madId'] = _event._parameter
                         _data['type'] = _event._type
-                        _data['madStatus'] = _event._status
+                        _data['madStatus'] = +!_event._status
                         ym.init.XML({
                             method: 'POST',
                             uri: token._j.URLS.Development_Server_ + _event._uri,
@@ -1498,6 +1515,8 @@ new Vue({
                             xmldata: _data,
                             done: function (res) {
                                 ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
+                                    delete _data['madId'];
+                                    delete _data['madStatus'];
                                     it.list()
                                 })() :
                                     it.IError(res.statusCode.msg);

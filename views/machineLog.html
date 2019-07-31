@@ -19,13 +19,14 @@
 
 
 <body class="_scrollbar">
-    <div id="c-container-list" style="height: 100%;" data-uri="machine_runtime_list">
+    <div id="c-container-list" style="height: 100%;" data-uri="machine_runtime_list"
+        v-loading.fullscreen.lock="loading">
         <el-container>
             <el-main>
                 <el-form>
                     <el-input placeholder="请输入内容" v-model="searchVal" class="_searchVal">
                         <el-select v-model="searchName" class="_searchVal_select" slot="prepend" placeholder="请选择">
-                            <el-option label="ID" value="name"></el-option>
+                            <el-option label="设备编号" value="machineNumber"></el-option>
                         </el-select>
                     </el-input>
 
@@ -39,9 +40,12 @@
                         <el-table-column prop="machineNumber" label="机器编号"></el-table-column>
                         <el-table-column prop="machineType" label="设备类型">
                             <template slot-scope="scope">
-                                <el-tag>
-                                    {{ scope.row.machineType == 1 ? '大型柜式机' : '小型桌面机' }}
-                                </el-tag>
+                                <div slot="reference" class="name-wrapper">
+                                    <el-badge :value="scope.row.machineType[0] == '大' ? 'B' : 'S'"
+                                        :type="scope.row.machineType[0] == '大' ? 'danger' : 'primary'" class="item">
+                                        <el-tag size="medium">{{ scope.row.machineType }}</el-tag>
+                                    </el-badge>
+                                </div>
                             </template>
                         </el-table-column>
                         <el-table-column prop="createTime" label="创建时间"></el-table-column>
@@ -49,7 +53,7 @@
                         <el-table-column prop="limitShow" label="时间间隔"></el-table-column>
                         <el-table-column prop="status" label="状态">
                             <template slot-scope="scope">
-                                <el-tag>{{ scope.row.status == 1 ? '正常' : '故障' }}</el-tag>
+                                <el-tag>{{ scope.row.status }}</el-tag>
                             </template>
                         </el-table-column>
                     </el-table>

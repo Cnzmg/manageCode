@@ -213,7 +213,18 @@ new Vue({
                                     type: 'line',
                                     stack: '总量',
                                     areaStyle: {},
-                                    data: _content
+                                    data: _content,
+                                    markPoint: {
+                                        data: [
+                                            { type: 'max', name: '最大值' },
+                                            { type: 'min', name: '最小值' }
+                                        ]
+                                    },
+                                    markLine: {
+                                        data: [
+                                            { type: 'average', name: '平均值' }
+                                        ]
+                                    }
                                 }
                             ]
                         };
@@ -650,14 +661,15 @@ new Vue({
                         xmldata: _data,
                         done: function (res) {
                             try {
+                                res.statusCode.status == 0o10534 ? res.statusCode.status = 0o15012 : null;   //判空调用
                                 ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
-                                    _contentBt.unused = res.unused
-                                    _contentBt.used = res.used
-                                    _contentBt.due = res.due
+                                    _contentBt.unused = res.unused || 0
+                                    _contentBt.used = res.used || 0
+                                    _contentBt.due = res.due || 0
                                     let _date = ym.init.getAllDate(it.userCharts[0].split(' ')[0], it.userCharts[1].split(' ')[0]);
                                     for (let i = 0; i < _date.length; i++) {
                                         _DayTime.push(_date[i]);  //记录日期
-                                        _contentBt.Sum.push(0); //0 
+                                        _contentBt.Sum.push(0);  //0 
                                         for (let j of res.dataList) {
                                             if (_date[i] == j.date) {
                                                 _contentBt.Sum[i] = j.count; //总数量
@@ -670,7 +682,7 @@ new Vue({
                                         throw "收集到错误：\n\n" + res.statusCode.msg;
                                     })()
                             } catch (error) {
-                                it.IError(error);
+                                // it.IError(error);
                             }
                         }
                     });
@@ -828,8 +840,8 @@ new Vue({
                                         rCouponId: res.logList[i].rCouponId,
                                         couponId: res.logList[i].couponId,
                                         couponName: res.logList[i].couponName,
-                                        couponTime: res.logList[i].couponTime,
-                                        status: res.logList[i].status
+                                        couponTime: (res.logList[i].couponTime ? ym.init.getDateTime(res.logList[i].couponTime) : ''),
+                                        status: (res.logList[i].status ? '未使用' : '已使用')
                                     })
                                 }
                                 break;

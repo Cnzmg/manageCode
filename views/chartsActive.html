@@ -19,8 +19,8 @@
 
 
 <body class="_scrollbar">
-    <div id="c-container-list" style="height: 100%;" data-uri="get_activity_list">
-        <el-container v-loading.fullscreen.lock="loading">
+    <div id="c-container-list" style="height: 100%;" data-uri="get_activity_list" v-loading.fullscreen.lock="loading">
+        <el-container>
             <el-main>
                 <template>
                     <el-table :data="tableData" stripe style="width: 100%">
