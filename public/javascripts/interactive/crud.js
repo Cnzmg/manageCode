@@ -244,13 +244,15 @@ new Vue({
                 { color: '#1989fa', percentage: 80 },
                 { color: '#6f7ad3', percentage: 100 }
             ],
-            longStatus: [],
+            longStatus: [],  //大机器状态
+            longStatusSm: [], //小机器状态
             SearchAsyncMachineNumber: (uri == 'manage_poi' ? querySearchAsyncMachineNumber() : []),
             timeLimShow: false,   //会员添加
             numLength: 1,
             cTypeShow: true,
             tableData: [],
-            SearchProduct: dataHref.split('*').length > 1 ? false : true
+            SearchProduct: dataHref.split('*').length > 1 ? false : true,
+            bigAndsmall: true,
         }
     },
     created: function () {
@@ -377,7 +379,7 @@ new Vue({
                     _data['type'] = 3;
                     _data['machineNumber'] = JSON.parse(e).machineNumber;
                     break;
-                case 'remote_operation':  
+                case 'remote_operation':
                     _data['type'] = 1;
                     _data['machineNumber'] = JSON.parse(e).machineNumber;
                     break;
@@ -557,27 +559,48 @@ new Vue({
 
                                 break;
                             case 'remote_operation':
-                                res = `{"machineStatus":{"boilerTemperature":"89.8度","boilerPressure":"2804mbar","traffic":"0.0","machineStatus":"正常待机","failureStatus":"App运行崩溃","bootTime":"19天2时40分","cumulativeTime":"0秒","systemSwitchboardRevisionNumber":"0","systemSwitchboardHardwareNumber":"0","burstBubbleBoardRevisionNumber":"0","burstBubbleBoardHardwareNumber":"0","productAllowedStatus":"00C0","sensorStatus":"67FF1800","version":"20","faultTime":"无故障","iofirmwareRevisionNumber":"66","iohardwareNumber":"20","cpufirmwareRevisionNumber":"37","cpuhardwareNumber":"20"},"machineConfig":{"hotWaterTemperature":"90.0度","coffeeBrewPressure":"100mbpa","automaticCleanTimeInterval":"9000分钟","bubbleTemperature":"0.0度","bubbleCrowdedCakeForce":"800","bubbleCrowdedCakeTime":"7.0秒","bubbleReturnTime":"2.0秒","bubbleReCrowdedTime":"0.2秒","trayValue":"15","cupKispensor":"96","reCupNum":"96","gearPumpTime":"0.6秒","gearPumpMaxPower":"16","valveOpenAfterBlenderDelayTime":"12.7秒","freshWaterAfterBlenderDelayTime":"0.4秒","fanSpeed":"35","teaInfuserAirPumpSpeed":"127","teaInfuserBetweenTime":"8.0秒","airPumpGassingTime":"2.0秒","coffeeWaterRatio":"250","coffeeBrewTime":"0.0秒","startUpWash":"否","uvlampOpenTime":"80分钟","uvlampCloseTime":"50分钟"},"canister":[92.0,1500.0,640.0,1000.0,1004.3,1500.0,717.8,1000.0,595.3,800.0,146.6,400.0,274.0,857.0,60.0,100.0,600.0,35000.0],"statusCode":{"status":6666,"msg":"查询成功"}}`;
-                                res = JSON.parse(res);
-                                it.longStatus.push({
-                                    boilerTemperature: res.machineStatus.boilerTemperature,
-                                    machineStatus: res.machineStatus.machineStatus,
-                                    failureStatus: res.machineStatus.failureStatus,
-                                    bootTime: res.machineStatus.bootTime,
-                                    canister: {
-                                        at: [+parseFloat(res.canister[0] / res.canister[1] * 100).toFixed(2), res.canister[1]],
-                                        bt: [+parseFloat(res.canister[2] / res.canister[3] * 100).toFixed(2), res.canister[3]],
-                                        ct: [+parseFloat(res.canister[4] / res.canister[5] * 100).toFixed(2), res.canister[5]],
-                                        dt: [+parseFloat(res.canister[6] / res.canister[7] * 100).toFixed(2), res.canister[7]],
-                                        et: [+parseFloat(res.canister[8] / res.canister[9] * 100).toFixed(2), res.canister[9]],
-                                        ft: [+parseFloat(res.canister[10] / res.canister[11] * 100).toFixed(2), res.canister[11]],
-                                        gt: [+parseFloat(res.canister[12] / res.canister[13] * 100).toFixed(2), res.canister[13]],
-                                        ht: [+parseFloat(res.canister[14] / res.canister[15] * 100).toFixed(2), res.canister[15]],
-                                        it: [+parseFloat(res.canister[16] / res.canister[17] * 100).toFixed(2), res.canister[17]],
-                                        version: res.machineStatus.version,
-                                        machineNumber: JSON.parse(e).machineNumber
+                                try {
+                                    if (JSON.parse(e).machineNumber[0] == '2') {
+                                        it.bigAndsmall = false;
+                                        it.longStatusSm.push({
+                                            machineStatus: res.machineStatus,
+                                            faultTime: res.faultTime,
+                                            canisterSm: {
+                                                at: [+parseFloat(res.canister[0] / res.canister[1] * 100).toFixed(2), res.canister[1]],
+                                                bt: [+parseFloat(res.canister[2] / res.canister[3] * 100).toFixed(2), res.canister[3]],
+                                                ct: [+parseFloat(res.canister[4] / res.canister[5] * 100).toFixed(2), res.canister[5]],
+                                                version: res.version,
+                                                machineNumber: JSON.parse(e).machineNumber,
+                                                machinePwd: res.machinePwd
+                                            }
+                                        })
+                                    } else {
+                                        // res = `{"machineStatus":{"boilerTemperature":"89.8度","boilerPressure":"2804mbar","traffic":"0.0","machineStatus":"正常待机","failureStatus":"App运行崩溃","bootTime":"19天2时40分","cumulativeTime":"0秒","systemSwitchboardRevisionNumber":"0","systemSwitchboardHardwareNumber":"0","burstBubbleBoardRevisionNumber":"0","burstBubbleBoardHardwareNumber":"0","productAllowedStatus":"00C0","sensorStatus":"67FF1800","version":"20","faultTime":"无故障","iofirmwareRevisionNumber":"66","iohardwareNumber":"20","cpufirmwareRevisionNumber":"37","cpuhardwareNumber":"20"},"machineConfig":{"hotWaterTemperature":"90.0度","coffeeBrewPressure":"100mbpa","automaticCleanTimeInterval":"9000分钟","bubbleTemperature":"0.0度","bubbleCrowdedCakeForce":"800","bubbleCrowdedCakeTime":"7.0秒","bubbleReturnTime":"2.0秒","bubbleReCrowdedTime":"0.2秒","trayValue":"15","cupKispensor":"96","reCupNum":"96","gearPumpTime":"0.6秒","gearPumpMaxPower":"16","valveOpenAfterBlenderDelayTime":"12.7秒","freshWaterAfterBlenderDelayTime":"0.4秒","fanSpeed":"35","teaInfuserAirPumpSpeed":"127","teaInfuserBetweenTime":"8.0秒","airPumpGassingTime":"2.0秒","coffeeWaterRatio":"250","coffeeBrewTime":"0.0秒","startUpWash":"否","uvlampOpenTime":"80分钟","uvlampCloseTime":"50分钟"},"canister":[92.0,1500.0,640.0,1000.0,1004.3,1500.0,717.8,1000.0,595.3,800.0,146.6,400.0,274.0,857.0,60.0,100.0,600.0,35000.0],"statusCode":{"status":6666,"msg":"查询成功"}}`;
+                                        // res = JSON.parse(res);
+                                        it.longStatus.push({
+                                            boilerTemperature: res.machineStatus.boilerTemperature,
+                                            machineStatus: res.machineStatus.machineStatus,
+                                            failureStatus: res.machineStatus.failureStatus,
+                                            bootTime: res.machineStatus.bootTime,
+                                            canister: {
+                                                at: [+parseFloat(res.canister[0] / res.canister[1] * 100).toFixed(2), res.canister[1]],
+                                                bt: [+parseFloat(res.canister[2] / res.canister[3] * 100).toFixed(2), res.canister[3]],
+                                                ct: [+parseFloat(res.canister[4] / res.canister[5] * 100).toFixed(2), res.canister[5]],
+                                                dt: [+parseFloat(res.canister[6] / res.canister[7] * 100).toFixed(2), res.canister[7]],
+                                                et: [+parseFloat(res.canister[8] / res.canister[9] * 100).toFixed(2), res.canister[9]],
+                                                ft: [+parseFloat(res.canister[10] / res.canister[11] * 100).toFixed(2), res.canister[11]],
+                                                gt: [+parseFloat(res.canister[12] / res.canister[13] * 100).toFixed(2), res.canister[13]],
+                                                ht: [+parseFloat(res.canister[14] / res.canister[15] * 100).toFixed(2), res.canister[15]],
+                                                it: [+parseFloat(res.canister[16] / res.canister[17] * 100).toFixed(2), res.canister[17]],
+                                                version: res.machineStatus.version,
+                                                machineNumber: JSON.parse(e).machineNumber,
+                                                machinePwd: res.machinePwd
+                                            }
+                                        })
                                     }
-                                })
+                                } catch (error) {
+                                    alert('解码异常：' + error);
+                                }
                                 break;
                             case 'manage_poi':
                                 it.ruleForm.machineLongitude = res.poi.longitude;
@@ -588,7 +611,7 @@ new Vue({
                                 it.ruleForm.machineUrl = res.poi.machineUrl;  //大楼外景图
                                 it.ruleForm.poiId = res.poi.poiId;
 
-                                if(res.poi.machineList){
+                                if (res.poi.machineList) {
                                     res.poi.numberList.split(',').forEach(el => {  //执行已选择设备回显
                                         it.ruleForm.machineNumber.push(el)
                                     });
@@ -635,7 +658,7 @@ new Vue({
                                 it.ruleForm.couponType = res.coupon.couponType; //优惠券类型
                                 it.ruleForm.couponDesc = res.coupon.couponDesc; //优惠券类型
                                 it.ruleForm.productId = res.coupon.productId; //优惠券类型
-                                
+
                                 it.ruleForm.timeUnit = res.coupon.timeUnit;//时间节点
                                 it.imageList.couponUrl.push({ name: 'couponUrl', url: res.coupon.couponUrl }); //优惠券图片
                                 it.manageCoupon(res);
@@ -990,6 +1013,26 @@ new Vue({
         },
         sendMachine(_) {  //发送控制指令
             const it = this;
+            if (_._operationType == 8) {  //发送运维状态指令 machineSn
+                _data['machineSn'] = JSON.parse(decodeURI(dataHref.split('*')[1])).machineSn;
+                if (JSON.parse(decodeURI(dataHref.split('*')[1])).runTimeStatus == 5) {
+                    _data['status'] = 6;
+                } else {
+                    _data['status'] = 5;
+                }; // 状态判定
+                // add_runtime_log
+                ym.init.XML({  //发送更改运维状态
+                    method: 'POST',
+                    uri: token._j.URLS.Development_Server_ + 'add_runtime_log',
+                    async: true,
+                    xmldata: _data,
+                    done: function (res) {
+                        it.ISuccessfull(res.statusCode.msg);
+                    }
+                });
+
+                return false;
+            }
             _data['type'] = 2;
             _data['operationType'] = _._operationType;
             ym.init.XML({

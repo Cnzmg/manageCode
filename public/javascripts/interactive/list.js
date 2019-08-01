@@ -1,3 +1,10 @@
+if (/(iPhone|iPad|iPod|iOS|Android)/i.test(navigator.userAgent)) {
+    window.onload = function (params) {
+        for(let i = 0; i < document.getElementsByClassName('el-dialog').length; i++){
+            document.getElementsByClassName('el-dialog')[i].style.width = '100%';  //iframe 里面的class 
+        }
+    }
+}
 const [
     $,
     token,
@@ -336,7 +343,8 @@ new Vue({
                                         wxacode: res.machineShowList[i].wxacode,
                                         onlineStatus: res.machineShowList[i].onlineStatus,
                                         failureStatus: res.machineShowList[i].failureStatus,
-                                        materialStatus: res.machineShowList[i].materialStatus
+                                        materialStatus: res.machineShowList[i].materialStatus,
+                                        runTimeStatus: res.machineShowList[i].runTimeStatus
                                     })
                                 }
                                 break;

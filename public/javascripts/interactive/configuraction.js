@@ -3,7 +3,6 @@ import media from '../../stylesheets/base/mediasheets.css'
 import app from '../../../app.js'
 import json from '../config/json/configuraction.json' 
 
-
 localStorage.setItem('_e',JSON.stringify(json));
 
 ym.init = {

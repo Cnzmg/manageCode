@@ -1,3 +1,25 @@
+let bools = false, time = 10, w = 2.223, c = 89.2;
+if (/(iPhone|iPad|iPod|iOS|Android)/i.test(navigator.userAgent)) {
+    window.onload = function (params) {
+        let timer = 10, uiWidth = 200, w = 80;
+        let time = setInterval(name => {
+            if (uiWidth < 1) clearInterval(time)
+            timer * 2
+            uiWidth = uiWidth - timer
+            w = w + timer
+            document.getElementById('menui').style.width = (uiWidth - timer) + 'px';
+            document.getElementById('content').style.width = (w + timer) + "%";
+            document.getElementById('tagMenu').style.display = 'none';
+            document.getElementsByClassName('el-submenu__title')[0].innerHTML = '<i class="el-icon-user"></i>';
+            for (let i = 0; i < document.getElementsByClassName('el-dialog').length; i++) {
+                document.getElementsByClassName('el-dialog')[i].style.width = '100%';
+            }
+        }, 0)  // 最后执行
+    }
+} else {
+    bools = true;
+    document.getElementById('ym-menu-left').childNodes[0].style.transform = "rotate(90deg)";
+}
 const _data = {
     id: ym.init.COMPILESTR.decrypt(all.json.id),
     token: ym.init.COMPILESTR.decrypt(all.json.asset),
@@ -10,6 +32,7 @@ new Vue({
             loading: false,
             imageShow: false,
             UpdateVisible: false,
+            screenViews: '全屏显示',
             DataVisible: {
                 realName: '',
                 adminMobile: '',
@@ -124,7 +147,7 @@ new Vue({
         Error(err) {
             this.$message.error('错了哦，' + err);
         },
-        IsuccessFull(e){
+        IsuccessFull(e) {
             this.$message({
                 message: '成功了哦!,' + e,
                 type: 'success'
@@ -200,7 +223,7 @@ new Vue({
                 _data['realName'] = _event.DataVisible.realName || '';
                 _data['userId'] = it.DataVisible.userId;
                 _data['type'] = 2;
-            }else{
+            } else {
                 _data['type'] = 1;
             }
             _data['url'] = '/manage/information.html';
@@ -210,24 +233,44 @@ new Vue({
                 async: false,
                 xmldata: _data,
                 done: function (res) {
-                    if(_event.en == 'pull'){
-                        it.DataVisible.adminMobile = res.adminUser.adminMobile; 
-                        it.DataVisible.realName = res.adminUser.realName; 
+                    if (_event.en == 'pull') {
+                        it.DataVisible.adminMobile = res.adminUser.adminMobile;
+                        it.DataVisible.realName = res.adminUser.realName;
                         it.DataVisible.userId = res.adminUser.userId;
                         it.DataVisible.state = res.adminUser.nickName;
-                    }else{
+                    } else {
                         let i = 4, delay = 1000;
                         setInterval(() => {
                             i--;
                             it.IsuccessFull(res.statusCode.msg + `${i}s 后自动跳转到登陆页面`);
-                            if(i < 1){
+                            if (i < 1) {
                                 window.location.href = `../../login.htm?:hash(-kill-1)`;
                             }
-                        },delay)
+                        }, delay)
                         it.UpdateVisible = false;
                     }
                 }
             })
+        },
+        screenView(element) {  //全屏查看
+            element = document.documentElement;
+            if (element.requestFullscreen) {
+                element.requestFullscreen();
+            } else if (element.mozRequestFullScreen) {
+                element.mozRequestFullScreen();
+            } else if (element.webkitRequestFullscreen) {
+                element.webkitRequestFullscreen();
+            } else if (element.msRequestFullscreen) {
+                element.msRequestFullscreen();
+            }
+
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            } else if (document.mozCancelFullScreen) {
+                document.mozCancelFullScreen();
+            } else if (document.webkitExitFullscreen) {
+                document.webkitExitFullscreen();
+            }
         }
     }
 });
@@ -304,3 +347,25 @@ function tag() {
         alert(error);
     }
 }
+document.getElementById('ym-menu-left').addEventListener('click', function (params) {
+    console.log(time)
+    if (bools) {
+        bools = false;
+        let _o = setInterval(() => {
+            if (time < 1) clearInterval(_o)
+            this.childNodes[0].style.transform = "rotate(" + time-- + "deg)";
+            // document.getElementById('menui').style.width = parseInt(w * time) +'px';
+            document.getElementById('content').style.width = '100%';
+            document.getElementById('menui').style.width = '0px';
+        }, 0);
+    } else {
+        bools = true;
+        let _ = setInterval(() => {
+            if (time > 89) clearInterval(_)
+            this.childNodes[0].style.transform = "rotate(" + time++ + "deg)";
+            // document.getElementById('menui').style.width = parseInt(w * time) + 'px';
+            document.getElementById('menui').style.width = '200px';
+            document.getElementById('content').style.width = c + '%';
+        }, 0);
+    }
+})

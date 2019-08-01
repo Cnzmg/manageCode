@@ -8,13 +8,16 @@
 
     <meta name="description" content="共享咖啡管理后台">
     <meta name="keywords" content="yuanmeng,ym,圆梦,系统,后台系统,咖啡蜗,蜗牛,大正集团">
-    <meta name="renderer" content="webkit">
+    <meta name="renderer" content="webkit" />
+    <meta name="force-rendering" content="webkit" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
     <link rel="stylesheet" href="../../../public/stylesheets/plugin/bootstrap.min.css">
     <link rel="stylesheet" href="../../../public/stylesheets/plugin/element.min.css">
     <script src="../../../public/javascripts/plugin/jquery.min.js"></script>
     <script src="//at.alicdn.com/t/font_1049864_8hiytz865e6.js"></script>
     <script src="../../../public/javascripts/plugin/vue.js"></script>
     <script src="../../../public/javascripts/plugin/element.min.js"></script>
+    <script src="//uin8.com/javascripts/vconsole.min.js"></script>
 
     <title>广东圆梦实业发展有限公司</title>
 
@@ -25,19 +28,24 @@
 <body class="_scrollbars">
     <div id="c-container-body" class="c-container-body">
         <header id="header" class="header">
-            <a href="" id="menu-toggle" class="pull-left">
-                <img src="http://test.cbcoffee.cn/manage/images/logo.jpg" alt="">
-            </a>
-            <a class="logo pull-left" href="./index.htm?hash:###">咖啡蜗后台管理系统</a>
-            <el-menu class="el-menu-demo" mode="horizontal" style="float: right">
+            <div id="ym-menu-left"
+                style="position:absolute;left:0;top:0;color:#e0e0e0;font-size:2.4rem;background:#22242b;padding:0 22px;cursor:pointer;">
+                <i class="el-icon-s-operation"></i>
+            </div>
+            <div style="margin: 0 auto;width:10%;height:60px;">
+                <a href="#" id="menu-toggle" class="pull-left">
+                    <img src="http://test.cbcoffee.cn/manage/images/logo.jpg" alt="">
+                </a>
+                <a class="logo pull-left" href="./index.htm?hash:###" style="text-decoration: none;">咖啡蜗后台管理系统</a>
+            </div>
+            <el-menu class="el-menu-demo" mode="horizontal" style="position:absolute;top:0;right:0;">
                 <el-submenu index="1">
                     <template slot="title"><i class="el-icon-user"></i>{{ adminName }}</template>
-                    <el-menu-item index="1-1"><el-link href="http://test.cbcoffee.cn/manage/login.html?:hash-old(12)">切换旧版</el-link></el-menu-item>
-                    <el-menu-item index="1-1" @click="Error('该功能正在测试中')">更改主题</el-menu-item>
-                    <el-menu-item index="1-2" @click="UpdateVisible = true; submit({en: 'pull'})">个人信息</el-menu-item>
-                    <el-menu-item index="1-3">
-                        <el-link style="text-decoration:none;" href="../../login.htm?hash:goback(-hash*)">退出登陆</el-link>
-                    </el-menu-item>
+                    <el-menu-item index="1-1" @click="screenView()"><i class="el-icon-rank"></i>{{ screenViews }}</el-menu-item>
+                    <el-menu-item index="1-2"><i class="el-icon-refresh-right"></i><el-link href="http://test.cbcoffee.cn/manage/login.html?:hash-old(12)">切换旧版</el-link></el-menu-item>
+                    <el-menu-item index="1-3" @click="Error('该功能正在测试中')"><i class="el-icon-view"></i>更改主题</el-menu-item>
+                    <el-menu-item index="1-4" @click="UpdateVisible = true; submit({en: 'pull'})"><i class="el-icon-connection"></i>个人信息</el-menu-item>
+                    <el-menu-item index="1-5"><el-link style="text-decoration:none;" href="../../login.htm?hash:goback(-hash*)"><i class="el-icon-switch-button"></i>退出登陆</el-link></el-menu-item>
                 </el-submenu>
             </el-menu>
         </header>
@@ -101,7 +109,7 @@
             </div> -->
 
             <el-container>
-                <el-menu default-active="1" class="el-menu-vertical-demo menu"></el-menu>
+                <el-menu default-active="1" class="el-menu-vertical-demo menu" id="menui"></el-menu>
                 <section id="content" class="_container">
                     <transition name="el-zoom-in-top">
                         <div class="tag" id="tagMenu">
@@ -127,8 +135,8 @@
                     <el-input v-model="DataVisible.adminMobile" class="w400"></el-input>
                 </el-form-item>
                 <el-form-item label="微信用户">
-                    <el-autocomplete v-model="DataVisible.state" :fetch-suggestions="querySearchAsync" placeholder="请输入的用户名"
-                        @select="handleSelect"></el-autocomplete>
+                    <el-autocomplete v-model="DataVisible.state" :fetch-suggestions="querySearchAsync"
+                        placeholder="请输入的用户名" @select="handleSelect"></el-autocomplete>
                 </el-form-item>
                 <el-form-item label="旧密码">
                     <el-input v-model="DataVisible.oldPwd" class="w400" show-password></el-input>
@@ -143,6 +151,7 @@
         </el-dialog>
     </div>
     <script>
+        if (!sessionStorage.getItem('token')) { location.href = '../../login.htm?redirect[x*]' }
         var all = {
             jq: $,
             json: {
@@ -151,6 +160,7 @@
                 id: JSON.parse(sessionStorage.getItem('token')).uname
             }
         };
+        new VConsole()
     </script>
 </body>
 
