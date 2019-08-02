@@ -599,7 +599,9 @@ new Vue({
                                         })
                                     }
                                 } catch (error) {
-                                    alert('解码异常：' + error);
+                                    error = `${error}。收集到可能的错误源：机器离线`;
+                                    it.IError('解码异常：' + error);
+                                    return false;
                                 }
                                 break;
                             case 'manage_poi':

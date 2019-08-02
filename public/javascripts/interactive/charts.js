@@ -151,7 +151,7 @@ new Vue({
                                         if(res.package.content == 0) continue
                                         for (let j of res.package.content) {
                                             if (_ate[i] == j.moneyDay) {
-                                                _content[i] = 666; //对应的数值
+                                                _content[i] = j.money; //对应的数值
                                             }
                                         }
                                     }

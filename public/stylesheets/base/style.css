@@ -1,3 +1,4 @@
+@charset "UTF-8";
 html, body {
   height: 100%;
   background: #2a2d35;
@@ -282,8 +283,17 @@ ul, ol {
   height: 40px;
   line-height: 40px;
   background: #5e636d;
-  /* overflow-x: auto; */
   cursor: pointer;
+  white-space: nowrap;
+  -webkit-overflow-scrolling: touch;
+  overflow-x: auto;
+  overflow-y: hidden;
+  overflow: -moz-scrollbars-none;
+  overflow: -moz-scrollbars-none;
+}
+
+.tag::-webkit-scrollbar {
+  display: none;
 }
 
 .tag-con-ul {
@@ -292,6 +302,7 @@ ul, ol {
   position: relative;
   padding: 0 !important;
   overflow-x: auto;
+  margin: 0;
 }
 
 .tag ul li {
@@ -301,6 +312,15 @@ ul, ol {
   float: left;
   background: #d4d6da;
   border-right: 1px solid #fff;
+  -moz-user-select: none;
+  /*火狐*/
+  -webkit-user-select: none;
+  /*webkit浏览器*/
+  -ms-user-select: none;
+  /*IE10*/
+  -khtml-user-select: none;
+  /*早期浏览器*/
+  user-select: none;
 }
 
 .tag ul li i {
@@ -316,6 +336,23 @@ ul, ol {
 
 .el-main {
   padding: 0 !important;
+}
+
+._menu_ {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  background: #a0a0a0;
+  z-index: 9;
+  line-height: 40px;
+}
+
+._menu_left {
+  left: 0;
+}
+
+._menu_right {
+  right: 0;
 }
 
 ._scrollbars::-webkit-scrollbar {

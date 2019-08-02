@@ -9,7 +9,6 @@ if (/(iPhone|iPad|iPod|iOS|Android)/i.test(navigator.userAgent)) {
             w = w + timer
             document.getElementById('menui').style.width = (uiWidth - timer) + 'px';
             document.getElementById('content').style.width = (w + timer) + "%";
-            document.getElementById('tagMenu').style.display = 'none';
             document.getElementsByClassName('el-submenu__title')[0].innerHTML = '<i class="el-icon-user"></i>';
             for (let i = 0; i < document.getElementsByClassName('el-dialog').length; i++) {
                 document.getElementsByClassName('el-dialog')[i].style.width = '100%';
@@ -33,6 +32,7 @@ new Vue({
             imageShow: false,
             UpdateVisible: false,
             screenViews: '全屏显示',
+            maxWidth: false,
             DataVisible: {
                 realName: '',
                 adminMobile: '',
@@ -62,7 +62,6 @@ new Vue({
                 location.href = '../../login.htm?hash:err(o012)';
             }, 1000);
         };
-
         //tag 权限列表
         let tag = JSON.parse(sessionStorage.getItem('tag')), _tag = '', icons = [
             'el-icon-s-cooperation',
@@ -140,7 +139,10 @@ new Vue({
             _tag += `</el-menu-item-group>
                 </el-submenu>`;
         };
-        jQuery('.menu').html(_tag);
+        document.getElementsByClassName('menu')[0].innerHTML = _tag;
+        if (!/(iPhone|iPad|iPod|iOS|Android)/i.test(navigator.userAgent)) {
+            this.maxWidth = true;
+        }
 
     },
     methods: {
@@ -154,7 +156,8 @@ new Vue({
             });
         },
         Href: function (e) {
-            jQuery('#tagHref').attr('src', e.uri);
+            document.getElementById('tagHref').setAttribute('src', e.uri);
+            document.getElementById('ym-menu-left').click();  //点击菜单
             let c = [], local = JSON.parse('[' + localStorage.getItem('uri') + ']');
             if (localStorage.getItem('uri')) {
                 for (let i = 0; i < local.length; i++) {
@@ -170,12 +173,12 @@ new Vue({
             } else {
                 localStorage.setItem('uri', JSON.stringify({ uri: e.uri, title: e.title }))
             }
-
             jQuery('#tagMenu ul').append(   //关闭按钮
                 `<li data-href="${e.uri}" class="tag_40b8ff">${e.title}<i data-click="${e.uri}"><svg class="icon icon_clone" aria-hidden="true">
                 <use xlink:href="#ym-icon-guanbi"></use>
             </svg></i></li>`
             );
+
             tag();
         },
         querySearchAsync(queryString, cb) {  //动态查询用户
@@ -271,7 +274,23 @@ new Vue({
             } else if (document.webkitExitFullscreen) {
                 document.webkitExitFullscreen();
             }
-        }
+        },
+        menuauto(element) {  //鼠标点击移动
+            let dom = document.getElementById('tagList'), dom_w = sessionStorage.getItem('dom_w') ? sessionStorage.getItem('dom_w') : sessionStorage.setItem('dom_w', dom.offsetWidth);
+            for (let index = 0; index < dom.childNodes.length; index++) {
+                switch (element) {
+                    case 'left':
+                        dom.style.right = dom_w - (dom_w - 137) + 'px';
+                        break;
+                    default:
+                        console.log(dom.style.left != +false);
+                        if(dom.style.left != +false){
+                            dom.style.left = dom_w - (dom_w + 137) + 'px';
+                        }
+                        break;
+                }
+            }
+        },
     }
 });
 
@@ -294,21 +313,28 @@ function tag() {
     jQuery('#tagMenu').show();
     let _tag = document.getElementById('tagMenu'), _href = document.getElementById('tagHref');
     try {
-        for (let i = 0; i < _tag.childNodes[0].childNodes.length; i++) {
-            if (_tag.childNodes[0].childNodes[i].getAttribute('data-href') == _href.getAttribute('src')) {  //显示当前页面的时候tag 的颜色变化
-                _tag.childNodes[0].childNodes[i].setAttribute('class', 'tag_40b8ff');
+        let dom = document.getElementById('tagList'), dom_w = dom.offsetWidth, ow = 0;
+        for (let index = 0; index < dom.childNodes.length; index++) {
+            const element = dom.childNodes[index];
+            ow = ow + dom.childNodes[index].offsetWidth
+        }
+        document.getElementById('tagList').style.width = ow + 'px';  //导航栏的宽度
+
+        for (let i = 0; i < _tag.childNodes[1].childNodes.length; i++) {
+            if (_tag.childNodes[1].childNodes[i].getAttribute('data-href') == _href.getAttribute('src')) {  //显示当前页面的时候tag 的颜色变化
+                _tag.childNodes[1].childNodes[i].setAttribute('class', 'tag_40b8ff');
             } else {
-                _tag.childNodes[0].childNodes[i].setAttribute('class', '');
+                _tag.childNodes[1].childNodes[i].setAttribute('class', '');
             }
-            if (!_tag.childNodes[0].childNodes[i].firstElementChild) {  //是否存在 del 标签
+            if (!_tag.childNodes[1].childNodes[i].firstElementChild) {  //是否存在 del 标签
                 var car = document.createElement('i');
-                car.setAttribute('data-click', _tag.childNodes[0].childNodes[i].getAttribute('data-href'));
+                car.setAttribute('data-click', _tag.childNodes[1].childNodes[i].getAttribute('data-href'));
                 car.innerHTML = `<svg class="icon icon_clone" aria-hidden="true">
                                     <use xlink:href="#ym-icon-guanbi"></use>
                                 </svg>`;
-                _tag.childNodes[0].childNodes[i].appendChild(car);  //执行添加del 标签节点
+                _tag.childNodes[1].childNodes[i].appendChild(car);  //执行添加del 标签节点
             }
-            _tag.childNodes[0].childNodes[i].childNodes[1].onclick = function (e) {  //del 标签执行方法
+            _tag.childNodes[1].childNodes[i].childNodes[1].onclick = function (e) {  //del 标签执行方法
                 let arr = [];
                 JSON.parse("[" + localStorage.getItem('uri') + "]").forEach((els, index) => { //删除某些页面
                     if (els.uri != this.getAttribute('data-click')) {  //清除已存地址
@@ -316,22 +342,22 @@ function tag() {
                         localStorage.setItem('uri', arr);  //覆盖
                     };
                 });
-                _tag.childNodes[0].removeChild(_tag.childNodes[0].childNodes[i]); // 清除tag节点
-                if (_tag.childNodes[0].childNodes.length == 0) {  //当前tag 标签只剩一个
+                _tag.childNodes[1].removeChild(_tag.childNodes[1].childNodes[i]); // 清除tag节点
+                if (_tag.childNodes[1].childNodes.length == 0) {  //当前tag 标签只剩一个
                     _href.setAttribute('src', '../index.htm?hash:io');
                     localStorage.removeItem('uri');  //清除缓存uri
                     jQuery('#tagMenu').hide();
                 } else {
-                    _tag.childNodes[0].childNodes[_tag.childNodes.length - 1].setAttribute('class', 'tag_40b8ff');  //执行当前长度 -1 的颜色变换
-                    _href.setAttribute('src', _tag.childNodes[0].childNodes[_tag.childNodes.length - 1].childNodes[1].getAttribute('data-click')); //更改属性
+                    _tag.childNodes[1].childNodes[_tag.childNodes.length - 1].setAttribute('class', 'tag_40b8ff');  //执行当前长度 -1 的颜色变换
+                    _href.setAttribute('src', _tag.childNodes[1].childNodes[_tag.childNodes.length - 1].childNodes[1].getAttribute('data-click')); //更改属性
                 }
                 tag(); //删除后重新初始化tag 方法
                 e.stopPropagation();  //阻止事件冒泡
             };
-            _tag.childNodes[0].childNodes[i].onclick = function (e) { //tag 点击
-                let uri = _tag.childNodes[0].childNodes[i].getAttribute('data-href');
+            _tag.childNodes[1].childNodes[i].onclick = function (e) { //tag 点击
+                let uri = _tag.childNodes[1].childNodes[i].getAttribute('data-href');
                 _href.setAttribute('src', uri);  //页面uri更改
-                _tag.childNodes[0].childNodes.forEach(element => {
+                _tag.childNodes[1].childNodes.forEach(element => {
                     element.setAttribute('class', '');  // 兄弟节点切换颜色
                 });
                 this.setAttribute('class', 'tag_40b8ff');  //当前改变颜色
@@ -348,7 +374,6 @@ function tag() {
     }
 }
 document.getElementById('ym-menu-left').addEventListener('click', function (params) {
-    console.log(time)
     if (bools) {
         bools = false;
         let _o = setInterval(() => {
@@ -369,3 +394,30 @@ document.getElementById('ym-menu-left').addEventListener('click', function (para
         }, 0);
     }
 })
+
+// window.onload = function(params) {   //p A pass
+//     let boll = false, x0, xd, xm;
+//     document.getElementById('tagList').addEventListener('mousedown', function (params) {
+//         boll = true;
+//         x0 = params.offsetX;  //获取初始位置
+//         xd = params.pageX;  //获取按下的位置
+//     })
+
+//     document.getElementById('tagList').addEventListener('mouseover', function (params) {
+//         if(boll){
+//             xm = params.pageX;
+//             setTimeout(() => {
+//                 this.style.transform = `translateX(${ parseInt(xm) - parseInt(xd) + parseInt(x0) }px)`
+//                 console.log(parseInt(xm) - parseInt(xd) + parseInt(x0))
+//             }, 0);
+//             params.stopPropagation()
+//         }
+//     })
+
+//     document.getElementById('tagList').addEventListener('mouseup',function (params) {
+//         boll = false;
+//         document.getElementById('tagList').removeEventListener('mouseover',function (params) {
+//             console.log('remove')
+//         })
+//     });
+// }

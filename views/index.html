@@ -17,7 +17,6 @@
     <script src="//at.alicdn.com/t/font_1049864_8hiytz865e6.js"></script>
     <script src="../../../public/javascripts/plugin/vue.js"></script>
     <script src="../../../public/javascripts/plugin/element.min.js"></script>
-    <script src="//uin8.com/javascripts/vconsole.min.js"></script>
 
     <title>广东圆梦实业发展有限公司</title>
 
@@ -32,7 +31,7 @@
                 style="position:absolute;left:0;top:0;color:#e0e0e0;font-size:2.4rem;background:#22242b;padding:0 22px;cursor:pointer;">
                 <i class="el-icon-s-operation"></i>
             </div>
-            <div style="margin: 0 auto;width:10%;height:60px;">
+            <div style="margin: 0 auto;width:184.8px;height:60px;">
                 <a href="#" id="menu-toggle" class="pull-left">
                     <img src="http://test.cbcoffee.cn/manage/images/logo.jpg" alt="">
                 </a>
@@ -113,9 +112,9 @@
                 <section id="content" class="_container">
                     <transition name="el-zoom-in-top">
                         <div class="tag" id="tagMenu">
-                            <ul class="tag-con-ul" id="tagList">
-
-                            </ul>
+                            <i class="el-icon-arrow-left _menu_ _menu_left" v-show="maxWidth" @click="menuauto('left')"></i>
+                            <ul class="tag-con-ul" id="tagList"></ul>
+                            <i class="el-icon-arrow-right _menu_ _menu_right" v-show="maxWidth" @click="menuauto('right')"></i>
                         </div>
                     </transition>
 
@@ -160,7 +159,6 @@
                 id: JSON.parse(sessionStorage.getItem('token')).uname
             }
         };
-        new VConsole()
     </script>
 </body>
 
