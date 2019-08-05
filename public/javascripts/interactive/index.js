@@ -13,7 +13,7 @@ if (/(iPhone|iPad|iPod|iOS|Android)/i.test(navigator.userAgent)) {
             for (let i = 0; i < document.getElementsByClassName('el-dialog').length; i++) {
                 document.getElementsByClassName('el-dialog')[i].style.width = '100%';
             }
-        }, 0)  // 最后执行
+        }, 0)
     }
 } else {
     bools = true;
@@ -275,20 +275,23 @@ new Vue({
                 document.webkitExitFullscreen();
             }
         },
-        menuauto(element) {  //鼠标点击移动
-            let dom = document.getElementById('tagList'), dom_w = sessionStorage.getItem('dom_w') ? sessionStorage.getItem('dom_w') : sessionStorage.setItem('dom_w', dom.offsetWidth);
-            for (let index = 0; index < dom.childNodes.length; index++) {
-                switch (element) {
-                    case 'left':
-                        dom.style.right = dom_w - (dom_w - 137) + 'px';
-                        break;
-                    default:
-                        console.log(dom.style.left != +false);
-                        if(dom.style.left != +false){
-                            dom.style.left = dom_w - (dom_w + 137) + 'px';
-                        }
-                        break;
-                }
+        menuauto(element) {  //菜单栏的 tag 操作 
+            let dom = document.getElementById('tagMenu'), liw = document.getElementById('tagList'), ow = 0;
+            for (let index = 0; index < liw.childNodes.length; index++) {
+                ow = ow + liw.childNodes[index].offsetWidth;
+            };
+            switch (element) {
+                case 'left':
+                    if (dom.offsetWidth - ow < 1) {
+                        liw.style.marginLeft = `-${dom.offsetWidth}px`
+                    }
+                    break;
+                default:
+                    if (dom.offsetWidth - ow < 1) {
+                        if(parseInt(liw.style.marginLeft) == 0) return false;
+                        liw.style.marginLeft = `${ parseInt(liw.style.marginLeft) + dom.offsetWidth}px`
+                    }
+                    break;
             }
         },
     }
@@ -313,14 +316,14 @@ function tag() {
     jQuery('#tagMenu').show();
     let _tag = document.getElementById('tagMenu'), _href = document.getElementById('tagHref');
     try {
-        let dom = document.getElementById('tagList'), dom_w = dom.offsetWidth, ow = 0;
+        let dom = document.getElementById('tagList'), ow = 0;
         for (let index = 0; index < dom.childNodes.length; index++) {
             const element = dom.childNodes[index];
-            ow = ow + dom.childNodes[index].offsetWidth
+            ow = ow + element.offsetWidth;
         }
-        document.getElementById('tagList').style.width = ow + 'px';  //导航栏的宽度
+        document.getElementById('tagList').style.width = ow + 137 + 'px';  //导航栏的宽度
 
-        for (let i = 0; i < _tag.childNodes[1].childNodes.length; i++) {
+        for (let i = 0; i < _tag.childNodes[1].childNodes.length; i++) { //
             if (_tag.childNodes[1].childNodes[i].getAttribute('data-href') == _href.getAttribute('src')) {  //显示当前页面的时候tag 的颜色变化
                 _tag.childNodes[1].childNodes[i].setAttribute('class', 'tag_40b8ff');
             } else {
@@ -348,8 +351,8 @@ function tag() {
                     localStorage.removeItem('uri');  //清除缓存uri
                     jQuery('#tagMenu').hide();
                 } else {
-                    _tag.childNodes[1].childNodes[_tag.childNodes.length - 1].setAttribute('class', 'tag_40b8ff');  //执行当前长度 -1 的颜色变换
-                    _href.setAttribute('src', _tag.childNodes[1].childNodes[_tag.childNodes.length - 1].childNodes[1].getAttribute('data-click')); //更改属性
+                    _tag.childNodes[1].childNodes[_tag.childNodes[1].childNodes.length - 1].setAttribute('class', 'tag_40b8ff');  //执行当前长度 -1 的颜色变换
+                    _href.setAttribute('src', _tag.childNodes[1].childNodes[_tag.childNodes[1].childNodes.length - 1].childNodes[1].getAttribute('data-click')); //更改属性
                 }
                 tag(); //删除后重新初始化tag 方法
                 e.stopPropagation();  //阻止事件冒泡
@@ -373,7 +376,7 @@ function tag() {
         alert(error);
     }
 }
-document.getElementById('ym-menu-left').addEventListener('click', function (params) {
+document.getElementById('ym-menu-left').addEventListener('click', function (params) {  //导航栏收缩
     if (bools) {
         bools = false;
         let _o = setInterval(() => {
