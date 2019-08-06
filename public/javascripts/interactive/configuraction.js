@@ -1,5 +1,4 @@
 import style from '../../stylesheets/base/style.min.css'
-import media from '../../stylesheets/base/mediasheets.css'
 import app from '../../../app.js'
 import json from '../config/json/configuraction.json' 
 
@@ -213,32 +212,3 @@ Date.prototype.format = function() {  //原型
 	s += day; // 获取日。
 	return (s); // 返回日期。
 };
-
-//<% for(let i=0; i < data.supplies.length; i++) { %>
-//					    <% for(let j = 0; j < 12; j++) {%>
-//					    	<td><%= data.supplies[i] %></td>
-//					    <% } %>
-//					  <% } %>
-
-
-// function Foo () {  //Foo的函数
-//     getName = function () { console.log(1) } 
-//     return this
-//   }
-//   Foo.getName = function () { console.log(2) }//静态属性存储了一个匿名函数
-  
-//   Foo.prototype.getName = function () { console.log(3) } //Foo的原型对象新创建了一个叫getName的匿名函数
-
-//   var getName = function () { console.log(4) } //函数变量表达式
-
-//   function getName () { console.log(5) } //声明一个叫getName函数
-
-// //输入的值
-//   	Foo.getName();  //直接访问静态属性
-// 	  getName();	//	
-//   	Foo().getName(); //
-//   	getName();	//	
-//   	new Foo.getName();	//
-//   	new Foo().getName();
-// 		new new Foo().getName();
-
