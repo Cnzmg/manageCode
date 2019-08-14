@@ -9,7 +9,6 @@
     <meta name="description" content="共享咖啡管理后台">
     <meta name="keywords" content="yuanmeng,ym,圆梦,系统,后台系统,咖啡蜗,蜗牛,大正集团">
     <meta name="renderer" content="webkit">
-    <link rel="stylesheet" href="../../public/stylesheets/plugin/bootstrap.min.css">
     <link rel="stylesheet" href="../../public/stylesheets/plugin/element.min.css">
     <script src="../../public/javascripts/plugin/vue.js"></script>
     <script src="../../public/javascripts/plugin/element.min.js"></script>
@@ -75,9 +74,9 @@
                         <el-button type="info">离线总数 {{ machineNumbers.offLineNum }} </el-button>
                         <el-button type="warning">缺料总数 {{ machineNumbers.starvingNum }} </el-button>
                         <el-button type="danger">故障总数 {{ machineNumbers.faultNum }}</el-button>
-                        <el-button type="primary">运维总数 {{ machineNumbers.maintainNum }}</el-button>
+                        <el-button type="danger">运维总数 {{ machineNumbers.maintainNum }}</el-button>
+                        <el-button type="danger">维修总数 {{ machineNumbers.repairNum }}</el-button>
                     </el-form>
-
                     <el-table :data="tableData" stripe style="width: 100%">
                         <el-table-column prop="machineNumber" label="设备编号"></el-table-column>
                         <el-table-column prop="adminName" label="绑定商户"></el-table-column>
@@ -101,7 +100,7 @@
                         </el-table-column>
                         <el-table-column prop="wxacode" label="设备二维码">
                             <template slot-scope="scope">
-                                <el-image :src="scope.row.wxacode"></el-image>
+                                <el-image :src="scope.row.wxacode" :preview-src-list="scope.row.wxacode"></el-image>
                             </template>
                         </el-table-column>
 

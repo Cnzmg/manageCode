@@ -3,6 +3,9 @@ if (/(iPhone|iPad|iPod|iOS|Android)/i.test(navigator.userAgent)) {
         for(let i = 0; i < document.getElementsByClassName('el-dialog').length; i++){
             document.getElementsByClassName('el-dialog')[i].style.width = '100%';  //iframe 里面的class 
         }
+        for(let i = 0; i < document.getElementsByClassName('w400').length; i++){
+            document.getElementsByClassName('w400')[i].style.width = '100%'; //限定的表单宽度
+        }
     }
 }
 const [
@@ -35,7 +38,7 @@ new Vue({
             page: 1,
             select: '',
             searchVal: '',
-            searchName: '',
+            searchName: 'name',
             machineNumbers: {
                 machineCount: 0
             },
@@ -330,6 +333,7 @@ new Vue({
                                         it.machineNumbers['starvingNum'] = res.starvingNum;
                                         it.machineNumbers['faultNum'] = res.faultNum;
                                         it.machineNumbers['maintainNum'] = res.maintainNum;
+                                        it.machineNumbers['repairNum'] = res.repairNum;
                                     }
                                 })
                                 for (let i = 0; i < res.machineShowList.length; i++) { 
@@ -1195,14 +1199,13 @@ new Vue({
                 xmldata: _data,
                 done: function (res) {
                     let _arr = [];
-                    res.list.forEach(e => {
+                    res.list ? res.list.forEach(e => {
                         _arr.push({
                             value: e.nickName,
                             _id: e.userId
                         })
-                    })
+                    }) : it.IError(res.statusCode.msg)
                     it.UnFormData = res.list; //用户批量操作
-
                     var results = queryString ? _arr.filter(it.createStateFilter(queryString)) : _arr;
                     clearTimeout(it.timeout);
                     it.timeout = setTimeout(() => {

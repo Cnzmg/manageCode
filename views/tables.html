@@ -9,7 +9,6 @@
     <meta name="description" content="共享咖啡管理后台">
     <meta name="keywords" content="yuanmeng,ym,圆梦,系统,后台系统,咖啡蜗,蜗牛,大正集团">
     <meta name="renderer" content="webkit">
-    <link rel="stylesheet" href="../../public/stylesheets/plugin/bootstrap.min.css">
     <link rel="stylesheet" href="../../public/stylesheets/plugin/element.min.css">
     <script src="../../public/javascripts/plugin/vue.js"></script>
     <script src="../../public/javascripts/plugin/element.min.js"></script>
@@ -82,7 +81,8 @@
 
                         <el-table-column fixed="right" label="操作">
                             <template slot-scope="scope">
-                                <el-button type="text" size="small" @click="TableAndVisible = true; adminSubmit({en: 'pull', uri: 'manage_user', _d: scope.row.adminId})">
+                                <el-button type="text" size="small"
+                                    @click="TableAndVisible = true; adminSubmit({en: 'pull', uri: 'manage_user', _d: scope.row.adminId})">
                                     编辑
                                 </el-button>
                             </template>
@@ -123,7 +123,13 @@
                         </el-form-item>
                         <el-form-item label="微信用户">
                             <el-autocomplete v-model="formData.state" :fetch-suggestions="querySearchAsync"
-                                placeholder="请输入用户名" @select="handleSelect"></el-autocomplete>
+                                placeholder="请输入用户名" @select="handleSelect">
+                                <template slot-scope="{ item }">
+                                    <div><span
+                                            style="margin-right:10px">{{ item._id  }}</span><span>{{ item.value }}</span>
+                                    </div>
+                                </template>
+                            </el-autocomplete>
                         </el-form-item>
                         <el-form-item>
                             <el-button type="primary" @click="adminSubmit({en: 'post', formData, uri: 'manage_user'})">

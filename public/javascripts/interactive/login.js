@@ -1,4 +1,10 @@
-let vue = new Vue({
+if (/(iPhone|iPad|iPod|iOS|Android)/i.test(navigator.userAgent)) {
+    window.onload = function (params) {
+        document.getElementsByClassName('login')[0].style.width = '100%';
+        document.getElementsByClassName('login')[0].style.background = 'none';
+    }
+}
+new Vue({
     el: '#app',
     data: () => {
         return {
@@ -14,12 +20,6 @@ let vue = new Vue({
         const user = document.getElementById("user"), pwd = document.getElementById("pwd"), itself = this;
         document.addEventListener('DOMContentLoaded', function () {
             sessionStorage.removeItem("token");
-            //box position
-            ym().css('box-login', {
-                'left': window.innerWidth / 2 - 250,
-                'top': window.innerHeight / 2 - 185
-            });
-
             if (localStorage.getItem('remember')) {  //历史账号回显
                 itself.remember = true;
                 itself.user.name = ym.init.COMPILESTR.decrypt(JSON.parse(localStorage.getItem('remember')).name);
@@ -35,7 +35,7 @@ let vue = new Vue({
         });
     },
     methods: {
-        Error(err) {
+        IError(err) {
             this.$message.error('错了哦，' + err);
         },
         login() {
@@ -74,7 +74,7 @@ let vue = new Vue({
                         }, 500);
                     }
                     else {
-                        itself.Error(_e.statusCode.msg);
+                        itself.IError(_e.statusCode.msg);
                         setTimeout(() => {
                             itself.loading = false;
                         }, 500)

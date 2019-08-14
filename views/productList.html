@@ -9,7 +9,6 @@
 	<meta name="description" content="共享咖啡管理后台">
 	<meta name="keywords" content="yuanmeng,ym,圆梦,系统,后台系统,咖啡蜗,蜗牛,大正集团">
 	<meta name="renderer" content="webkit">
-	<link rel="stylesheet" href="../../public/stylesheets/plugin/bootstrap.min.css">
 	<link rel="stylesheet" href="../../public/stylesheets/plugin/element.min.css">
 	<script src="../../public/javascripts/plugin/vue.js"></script>
 	<script src="../../public/javascripts/plugin/element.min.js"></script>
@@ -27,7 +26,7 @@
 						<el-button @click="crud({uri:'userAddProduct'})" type="primary">添加<i
 								class="el-icon-plus el-icon--right"></i></el-button>
 					</div>
-					<el-input placeholder="请输入内容" v-model="searchVal" class="_searchVal">
+					<el-input placeholder="请输入内容" v-model="searchVal" class="w400">
 						<el-select v-model="searchName" class="_searchVal_select" slot="prepend" placeholder="请选择">
 							<el-option label="产品名称/ID" value="name"></el-option>
 						</el-select>

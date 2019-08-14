@@ -19,93 +19,31 @@
 
     <title>广东圆梦实业发展有限公司</title>
 
-    <!-- CSS -->
-    <link rel="icon" href="img/bitbug_favicon.ico" type="image/x-icon" />
+    <link rel="icon" href="../../../public/images/icons/logo.ico" type="image/x-icon" />
 </head>
 
 <body class="_scrollbars">
     <div id="c-container-body" class="c-container-body">
         <header id="header" class="header">
-            <div id="ym-menu-left"
-                style="position:absolute;left:0;top:0;color:#e0e0e0;font-size:2.4rem;background:#22242b;padding:0 22px;cursor:pointer;">
+            <div id="ym-menu-left" class="ym-menu-left">
                 <i class="el-icon-s-operation"></i>
             </div>
-            <div>
-                <a href="#" id="menu-toggle">
-                    <img src="http://test.cbcoffee.cn/manage/images/logo.jpg" alt="">
-                </a>
+            <div class="ym-menu-center">
+                <em class="ym-menu-logo"></em>
                 <span>咖啡蜗后台管理系统</span>
             </div>
             <el-menu class="el-menu-demo" mode="horizontal" style="position:absolute;top:0;right:0;">
                 <el-submenu index="1">
                     <template slot="title"><i class="el-icon-user"></i>{{ adminName }}</template>
                     <el-menu-item index="1-1" @click="screenView()"><i class="el-icon-rank"></i>{{ screenViews }}</el-menu-item>
-                    <el-menu-item index="1-2"><i class="el-icon-refresh-right"></i><el-link href="http://test.cbcoffee.cn/manage/login.html?:hash-old(12)">切换旧版</el-link></el-menu-item>
-                    <el-menu-item index="1-3" @click="Error('该功能正在测试中')"><i class="el-icon-view"></i>更改主题</el-menu-item>
+                    <el-menu-item index="1-2"><i class="el-icon-refresh-right"></i><el-link href="http://test.cbcoffee.cn/manage/login.html?:hash-old(13)">切换旧版</el-link></el-menu-item>
+                    <!-- <el-menu-item index="1-3" @click="IError('该功能正在测试中')"><i class="el-icon-view"></i>更改主题</el-menu-item> -->
                     <el-menu-item index="1-4" @click="UpdateVisible = true; submit({en: 'pull'})"><i class="el-icon-connection"></i>个人信息</el-menu-item>
                     <el-menu-item index="1-5"><el-link style="text-decoration:none;" href="../../login.htm?hash:goback(-hash*)"><i class="el-icon-switch-button"></i>退出登陆</el-link></el-menu-item>
                 </el-submenu>
             </el-menu>
         </header>
         <section id="main" class="main" role="main">
-            <!-- <a id="settings" @click="imageShow = !imageShow" style="display: none"><i class="fa fa-gear"></i></a>
-            <div id="changeSkin" v-show="imageShow" @click="imageShow = !imageShow" style="display: none">
-                <div class="modal-dialog modal-lg">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <button type="button" class="close" @click="imageShow = !imageShow">×</button>
-                            <h4 class="modal-title">改变主题皮肤</h4>
-                        </div>
-                        <div class="modal-body">
-                            <div class="row template-skins">
-                                <a data-skin="skin-blur-violate" class="col-sm-2 col-xs-4" href="">
-                                    <img src="../public/images/body/tag/skin-blue.jpg">
-                                </a>
-                                <a data-skin="skin-blur-violate" class="col-sm-2 col-xs-4" href="">
-                                    <img src="../public/images/body/tag/skin-chrome.jpg">
-                                </a>
-                                <a data-skin="skin-blur-violate" class="col-sm-2 col-xs-4" href="">
-                                    <img src="../public/images/body/tag/skin-city.jpg">
-                                </a>
-                                <a data-skin="skin-blur-violate" class="col-sm-2 col-xs-4" href="">
-                                    <img src="../public/images/body/tag/skin-cloth.jpg">
-                                </a>
-                                <a data-skin="skin-blur-violate" class="col-sm-2 col-xs-4" href="">
-                                    <img src="../public/images/body/tag/skin-greenish.jpg">
-                                </a>
-                                <a data-skin="skin-blur-violate" class="col-sm-2 col-xs-4" href="">
-                                    <img src="../public/images/body/tag/skin-kiwi.jpg">
-                                </a>
-                                <a data-skin="skin-blur-violate" class="col-sm-2 col-xs-4" href="">
-                                    <img src="../public/images/body/tag/skin-lights.jpg">
-                                </a>
-                                <a data-skin="skin-blur-violate" class="col-sm-2 col-xs-4" href="">
-                                    <img src="../public/images/body/tag/skin-night.jpg">
-                                </a>
-                                <a data-skin="skin-blur-violate" class="col-sm-2 col-xs-4" href="">
-                                    <img src="../public/images/body/tag/skin-ocean.jpg">
-                                </a>
-                                <a data-skin="skin-blur-violate" class="col-sm-2 col-xs-4" href="">
-                                    <img src="../public/images/body/tag/skin-sunny.jpg">
-                                </a>
-                                <a data-skin="skin-blur-violate" class="col-sm-2 col-xs-4" href="">
-                                    <img src="../public/images/body/tag/skin-sunset.jpg">
-                                </a>
-                                <a data-skin="skin-blur-violate" class="col-sm-2 col-xs-4" href="">
-                                    <img src="../public/images/body/tag/skin-tectile.jpg">
-                                </a>
-                                <a data-skin="skin-blur-violate" class="col-sm-2 col-xs-4" href="">
-                                    <img src="../public/images/body/tag/skin-violate.jpg">
-                                </a>
-                                <a data-skin="skin-blur-violate" class="col-sm-2 col-xs-4" href="">
-                                    <img src="../public/images/body/tag/skin-yellow.jpg">
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div> -->
-
             <el-container>
                 <el-menu default-active="1" class="el-menu-vertical-demo menu" id="menui"></el-menu>
                 <section id="content" class="_container">

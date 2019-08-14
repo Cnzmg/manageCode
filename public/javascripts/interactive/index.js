@@ -146,7 +146,7 @@ new Vue({
 
     },
     methods: {
-        Error(err) {
+        IError(err) {
             this.$message.error('错了哦，' + err);
         },
         IsuccessFull(e) {
@@ -377,9 +377,11 @@ function tag() {
     }
 }
 document.getElementById('ym-menu-left').addEventListener('click', function (params) {  //导航栏收缩
+    let _o, _;
     if (bools) {
         bools = false;
-        let _o = setInterval(() => {
+        clearInterval(_o);  
+        _o = setInterval(() => {
             if (time < 1) clearInterval(_o)
             this.childNodes[0].style.transform = "rotate(" + time-- + "deg)";
             // document.getElementById('menui').style.width = parseInt(w * time) +'px';
@@ -388,7 +390,8 @@ document.getElementById('ym-menu-left').addEventListener('click', function (para
         }, 0);
     } else {
         bools = true;
-        let _ = setInterval(() => {
+        clearInterval(_);  
+        _ = setInterval(() => {
             if (time > 89) clearInterval(_)
             this.childNodes[0].style.transform = "rotate(" + time++ + "deg)";
             // document.getElementById('menui').style.width = parseInt(w * time) + 'px';

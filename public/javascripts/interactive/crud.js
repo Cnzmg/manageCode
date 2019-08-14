@@ -1,4 +1,11 @@
-import { regionData, CodeToText, TextToCode } from 'element-china-area-data'
+import { regionData, CodeToText, TextToCode } from 'element-china-area-data';
+if (/(iPhone|iPad|iPod|iOS|Android)/i.test(navigator.userAgent)) {
+    window.onload = function (params) {
+        for(let i = 0; i < document.getElementsByClassName('w400').length; i++){
+            document.getElementsByClassName('w400')[i].style.width = '100%'; //限定的表单宽度
+        }
+    }
+}
 var [
     $,
     token,
@@ -44,6 +51,7 @@ new Vue({
             return data;
         }
         return {
+            // fileUpdata:,
             loading: false,
             boxshow: false,
             tagshow: false,

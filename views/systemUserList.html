@@ -9,7 +9,6 @@
     <meta name="description" content="共享咖啡管理后台">
     <meta name="keywords" content="yuanmeng,ym,圆梦,系统,后台系统,咖啡蜗,蜗牛,大正集团">
     <meta name="renderer" content="webkit">
-    <link rel="stylesheet" href="../../public/stylesheets/plugin/bootstrap.min.css">
     <link rel="stylesheet" href="../../public/stylesheets/plugin/element.min.css">
     <script src="../../public/javascripts/plugin/vue.js"></script>
     <script src="../../public/javascripts/plugin/element.min.js"></script>
@@ -102,8 +101,13 @@
 
                 <el-dialog title="批量操作用户" :visible.sync="detailTableAndVisible">
                     <el-form :model="unbinadmin">
-                        <el-autocomplete v-model="state" :fetch-suggestions="querySearchAsync"
-                            placeholder="请输入用户名" @select="handleSelect"></el-autocomplete>
+                        <el-autocomplete v-model="state" :fetch-suggestions="querySearchAsync" placeholder="请输入用户名"
+                            @select="handleSelect">
+                            <template slot-scope="{ item }">
+                                <div><span style="margin-right:10px">{{ item._id  }}</span><span>{{ item.value }}</span>
+                                </div>
+                            </template>
+                        </el-autocomplete>
 
                         <el-table :data="UnFormData" height="300px" style="margin: 10px 0" tooltip-effect="dark"
                             @selection-change="handleSelectionChange" ref="multipleTable">

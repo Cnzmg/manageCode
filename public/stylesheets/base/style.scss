@@ -1,8 +1,10 @@
+$w100: 100%;
 html,body{
-	height: 100%;
+	height: $w100;
 	background: rgb(42, 45, 53);
 	padding: 0;
 	margin: 0;
+	font-size: 12px;
 	/* icons */
 	.icon_user {
 		width: 3rem; 
@@ -28,7 +30,7 @@ html,body{
 }
 body{
 	min-width: 320px;
-	height: 100%;
+	height: $w100;
 	ul,ol{
 		list-style: none;
 	}
@@ -74,13 +76,24 @@ body{
 		border-radius: 50% !important;
 		animation: k-loading 2s ease infinite;
 		background: #193B48
-	} 
+	}
+	._scrollbars::-webkit-scrollbar{
+		width: 10px;
+		height: 1px;
+	  }
+	._scrollbars::-webkit-scrollbar-thumb {
+		border-radius: 5px;
+		background-color: rgba(0,0,0,0.5);
+	}
 }
 /** login **/
 .login_container{
-	padding:15% 0;
-	overflow:hidden;
+	overflow: hidden;
 	box-sizing: border-box;
+	padding-top: 10%;
+	background: url(../../images/TVYTbAXWheQpRcWDaDMu.svg) center center;
+	width: $w100;
+	height: $w100;
 	.login{
 		background: rgba(0,0,0,0.5);
 		padding:20px 0;
@@ -92,7 +105,7 @@ body{
 			text-align: center;
 			margin: 0 auto;
 			img{
-				width: 100%;
+				width: $w100;
 			}
 		}
 	}
@@ -100,7 +113,7 @@ body{
 		color: #fff;
 		h2{
 			text-align: center;
-			font-size: 1.2rem;
+			font-size: 1.8rem;
 		}
 		.login-input{
 			overflow: hidden;
@@ -111,7 +124,7 @@ body{
 				margin-top: 10px;
 				display: inline-block;
 				height: 2.6rem;
-				background-size: 100%;
+				background-size: $w100;
 				position: absolute;
 				top: -8px;
 				left: 0;
@@ -136,12 +149,51 @@ body{
 			}
 		}
 		.coffeeLogin{
-			position: relative;
 			width: 40%;
 			margin: 5% 30%;
-			height: 30px;
+			line-height: 34px;
 			text-align: center;
 			background: #FFF100;
+			color: black;
+			font-size: 1.2rem;
+			border-radius: 20px;
+			cursor: pointer;
+		}
+	}
+}
+
+/**  index  **/
+._scrollbars{
+	.c-container-body{
+		.header{
+			.ym-menu-left{
+				position:absolute;
+				left:0;
+				top:0;
+				color:#e0e0e0;
+				font-size:2.4rem;
+				background:#22242b;
+				padding:0 22px;
+				cursor:pointer;
+			}
+			.ym-menu-center{
+				width: 184.8px;
+				margin: 0 auto;
+				height: $w100;
+				.ym-menu-logo{
+					background:url(../../images/icons/logo.jpg) center center;
+					width: 40px;
+					height:40px;
+					background-size:$w100;
+					margin-top: 10px;
+					display:inline-block;
+				}
+				span{
+					float: right;
+					font-size: 1.2rem;
+					color: #e0e0e0;
+				}
+			}
 		}
 	}
 }
@@ -159,29 +211,29 @@ body{
 
 .menu{
 	width: 200px;
-	height: 100%;
+	height: $w100;
 	float: left;
 	overflow: auto;
 }
 ._container{
 	width: 89.2%;
-	height: 100%;
+	height: $w100;
 	float: right;
 	position: relative;
 }
 .c-container-body{
-	height: 100%;
+	height: $w100;
 }
 .el-container{
-	height: 100%;
+	height: $w100;
 }
 .main{
-	height: 100%;
+	height: $w100;
 }
 .header{
 	height: 60px;
 	overflow: hidden;
-	width: 100%;
+	width: $w100;
 	line-height: 60px;
 }
 #settings {
@@ -222,7 +274,7 @@ body{
 	box-shadow: 0 5px 15px rgba(0,0,0,.5);
 }
 .modal-content img {
-    max-width: 100%;
+    max-width: $w100;
 }
 .template-skins [class*="col-"] img {
     border: 3px solid rgb(146, 146, 146);
@@ -230,17 +282,10 @@ body{
 .template-skins [class*="col-"] {
     margin-bottom: 10px;
 }
-#menu-toggle{
-	width: 40px;
-    margin: 0 4%;
-}
-#menu-toggle img{
-	width: 100%;
-}
 
 /* tag */
 .tag{
-	width: 100%;
+	width: $w100;
 	position: absolute;
 	top: 0;
 	left: 0;
@@ -260,7 +305,7 @@ body{
     display: none;
 	}
   .tag-con-ul{
-	width: 100%;
+	width: $w100;
 	height:40px;
 	position: relative;
 	padding: 0 !important;
@@ -296,7 +341,7 @@ body{
   ._menu_{
 	  position:absolute;
 	  top:0;
-	  height:100%;
+	  height:$w100;
 	  background:#a0a0a0;
 	  z-index: 9;
 	  line-height:40px;
@@ -307,14 +352,7 @@ body{
 	._menu_right{
 		right:0;
 	}
-  ._scrollbars::-webkit-scrollbar{
-	width: 10px;
-	height: 1px;
-  }
-  ._scrollbars::-webkit-scrollbar-thumb {
-  border-radius: 5px;
-  background-color: rgba(0,0,0,0.5);
-  }
+  
 
   ._scrollbar::-webkit-scrollbar{
 	width: 10px;
@@ -343,7 +381,7 @@ body{
 }
 .demo-ruleForm{
 	margin:0 0 150px 0 ;
-	width: 100%;
+	width: $w100;
 	overflow: auto;
 }
 ._search_btn{

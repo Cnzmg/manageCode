@@ -4,6 +4,7 @@ html, body {
   background: #2a2d35;
   padding: 0;
   margin: 0;
+  font-size: 12px;
   /* icons */
 }
 
@@ -87,11 +88,24 @@ body .k-ball7d {
   background: #193B48;
 }
 
+body ._scrollbars::-webkit-scrollbar {
+  width: 10px;
+  height: 1px;
+}
+
+body ._scrollbars::-webkit-scrollbar-thumb {
+  border-radius: 5px;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
 /** login **/
 .login_container {
-  padding: 15% 0;
   overflow: hidden;
   box-sizing: border-box;
+  padding-top: 10%;
+  background: url(../../images/TVYTbAXWheQpRcWDaDMu.svg) center center;
+  width: 100%;
+  height: 100%;
 }
 
 .login_container .login {
@@ -118,7 +132,7 @@ body .k-ball7d {
 
 .login_container .login-form h2 {
   text-align: center;
-  font-size: 1.2rem;
+  font-size: 1.8rem;
 }
 
 .login_container .login-form .login-input {
@@ -160,12 +174,48 @@ body .k-ball7d {
 }
 
 .login_container .login-form .coffeeLogin {
-  position: relative;
   width: 40%;
   margin: 5% 30%;
-  height: 30px;
+  line-height: 34px;
   text-align: center;
   background: #FFF100;
+  color: black;
+  font-size: 1.2rem;
+  border-radius: 20px;
+  cursor: pointer;
+}
+
+/**  index  **/
+._scrollbars .c-container-body .header .ym-menu-left {
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: #e0e0e0;
+  font-size: 2.4rem;
+  background: #22242b;
+  padding: 0 22px;
+  cursor: pointer;
+}
+
+._scrollbars .c-container-body .header .ym-menu-center {
+  width: 184.8px;
+  margin: 0 auto;
+  height: 100%;
+}
+
+._scrollbars .c-container-body .header .ym-menu-center .ym-menu-logo {
+  background: url(../../images/icons/logo.jpg) center center;
+  width: 40px;
+  height: 40px;
+  background-size: 100%;
+  margin-top: 10px;
+  display: inline-block;
+}
+
+._scrollbars .c-container-body .header .ym-menu-center span {
+  float: right;
+  font-size: 1.2rem;
+  color: #e0e0e0;
 }
 
 /*module*/
@@ -265,15 +315,6 @@ body .k-ball7d {
   margin-bottom: 10px;
 }
 
-#menu-toggle {
-  width: 40px;
-  margin: 0 4%;
-}
-
-#menu-toggle img {
-  width: 100%;
-}
-
 /* tag */
 .tag {
   width: 100%;
@@ -353,16 +394,6 @@ body .k-ball7d {
 
 ._menu_right {
   right: 0;
-}
-
-._scrollbars::-webkit-scrollbar {
-  width: 10px;
-  height: 1px;
-}
-
-._scrollbars::-webkit-scrollbar-thumb {
-  border-radius: 5px;
-  background-color: rgba(0, 0, 0, 0.5);
 }
 
 ._scrollbar::-webkit-scrollbar {
