@@ -21,6 +21,13 @@
         data-child-uri="/manage/chartsFinance.html" v-loading.fullscreen.lock="loading">
         <el-container>
             <el-main>
+                
+                <div style="margin: 10px 0">
+                        <el-date-picker v-model="userCharts" type="daterange" align="right" unlink-panels
+                            range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期"
+                            :picker-options="pickerOptions" @change="getTime">
+                        </el-date-picker>
+                    </div>
                 <template>
                     <el-table :data="tableData" stripe style="width: 100%" height="600px">
                         <el-table-column prop="machineNumber" label="机器编号"></el-table-column>
@@ -44,7 +51,7 @@
 
                 <el-form>
                     <div style="margin:10px auto;">
-                        <el-button type="primary">总的销售： {{ sum }}</el-button>
+                        <el-button type="primary">总的销售： {{ sum }} 杯</el-button>
                         <el-button type="primary"> 总的销售金额：{{ paySum }} 元 </el-button>
                     </div>
 

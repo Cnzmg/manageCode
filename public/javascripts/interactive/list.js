@@ -227,6 +227,7 @@ new Vue({
             this.list();
         },
         list(...arg) {
+            console.log(arg)
             let it = this, xml = [];
             it.loading = true;
             arg == '' ? null : ~function () {
@@ -235,12 +236,18 @@ new Vue({
                         _data[arr.split(':')[0]] = arr.split(':')[1];
                     }
                 })
-                if (arg[0] != '' && arg[1] != '') {  //处理1、2数据
+                if (arg[0] != '' && arg[1] != '') {  //处理0、1数据
                     _data[arg[0]] = arg[1]
                 };
                 if (arg[4]) {  //处理时间
-                    _data['startDate'] = ym.init.getDateTime(arg[4][0]);
-                    _data['endDate'] = ym.init.getDateTime(arg[4][0]);
+                    _data['startDate'] = ym.init.getDateTime(arg[4][0]).split(' ')[0];
+                    _data['endDate'] = ym.init.getDateTime(arg[4][1]).split(' ')[0];
+                    if(uri == 'statistics_shop'){
+                        _data['startTime'] = _data['startDate'];
+                        _data['endTime'] = _data['endDate'];
+                        delete _data['startDate']
+                        delete _data['endDate']
+                    }
                 }
             }();
             if (uri == 'manage_prodcut_list_list') _data['type'] = 1;  //临时处理存在此接口存在type 数值问题

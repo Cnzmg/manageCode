@@ -443,7 +443,7 @@ new Vue({
                         //     }
                         // });
 
-                    }, 1000)
+                    }, 2000)
                     break;
                 case 'statistics_machineorder':
                     it.list();  //统计列表
@@ -795,6 +795,10 @@ new Vue({
                 _data['startTime'] = it.userCharts[0]
                 _data['endTime'] = it.userCharts[1]
                 _data['url'] = `/manage/chartsActive.html`
+            }else if(uri == 'statistics_machinelist'){
+                _data['startTime'] = it.userCharts[0]
+                _data['endTime'] = it.userCharts[1]
+                _data['adminID'] = JSON.parse(decodeURI(parent.document.getElementById('tagHref').getAttribute('src').split('*')[1])).adminID
             }
             ym.init.XML({
                 method: 'GET',
@@ -809,7 +813,7 @@ new Vue({
                                     xml.push({
                                         machineNumber: res.package.MachineCountList[i].machineNumber,
                                         addr: res.package.MachineCountList[i].addr,
-                                        machineType: res.package.MachineCountList[i].machineType,
+                                        machineType: (res.package.MachineCountList[i].machineType == 1 ? '大型柜式机' : '小型桌面机'),
                                         payMoney: res.package.MachineCountList[i].payMoney,
                                         payCount: res.package.MachineCountList[i].payCount,
                                         longitude: res.package.MachineCountList[i].longitude,
