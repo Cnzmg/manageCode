@@ -70,7 +70,7 @@
                     <el-form-item label="会员图片">
                         <template v-model="ruleForm.memberPicUrl">
                             <small>列表图片</small>
-                            <el-upload prop="memberPicUrl" action="http://test.cbcoffee.cn:8085/upload_file"
+                            <el-upload prop="memberPicUrl" :action="fileUpdata"
                                 list-type="picture-card" :file-list="imageList.memberPicUrl" :limit="num" :data="fileData"
                                 :on-change="filememberPicUrlChange" :on-success="filememberPicUrlSuccess" :on-exceed="fileExceed"
                                 :on-preview="handlePictureCardPreview" :on-remove="handleRemove">
@@ -82,7 +82,7 @@
                         </template>
                         <template v-model="ruleForm.memberHeadPic">
                             <small>TAG图片</small>
-                            <el-upload action="http://test.cbcoffee.cn:8085/upload_file" list-type="picture-card"
+                            <el-upload :action="fileUpdata" list-type="picture-card"
                                 :limit="num" :data="fileData" :file-list="imageList.memberHeadPic" :on-change="filememberHeadPicChange"
                                 :on-success="filememberHeadPicSuccess" :on-exceed="fileExceed"
                                 :on-preview="handlePictureCardPreview" :on-remove="handleRemove">

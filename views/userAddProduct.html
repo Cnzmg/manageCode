@@ -37,7 +37,7 @@
                 <el-form-item label="产品图片">
                     <template v-model="ruleForm.productMachinePicurl">
                         <small>机器图片</small>
-                        <el-upload prop="productMachinePicurl" action="http://test.cbcoffee.cn:8085/upload_file"
+                        <el-upload prop="productMachinePicurl" :action="fileUpdata"
                             list-type="picture-card" :file-list="imageList.machine" :limit="num" :data="fileData" :on-change="fileChange"
                             :on-success="fileMachineSuccess" :on-exceed="fileExceed" :on-preview="handlePictureCardPreview"
                             :on-remove="handleRemove">
@@ -49,7 +49,7 @@
                     </template>
                     <template v-model="ruleForm.productPicurl">
                         <small>手机端图片</small>
-                        <el-upload action="http://test.cbcoffee.cn:8085/upload_file" list-type="picture-card"
+                        <el-upload :action="fileUpdata" list-type="picture-card"
                             :limit="num" :data="fileData" :file-list="imageList.product" :on-change="filePicChange"
                             :on-success="filePicSuccess" :on-exceed="fileExceed" :on-preview="handlePictureCardPreview" :on-remove="handleRemove" >
                             <i class="el-icon-plus"></i>
@@ -61,7 +61,7 @@
                     <div v-show="samllfileUpdata">
                         <template  v-model="productMachineDetailPicurl">
                             <small>详情图片</small>
-                            <el-upload action="http://test.cbcoffee.cn:8085/upload_file" list-type="picture-card"
+                            <el-upload :action="fileUpdata" list-type="picture-card"
                                 :limit="num" :data="fileData" :file-list="imageList.detail" :on-change="fileChange"
                                 :on-success="fileDateilSuccess" :on-exceed="fileExceed" :on-preview="handlePictureCardPreview" :on-remove="handleRemove">
                                 <i class="el-icon-plus"></i>

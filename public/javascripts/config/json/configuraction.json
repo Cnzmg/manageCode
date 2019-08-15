@@ -30,7 +30,7 @@
     "Buckets": null,
     "Backups": "location this JSON",
     "URLS": {
-        "ForMal_Server_": "http://mapi.cbcoffee.cn/",
+        "ForMal_Server_": "http://mapi.cbcoffee.cn/ http://test.cbcoffee.cn:8080/",
         "ForMal_Files_": "http://mapi.cbcoffee.cn:8080/",
         "ForMal_Local_": "/manage/views/index.html /manage/views/",
         "Development_Server_": "http://test.cbcoffee.cn:8080/",

@@ -202,6 +202,10 @@ new Vue({
         IError(err) {
             setTimeout(() => {
                 this.loading = false;
+                if(err == `未登录或身份验证过时`){
+                    // window.top.location.href = `../login.htm?hash:[]`;
+                    parent.location.href = `../login.htm?hash:[nK6t7a]`;
+                }
             }, 1000);
             this.$message.error('错了哦!' + err);
         },

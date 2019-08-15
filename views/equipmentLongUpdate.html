@@ -82,7 +82,7 @@
 							<el-form-item>
 								<template v-model="formData.mUpdateUrl">
 									<el-upload prop="mUpdateUrl"
-										action="http://test.cbcoffee.cn:8085/upload_file" list-type="picture-card"
+										:action="fileUpdata" list-type="picture-card"
 										:file-list="imageList.mUpdateUrl" :limit="num" :data="fileData"
 										:on-change="fileChange" :on-success="machineSceneSuccess"
 										:on-exceed="fileExceed" :on-preview="handlePictureCardPreview"

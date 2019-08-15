@@ -35,7 +35,7 @@
                     </el-form-item>
                     <el-form-item label="优惠券图片">
                         <template v-model="ruleForm.couponUrl">
-                            <el-upload prop="couponUrl" action="http://test.cbcoffee.cn:8085/upload_file"
+                            <el-upload prop="couponUrl" :action="fileUpdata"
                                 list-type="picture-card" :file-list="imageList.couponUrl" :limit="num" :data="fileData"
                                 :on-change="filecouponUrlChange" :on-success="filecouponUrlSuccess"
                                 :on-exceed="fileExceed" :on-preview="handlePictureCardPreview"

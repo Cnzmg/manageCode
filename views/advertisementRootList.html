@@ -93,7 +93,7 @@
                         </el-form-item>
                         <el-form-item label="视频文件">
                             <template v-model="formData.madUrl">
-                                <el-upload prop="madUrl" action="http://test.cbcoffee.cn:8085/upload_file"
+                                <el-upload prop="madUrl" :action="fileUpdata"
                                     list-type="picture-card" :file-list="imageList.madUrl" :limit="num" :data="fileData"
                                     :on-change="filemadUrlChange" :on-success="machineSceneSuccess"
                                     :on-exceed="fileExceed" :on-preview="handlePictureCardPreview"

@@ -51,7 +51,7 @@ new Vue({
             return data;
         }
         return {
-            // fileUpdata:,
+            fileUpdata: (process.env.NODE_ENV == "development" ? parent.all.json._j.URLS.Development_Files_ : parent.all.json._j.URLS.ForMal_Files_) + 'upload_file',
             loading: false,
             boxshow: false,
             tagshow: false,
