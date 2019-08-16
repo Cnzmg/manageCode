@@ -212,6 +212,11 @@ new Vue({
                 couponRange: '', //优惠券产品
                 shareNum: '', //优惠券分享次数
                 timeUnit: '', //时间单位
+                itemName: '',  //营销活动-奖品名称
+                itemType: 1,   //营销活动-奖品类型
+                objectId: '',  //营销活动-类型为2、3的对象ID
+                isMember: 0,  //营销活动-奖品首中
+                probability: '',  //营销活动-奖品概率
             },
             rules: {
                 productName: [
@@ -261,6 +266,49 @@ new Vue({
             tableData: [],
             SearchProduct: dataHref.split('*').length > 1 ? false : true,
             bigAndsmall: true,
+            pickerOptions: {  //时间节点
+                shortcuts: [{
+                    text: '最近一周',
+                    onClick(picker) {
+                        const end = new Date();
+                        const start = new Date();
+                        start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+                        picker.$emit('pick', [start, end]);
+                    }
+                }, {
+                    text: '最近一个月',
+                    onClick(picker) {
+                        const end = new Date();
+                        const start = new Date();
+                        start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+                        picker.$emit('pick', [start, end]);
+                    }
+                }, {
+                    text: '最近三个月',
+                    onClick(picker) {
+                        const end = new Date();
+                        const start = new Date();
+                        start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
+                        picker.$emit('pick', [start, end]);
+                    }
+                }, {
+                    text: '最近半年',
+                    onClick(picker) {
+                        const end = new Date();
+                        const start = new Date();
+                        start.setTime(start.getTime() - 3600 * 1000 * 24 * 180);
+                        picker.$emit('pick', [start, end]);
+                    }
+                }, {
+                    text: '最近一年',
+                    onClick(picker) {
+                        const end = new Date();
+                        const start = new Date();
+                        start.setTime(start.getTime() - 3600 * 1000 * 24 * 365);
+                        picker.$emit('pick', [start, end]);
+                    }
+                }]
+            },
         }
     },
     created: function () {
@@ -1123,5 +1171,14 @@ new Vue({
         tableChecked(e) { //表格初显
             this.$refs.multipleTable.toggleRowSelection(this.tableData[e], true);
         },
+        setCurrent(tableData){ //添加活动列 奖品
+            this.tableData.push({
+                itemName: 'itemName',
+                itemType: 'itemName',
+                objectId: 'itemName',
+                isMember: 'itemName',
+                probability: 'itemName'
+            })
+        }
     }
 })

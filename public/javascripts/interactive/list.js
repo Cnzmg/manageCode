@@ -227,7 +227,6 @@ new Vue({
             this.list();
         },
         list(...arg) {
-            console.log(arg)
             let it = this, xml = [];
             it.loading = true;
             arg == '' ? null : ~function () {
@@ -1334,7 +1333,7 @@ new Vue({
                 done: function (res) {
                     res.machineFaultList.forEach(arr => {
                         it.machineLogs.push({
-                            i: arr.faultTime,
+                            i: ym.init.getDateTime(arr.faultTime),
                             t: arr.faultContent
                         })
                     })

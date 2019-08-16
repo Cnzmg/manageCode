@@ -89,6 +89,7 @@ new Vue({
                 'machineLog',
                 'advertisementRootList',
                 'adRootDetailedList',
+                'turntableConf',
                 'chartsUser',
                 'chartsFinance',
                 'chartsActive',
