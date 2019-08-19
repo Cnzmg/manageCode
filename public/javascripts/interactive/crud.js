@@ -309,6 +309,14 @@ new Vue({
                     }
                 }]
             },
+            formDataObject:{
+                objectId: ''
+            }, // 大转盘活动对象
+            dialogVisibleTable: false,  //会员views
+            dialogVisibleTables: false,  //礼券views
+            objectIdShow: false,  //是否显示ID
+            tableDataVip: [],
+            index: 1,  
         }
     },
     created: function () {
@@ -1163,7 +1171,9 @@ new Vue({
             })
         },
         handleSelectionChange(val) {  //下拉选项
-            this.ruleForm.productId = [];
+            this.ruleForm.productId = [];  //优惠券产品相关
+            this.formDataObject.objectId = [];  //营销活动会员ID
+            this.formDataObject.objectId = val[0].memberRuleId;
             val.forEach(e => {
                 this.ruleForm.productId.push(e.productId);  //批量操作优惠券产品
             });
@@ -1173,12 +1183,69 @@ new Vue({
         },
         setCurrent(tableData){ //添加活动列 奖品
             this.tableData.push({
-                itemName: 'itemName',
-                itemType: 'itemName',
-                objectId: 'itemName',
-                isMember: 'itemName',
-                probability: 'itemName'
+                itemName: '未中奖',
+                itemType: '无奖品',
+                objectId: 'null',
+                isMember: 'not',
+                probability: '0.5'
             })
+        },
+        getobjectId:function (params) {
+            let xml = [], it = this;
+            switch (params) {
+                case 2:
+                    this.dialogVisibleTables = true; //礼券明细
+                    this.objectIdShow = true;
+                    
+                    break;
+                case 3:
+                    this.dialogVisibleTable = true;  //会员明细
+                    this.objectIdShow = true;
+                    ym.init.XML({
+                        method: 'POST',
+                        uri: token._j.URLS.Development_Server_ + 'get_member_list',
+                        async: false,
+                        xmldata: _data,
+                        done: function (res) {
+                            try {
+                                ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
+                                    setTimeout(() => {
+                                        it.tableDataVip = [];
+                                        res.memberRuleList.forEach((key, index) => {
+                                            it.tableDataVip.push({
+                                                memberRuleId: key.memberRuleId,
+                                                memberRuleName: key.memberRuleName
+                                            })
+                                        })
+                                    }, 500);
+                                })() : (() => {
+                                    throw "收集到错误：\n\n" + res.statusCode.msg;
+                                })();
+                            } catch (error) {
+                                it.IError(error);
+                            }
+                        }
+                    })
+                    break;
+                default:
+                    this.objectIdShow = false;
+                    break;
+            }
+        },
+        setVipAndCon(){
+            // this.formDataObject.objectId = this.formDataObject.objectId;
+            this.dialogVisibleTable = false;  //会员明细
+            this.dialogVisibleTables = false;  //会员明细
+        },
+        formDataObjectProduct(params){
+            if(this.index == 0) this.tableData = [];
+            this.tableData.splice(this.index, this.index, {
+                itemName: params.itemName,
+                itemType: params.itemType,
+                objectId: params.objectId,
+                isMember: params.isMember,
+                probability: params.probability
+            });
         }
     }
 })
