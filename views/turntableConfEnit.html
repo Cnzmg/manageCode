@@ -71,16 +71,16 @@
                             <el-table-column prop="objectId" label="奖品对象"></el-table-column>
                             <el-table-column prop="isMember" label="首重"></el-table-column>
                             <el-table-column prop="probability" label="获奖概率"></el-table-column>
-                            <el-table-column>
+                            <!-- <el-table-column>
                                 <template slot-scope="scope">
                                     <el-button type="text" size="small" @click="dialogVisible = true; index = scope.$index">
                                         编辑
                                     </el-button>
                                 </template>
-                            </el-table-column>
+                            </el-table-column> -->
                         </el-table>
                         <div style="margin-top: 20px">
-                            <el-button @click="setCurrent()">增加奖品</el-button>
+                            <el-button @click="dialogVisible = true;formDataObject = {}">增加奖品</el-button>
                         </div>
                     </el-form-item>
 

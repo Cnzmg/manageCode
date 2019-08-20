@@ -1,9 +1,9 @@
 if (/(iPhone|iPad|iPod|iOS|Android)/i.test(navigator.userAgent)) {
     window.onload = function (params) {
-        for(let i = 0; i < document.getElementsByClassName('el-dialog').length; i++){
+        for (let i = 0; i < document.getElementsByClassName('el-dialog').length; i++) {
             document.getElementsByClassName('el-dialog')[i].style.width = '100%';  //iframe 里面的class 
         }
-        for(let i = 0; i < document.getElementsByClassName('w400').length; i++){
+        for (let i = 0; i < document.getElementsByClassName('w400').length; i++) {
             document.getElementsByClassName('w400')[i].style.width = '100%'; //限定的表单宽度
         }
     }
@@ -160,7 +160,7 @@ new Vue({
             optionsTime: [], //时间选择
             bool: '',
             StatusName: new Map([
-                ['free',{
+                ['free', {
                     user: new Map([
                         [1, '超级管理员'],
                         [2, '系统管理员'],
@@ -176,7 +176,7 @@ new Vue({
                         [3, '无网单机']
                     ])
                 }],
-                ['time',{
+                ['time', {
                     machineRun: new Map([
                         [1, '正常'],
                         [2, '故障'],
@@ -202,7 +202,7 @@ new Vue({
         IError(err) {
             setTimeout(() => {
                 this.loading = false;
-                if(err == `未登录或身份验证过时`){
+                if (err == `未登录或身份验证过时`) {
                     // window.top.location.href = `../login.htm?hash:[]`;
                     parent.location.href = `../login.htm?hash:[nK6t7a]`;
                 }
@@ -241,7 +241,7 @@ new Vue({
                 if (arg[4]) {  //处理时间
                     _data['startDate'] = ym.init.getDateTime(arg[4][0]).split(' ')[0];
                     _data['endDate'] = ym.init.getDateTime(arg[4][1]).split(' ')[0];
-                    if(uri == 'statistics_shop'){
+                    if (uri == 'statistics_shop') {
                         _data['startTime'] = _data['startDate'];
                         _data['endTime'] = _data['endDate'];
                         delete _data['startDate']
@@ -346,7 +346,7 @@ new Vue({
                                         it.machineNumbers['repairNum'] = res.repairNum;
                                     }
                                 })
-                                for (let i = 0; i < res.machineShowList.length; i++) { 
+                                for (let i = 0; i < res.machineShowList.length; i++) {
                                     xml.push({
                                         machineNumber: res.machineShowList[i].machineNumber,
                                         adminName: res.machineShowList[i].adminName,
@@ -383,7 +383,7 @@ new Vue({
                                         latitude: res.poiList[i].latitude,
                                         addr: res.poiList[i].addr,
                                         mapMarkerIcon: res.poiList[i].mapMarkerIcon,
-                                        province: res.poiList[i].province +'/'+ res.poiList[i].city +'/'+ res.poiList[i].district,  //省市区组合
+                                        province: res.poiList[i].province + '/' + res.poiList[i].city + '/' + res.poiList[i].district,  //省市区组合
                                         machineUrl: res.poiList[i].machineUrl,
                                         hide: res.poiList[i].hide,
                                         machineCount: res.poiList[i].machineCount,
@@ -411,7 +411,7 @@ new Vue({
                                     })
                                 }
                                 break;
-                            case `statistics_shop`:  
+                            case `statistics_shop`:
                                 for (let i = 0; i < res.package.ShopMachine.length; i++) {
                                     xml.push({
                                         adminID: res.package.ShopMachine[i].adminID,
@@ -424,7 +424,7 @@ new Vue({
                                 }
                                 break;
                             case `get_activity_list`:    // activity charts
-                                for (let i = 0; i < res.activityList.length; i++) { 
+                                for (let i = 0; i < res.activityList.length; i++) {
                                     xml.push({
                                         id: res.activityList[i].id,
                                         comment: res.activityList[i].comment,
@@ -511,7 +511,7 @@ new Vue({
                                         couponType: res.couponInfoList[i].couponType,
                                         couponRangeName: res.couponInfoList[i].couponRangeName,
                                         couponMoney: parseFloat(res.couponInfoList[i].couponMoney / 100).toFixed(2),
-                                        couponTime: res.couponInfoList[i].couponTime +`( `+ it.StatusName.get('time').couponTime.get(res.couponInfoList[i].timeUnit)+ ` )` 
+                                        couponTime: res.couponInfoList[i].couponTime + `( ` + it.StatusName.get('time').couponTime.get(res.couponInfoList[i].timeUnit) + ` )`
                                     })
                                 }
                                 break;
@@ -607,8 +607,8 @@ new Vue({
                                             let _arr = [], productlogs = JSON.parse(res.materialLog[i].materialDeductionList);
                                             productlogs.forEach(_val => {
                                                 _arr.push(
-                                                    '名称：'+ _val.bunkerName,
-                                                    '---扣减量：'+ _val.deduraction +'---'
+                                                    '名称：' + _val.bunkerName,
+                                                    '---扣减量：' + _val.deduraction + '---'
                                                 );
                                             })
                                             return _arr
@@ -630,15 +630,53 @@ new Vue({
                                     })
                                 }
                                 break;
+                            case `draw_raffle_info_list`:  // draw_raffle_info_list run time logs
+                                for (let i = 0; i < res.data.length; i++) {
+                                    xml.push({
+                                        drawId: res.data[i].drawId,
+                                        title: res.data[i].title,
+                                        startTime: res.data[i].startTime,
+                                        endTime: res.data[i].endTime,
+                                        raffleType: res.data[i].raffleType,
+                                        limit: res.data[i].limit,
+                                        status: res.data[i].status,
+                                        raffleVersion: res.data[i].raffleVersion,
+                                        itemCount: res.data[i].itemCount
+                                    })
+                                }
+                                break;
+                            case `user_draw_raffle_log_list`:  // draw_raffle_info_list run time logs
+                                for (let i = 0; i < res.data.length; i++) {
+                                    xml.push({
+                                        drawInstanceId: res.data[i].drawInstanceId,
+                                        userId: res.data[i].userId,
+                                        nickName: res.data[i].nickName,
+                                        drawId: res.data[i].drawId,
+                                        drawName: res.data[i].drawName,
+                                        raffleVersion: res.data[i].raffleVersion,
+                                        itemName: res.data[i].itemName,
+                                        itemType: res.data[i].itemType,
+                                        objectId: res.data[i].objectId,
+                                        
+                                        objectInstanceId: res.data[i].objectInstanceId,
+                                        machineNumber: res.data[i].machineNumber,
+                                        isMember: res.data[i].isMember,
+                                        createTime: res.data[i].createTime,
+                                        status: res.data[i].status,
+                                        hasAddress: res.data[i].hasAddress,
+                                        addressId: res.data[i].addressId
+                                    })
+                                }
+                                break;
                             default:
                                 break;
                         }
                         it.total = parseInt(res.pageCount * 20);
                         // it.currentPage = parseInt(res.pageCount);  数据总条数
                         it.tableData = xml;
-                        setTimeout(()=>{
+                        setTimeout(() => {
                             it.loading = false;
-                        },500)
+                        }, 500)
                     })()
                         :
                         it.IError(res.statusCode.msg);
@@ -980,7 +1018,7 @@ new Vue({
         handleSelectionChange(val) {  //下拉选项
             this.multipleSelection = val;
             this.productCount = val.length;
-            if(uri == 'manage_prodcut_list_list') return false;   //阻止继续渲染清单的操作
+            if (uri == 'manage_prodcut_list_list') return false;   //阻止继续渲染清单的操作
             this.productId = [];
             this.adIds = [];
             this.machineNumber = [];
@@ -1805,6 +1843,37 @@ new Vue({
                                 }, 500)
                                 it.list();
                             }
+                        })() : (() => {
+                            throw "收集到错误：\n\n" + res.statusCode.msg;
+                        })();
+                    } catch (error) {
+                        it.IError(error);
+                    }
+                }
+            })
+        },
+        showtruntablelogs(params) {
+            console.log(params)
+            const it = this;
+            _data['addressId'] = params;
+            ym.init.XML({
+                method: 'GET',
+                uri: token._j.URLS.Development_Server_ + 'user_address_detail',
+                async: false,
+                xmldata: _data,
+                done: function (res) {
+                    try {
+                        ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
+                            it.UnFormData.push({
+                                userId: res.data.userId,
+                                named: res.data.named,
+                                phone: res.data.phone,
+                                province: res.data.province,
+                                city: res.data.city,
+                                district: res.data.district,
+                                address: res.data.address,
+                                createTime: res.data.createTime
+                            })
                         })() : (() => {
                             throw "收集到错误：\n\n" + res.statusCode.msg;
                         })();

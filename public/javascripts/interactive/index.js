@@ -90,6 +90,7 @@ new Vue({
                 'advertisementRootList',
                 'adRootDetailedList',
                 'turntableConf',
+                'turntableConfUserLogs',
                 'chartsUser',
                 'chartsFinance',
                 'chartsActive',

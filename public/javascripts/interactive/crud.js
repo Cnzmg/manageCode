@@ -1181,15 +1181,15 @@ new Vue({
         tableChecked(e) { //表格初显
             this.$refs.multipleTable.toggleRowSelection(this.tableData[e], true);
         },
-        setCurrent(tableData){ //添加活动列 奖品
-            this.tableData.push({
-                itemName: '未中奖',
-                itemType: '无奖品',
-                objectId: 'null',
-                isMember: 'not',
-                probability: '0.5'
-            })
-        },
+        // setCurrent(tableData){ //添加活动列 奖品
+        //     this.tableData.push({
+        //         itemName: '未中奖',
+        //         itemType: '无奖品',
+        //         objectId: 'null',
+        //         isMember: 'not',
+        //         probability: '0.5'
+        //     })
+        // },
         getobjectId:function (params) {
             let xml = [], it = this;
             switch (params) {
@@ -1234,18 +1234,26 @@ new Vue({
         },
         setVipAndCon(){
             // this.formDataObject.objectId = this.formDataObject.objectId;
-            this.dialogVisibleTable = false;  //会员明细
+            this.dialogVisibleTable = false;  //礼券明细
             this.dialogVisibleTables = false;  //会员明细
         },
         formDataObjectProduct(params){
-            if(this.index == 0) this.tableData = [];
-            this.tableData.splice(this.index, this.index, {
+            this.tableData.push({
                 itemName: params.itemName,
                 itemType: params.itemType,
                 objectId: params.objectId,
                 isMember: params.isMember,
                 probability: params.probability
             });
+            this.dialogVisibleTable = false;  //礼券明细
+            this.dialogVisibleTables = false;  //会员明细
+            // this.tableData.splice(this.index, this.index, {
+            //     itemName: params.itemName,
+            //     itemType: params.itemType,
+            //     objectId: params.objectId,
+            //     isMember: params.isMember,
+            //     probability: params.probability
+            // });
         }
     }
 })
