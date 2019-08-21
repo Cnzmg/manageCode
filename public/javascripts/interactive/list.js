@@ -657,11 +657,10 @@ new Vue({
                                         itemName: res.data[i].itemName,
                                         itemType: res.data[i].itemType,
                                         objectId: res.data[i].objectId,
-                                        
                                         objectInstanceId: res.data[i].objectInstanceId,
                                         machineNumber: res.data[i].machineNumber,
                                         isMember: res.data[i].isMember,
-                                        createTime: res.data[i].createTime,
+                                        createTime: ym.init.getDateTime(res.data[i].createTime),
                                         status: res.data[i].status,
                                         hasAddress: res.data[i].hasAddress,
                                         addressId: res.data[i].addressId

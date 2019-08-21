@@ -89,8 +89,8 @@ new Vue({
                 'machineLog',
                 'advertisementRootList',
                 'adRootDetailedList',
-                'turntableConf',
-                'turntableConfUserLogs',
+                'turntableConf',  //  未上线测试服功能
+                'turntableConfUserLogs',  // 未上线测试服功能
                 'chartsUser',
                 'chartsFinance',
                 'chartsActive',
