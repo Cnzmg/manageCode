@@ -1,7 +1,7 @@
 import { regionData, CodeToText, TextToCode } from 'element-china-area-data';
 if (/(iPhone|iPad|iPod|iOS|Android)/i.test(navigator.userAgent)) {
     window.onload = function (params) {
-        for(let i = 0; i < document.getElementsByClassName('w400').length; i++){
+        for (let i = 0; i < document.getElementsByClassName('w400').length; i++) {
             document.getElementsByClassName('w400')[i].style.width = '100%'; //限定的表单宽度
         }
     }
@@ -211,12 +211,14 @@ new Vue({
                 couponMoney: '', //优惠券金额
                 couponRange: '', //优惠券产品
                 shareNum: '', //优惠券分享次数
-                timeUnit: '', //时间单位
+                timeUnit: -1, //营销活动-时间单位
                 itemName: '',  //营销活动-奖品名称
                 itemType: 1,   //营销活动-奖品类型
                 objectId: '',  //营销活动-类型为2、3的对象ID
                 isMember: 0,  //营销活动-奖品首中
                 probability: '',  //营销活动-奖品概率
+                status: 1, // 营销活动-活动状态
+                raffleType: 1, // 营销活动-活动状态
             },
             rules: {
                 productName: [
@@ -309,14 +311,14 @@ new Vue({
                     }
                 }]
             },
-            formDataObject:{
+            formDataObject: {
                 objectId: ''
             }, // 大转盘活动对象
             dialogVisibleTable: false,  //会员views
             dialogVisibleTables: false,  //礼券views
             objectIdShow: false,  //是否显示ID
             tableDataVip: [],
-            index: 1,  
+            index: 1,
         }
     },
     created: function () {
@@ -1190,13 +1192,13 @@ new Vue({
         //         probability: '0.5'
         //     })
         // },
-        getobjectId:function (params) {
+        getobjectId: function (params) {
             let xml = [], it = this;
             switch (params) {
                 case 2:
                     this.dialogVisibleTables = true; //礼券明细
                     this.objectIdShow = true;
-                    
+
                     break;
                 case 3:
                     this.dialogVisibleTable = true;  //会员明细
@@ -1232,12 +1234,17 @@ new Vue({
                     break;
             }
         },
-        setVipAndCon(){
+        setVipAndCon() {
             // this.formDataObject.objectId = this.formDataObject.objectId;
             this.dialogVisibleTable = false;  //礼券明细
             this.dialogVisibleTables = false;  //会员明细
         },
-        formDataObjectProduct(params){
+        formDataObjectProduct(params) {
+            if (!params.itemName) this.IError('请填写完整！');
+            if (params.probability >= 1) {
+                this.IError('概率不能大于1');
+                return false;
+            }
             this.tableData.push({
                 itemName: params.itemName,
                 itemType: params.itemType,
@@ -1245,6 +1252,7 @@ new Vue({
                 isMember: params.isMember,
                 probability: params.probability
             });
+            this.dialogVisible = false; //添加奖品
             this.dialogVisibleTable = false;  //礼券明细
             this.dialogVisibleTables = false;  //会员明细
             // this.tableData.splice(this.index, this.index, {
@@ -1254,6 +1262,45 @@ new Vue({
             //     isMember: params.isMember,
             //     probability: params.probability
             // });
+        },
+        submitFormTruntable(params, tables) {
+            const it = this;
+            if (dataHref.split('*').length > 1) {
+                _data['drawId'] = JSON.parse(decodeURI(dataHref.split('*')[1])).drawId
+            }
+            try {
+                _data['title'] = params.title;
+                _data['startTime'] = ym.init.getDateTime(params.startTime[0]);
+                _data['endTime'] = ym.init.getDateTime(params.startTime[1]);
+                _data['raffleType'] = params.raffleType;
+                _data['timeUnit'] = params.timeUnit;
+                _data['limitCount'] = params.limitCount;
+                _data['status'] = params.status;
+                _data['raffleVersion'] = params.raffleVersion || '';
+                _data['items'] = JSON.stringify(tables);  //测试
+
+                ym.init.XML({
+                    method: 'POST',
+                    uri: token._j.URLS.Development_Server_ + uri,
+                    async: false,
+                    xmldata: _data,
+                    done: function (res) {
+                        try {
+                            ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
+                                console.log(res)
+                            })() : (() => {
+                                throw "收集到错误：\n\n" + res.statusCode.msg;
+                            })();
+                        } catch (error) {
+                            it.IError(error);
+                        }
+                    }
+                })
+            } catch (error) {
+                it.IError(error);
+            }
+
         }
+
     }
 })
