@@ -635,8 +635,8 @@ new Vue({
                                     xml.push({
                                         drawId: res.data[i].drawId,
                                         title: res.data[i].title,
-                                        startTime: res.data[i].startTime,
-                                        endTime: res.data[i].endTime,
+                                        startTime: res.data[i].startTime ? ym.init.getDateTime(res.data[i].startTime) : '无',
+                                        endTime: res.data[i].endTime ? ym.init.getDateTime(res.data[i].endTime): '无',
                                         raffleType: res.data[i].raffleType,
                                         limit: res.data[i].limit,
                                         status: res.data[i].status,
@@ -1681,7 +1681,35 @@ new Vue({
                 }
             })
         },
-        refundMoneyNum(_event) { //order_refund 订单导出excel
+        refundMoneyNum(_event) { //order_refund  订单退款
+            const it = this;
+            it.loading = true;
+            _data['orderId'] = _event.orderId;
+            _data['refundLimit'] = parseFloat(_event.payNum * 100).toFixed(0) || 0;
+            _data['milliliterLimit'] = it.milliliterLimit || '';
+            ym.init.XML({
+                method: 'POST',
+                uri: token._j.URLS.Development_Server_ + 'order_refund',
+                async: false,
+                xmldata: _data,
+                done: function (res) {
+                    try {
+                        ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
+                            it.ISuccessfull(res.statusCode.msg);
+                            it.InputAndVisible = false;
+                            setTimeout(() => {
+                                it.loading = false;
+                            }, 500)
+                        })() : (() => {
+                            throw "收集到错误：\n\n" + res.statusCode.msg;
+                        })();
+                    } catch (error) {
+                        it.IError(error);
+                    }
+                }
+            })
+        },
+        exportOrder(_event){ // 订单导出 excel
             const it = this;
             it.loading = true
             _data['name'] = JSON.stringify({

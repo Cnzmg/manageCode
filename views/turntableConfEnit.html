@@ -63,21 +63,24 @@
                         </el-radio-group>
                     </el-form-item>
 
-                    <el-form-item label="优惠产品" prop="couponRange">
-                        <el-table :data="tableData" style="width: 50%" height="300px">
+                    <el-form-item label="奖品列表" prop="couponRange">
+                        <el-table :data="tableData" style="width: 50%" height="300px" empty-text="至少添加两项奖品">
                             <el-table-column type="index"></el-table-column>
                             <el-table-column prop="itemName" label="奖品名称"></el-table-column>
                             <el-table-column prop="itemType" label="奖品类型"></el-table-column>
                             <el-table-column prop="objectId" label="奖品对象"></el-table-column>
                             <el-table-column prop="isMember" label="首重"></el-table-column>
                             <el-table-column prop="probability" label="获奖概率"></el-table-column>
-                            <!-- <el-table-column>
+                            <el-table-column>
                                 <template slot-scope="scope">
-                                    <el-button type="text" size="small" @click="dialogVisible = true; index = scope.$index">
+                                    <el-button type="text" size="small" @click="dialogVisible = true; enitTableData(scope.row, scope.$index)">
                                         编辑
                                     </el-button>
+                                    <el-button type="text" size="small" @click="deleteTableData(scope.row)">
+                                        移除
+                                    </el-button>
                                 </template>
-                            </el-table-column> -->
+                            </el-table-column>
                         </el-table>
                         <div style="margin-top: 20px">
                             <el-button @click="dialogVisible = true;formDataObject = {}">增加奖品</el-button>
@@ -90,7 +93,7 @@
                 </el-form>
 
 
-                <el-dialog title="添加奖品" :visible.sync="dialogVisible">
+                <el-dialog title="添加/编辑奖品" :visible.sync="dialogVisible">
                     <el-form :model="formDataObject" label-width="100px">
                         <el-form-item label="奖品名称">
                             <el-input v-model="formDataObject.itemName"></el-input>

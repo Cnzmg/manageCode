@@ -68,7 +68,11 @@
                             <template slot-scope="scope">
                                 <el-button type="text" size="small"
                                     @click="crud({uri:'turntableConfUserLogs'});">
-                                    查看
+                                    查看记录
+                                </el-button>
+                                <el-button type="text" size="small"
+                                    @click="crud({uri:'turntableConfEnit',enitId:scope.row});">
+                                    编辑
                                 </el-button>
                             </template>
                         </el-table-column>

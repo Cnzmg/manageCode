@@ -219,6 +219,7 @@ new Vue({
                 probability: '',  //营销活动-奖品概率
                 status: 1, // 营销活动-活动状态
                 raffleType: 1, // 营销活动-活动状态
+                startTime: [], //活动时间
             },
             rules: {
                 productName: [
@@ -317,8 +318,7 @@ new Vue({
             dialogVisibleTable: false,  //会员views
             dialogVisibleTables: false,  //礼券views
             objectIdShow: false,  //是否显示ID
-            tableDataVip: [],
-            index: 1,
+            tableDataVip: []
         }
     },
     created: function () {
@@ -462,12 +462,16 @@ new Vue({
                     _data['type'] = 0;
                     _data['couponId'] = JSON.parse(e).couponId;
                     break;
+                case 'add_or_update_draw_raffle':  //draw_raffle_info edit
+                    uri = "get_draw_raffle_info";
+                    _data['drawId'] = JSON.parse(e).drawId;
+                    break;
                 default:
                     break;
             }
             it.loading = true;
             ym.init.XML({
-                method: 'POST',
+                method: uri != 'get_draw_raffle_info' ? 'POST' : 'GET',
                 uri: token._j.URLS.Development_Server_ + uri,
                 async: false,
                 xmldata: _data,
@@ -731,6 +735,16 @@ new Vue({
                                 it.imageList.couponUrl.push({ name: 'couponUrl', url: res.coupon.couponUrl }); //优惠券图片
                                 it.manageCoupon(res);
 
+                                break;
+                            case 'get_draw_raffle_info':  //抽奖配置
+                                it.ruleForm.title = res.data.title;
+                                it.ruleForm.startTime.push(ym.init.getDateTime(res.data.startTime).split(' ')[0]);
+                                it.ruleForm.startTime.push(ym.init.getDateTime(res.data.endTime).split(' ')[0]);
+                                it.ruleForm.raffleType = res.data.raffleType;
+                                it.ruleForm.limitCount = res.data.limitCount;
+                                it.ruleForm.status = res.data.status;
+                                it.tableData = res.data.items;
+                                uri = 'add_or_update_draw_raffle'  //完成后重新把uri 复原
                                 break;
                             default:
                                 break;
@@ -1277,7 +1291,15 @@ new Vue({
                 _data['limitCount'] = params.limitCount;
                 _data['status'] = params.status;
                 _data['raffleVersion'] = params.raffleVersion || '';
-                _data['items'] = JSON.stringify(tables);  //测试
+                //_data['items'] = JSON.stringify(tables);  //服务端不支持该结构
+
+                tables.forEach((element, index) => {
+                    _data['items[' + index + '].itemName'] = element.itemName;
+                    _data['items[' + index + '].itemType'] = element.itemType;
+                    _data['items[' + index + '].objectId'] = element.objectId || '';
+                    _data['items[' + index + '].isMember'] = element.isMember;
+                    _data['items[' + index + '].probability'] = element.probability;
+                });
 
                 ym.init.XML({
                     method: 'POST',
@@ -1287,7 +1309,9 @@ new Vue({
                     done: function (res) {
                         try {
                             ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
-                                console.log(res)
+                                setTimeout(() => {
+                                    parent.document.getElementById('tagHref').setAttribute('src', callBackHtml);
+                                }, 300);
                             })() : (() => {
                                 throw "收集到错误：\n\n" + res.statusCode.msg;
                             })();
@@ -1299,7 +1323,22 @@ new Vue({
             } catch (error) {
                 it.IError(error);
             }
-
+        },
+        enitTableData(params, _index) {
+            for(let i = 0; i < this.tableData.length; i++){
+                if(_index == i){
+                    this.formDataObject = {
+                        itemName: this.tableData[i].itemName,
+                        itemType: this.tableData[i].itemType,
+                        objectId: this.tableData[i].objectId,
+                        isMember: this.tableData[i].isMember,
+                        probability: this.tableData[i].probability
+                    }
+                }
+            }
+        },
+        deleteTableData(params) {
+            console.log(params);
         }
 
     }
