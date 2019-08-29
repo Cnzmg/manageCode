@@ -1259,7 +1259,8 @@ new Vue({
                 this.IError('概率不能大于1');
                 return false;
             }
-            this.tableData.push({
+            if(!params._index_) params._index_ = this.tableData.length + 1;
+            this.tableData.splice(params._index_ - +true, +true, {
                 itemName: params.itemName,
                 itemType: params.itemType,
                 objectId: params.objectId,
@@ -1269,13 +1270,6 @@ new Vue({
             this.dialogVisible = false; //添加奖品
             this.dialogVisibleTable = false;  //礼券明细
             this.dialogVisibleTables = false;  //会员明细
-            // this.tableData.splice(this.index, this.index, {
-            //     itemName: params.itemName,
-            //     itemType: params.itemType,
-            //     objectId: params.objectId,
-            //     isMember: params.isMember,
-            //     probability: params.probability
-            // });
         },
         submitFormTruntable(params, tables) {
             const it = this;
@@ -1325,20 +1319,17 @@ new Vue({
             }
         },
         enitTableData(params, _index) {
-            for(let i = 0; i < this.tableData.length; i++){
-                if(_index == i){
-                    this.formDataObject = {
-                        itemName: this.tableData[i].itemName,
-                        itemType: this.tableData[i].itemType,
-                        objectId: this.tableData[i].objectId,
-                        isMember: this.tableData[i].isMember,
-                        probability: this.tableData[i].probability
-                    }
-                }
+            this.formDataObject = {
+                itemName: params.itemName,
+                itemType: params.itemType,
+                objectId: params.objectId,
+                isMember: params.isMember,
+                probability: params.probability,
+                _index_: _index + +true
             }
         },
-        deleteTableData(params) {
-            console.log(params);
+        deleteTableData(_index_) {
+            this.tableData.splice(_index_, +true);
         }
 
     }
