@@ -64,7 +64,7 @@
                     </el-button>
                 </el-form>
                 <template>
-                    <el-table :data="tableData" stripe style="width: 100%">
+                    <el-table :data="tableData" stripe style="width: 100%" border>
                         <el-table-column prop="userId" label="ID"></el-table-column>
                         <el-table-column prop="headPicUrl" label="头像">
                             <template slot-scope="scope">
@@ -126,6 +126,8 @@
                                 </el-option>
                                 <el-option label="用户状态" value='{"_uri": "manage_client_user", "_type": "3"}'>
                                 </el-option>
+                                <el-option label="赠送抽奖" value='{"_uri": "grant_draw_chance"}'>
+                                </el-option>
                                 <!-- <el-option label="开通会员" value='{"_uri": "manage_client_user", "_type": "3"}'></el-option> -->
                             </el-select>
                         </div>
@@ -146,6 +148,9 @@
                                     <el-radio :label="1">正常</el-radio>
                                     <el-radio :label="2">冻结</el-radio>
                                 </el-radio-group>
+                            </div>
+                            <div v-show="statues.ount">
+                                <el-input placeholder="请输入赠送次数" name="ount" v-model="ount"></el-input>
                             </div>
                         </template>
 

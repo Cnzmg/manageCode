@@ -28,7 +28,7 @@
                             :picker-options="pickerOptions" @change="getTime">
                         </el-date-picker>
                     </el-form>
-                    <el-table :data="tableData" stripe style="width: 100%;height: auto;overflow: hidden;">
+                    <el-table :data="tableData" stripe style="width: 100%;height: auto;overflow: hidden;" border>
                         <el-table-column prop="activityLogId" label="日志ID"></el-table-column>
                         <el-table-column prop="userId" label="用户ID"></el-table-column>
                         <el-table-column prop="userName" label="用户昵称"></el-table-column>

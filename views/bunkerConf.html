@@ -18,21 +18,21 @@
 
 
 <body class="_scrollbar">
-	<div id="c-container-list" style="height: 100%;" data-uri="manage_prodcut_list_list"
+	<div id="c-container-list" style="height: 100%;" data-uri="machine_bunker_config_list"
 		v-loading.fullscreen.lock="loading">
 		<el-container>
 			<el-main>
 				<el-form>
 					<div style="width: 100%;margin-bottom:10px;">
-						<el-button @click="InputAndVisible = true" type="primary">添加清单<i
+						<el-button @click="InputAndVisible = true" type="primary">添加配置<i
 								class="el-icon-plus el-icon--right"></i></el-button>
 						<el-button
 							@click="detailTableAndVisible = true;UnFormData = [];unbinadmin = {}; searchAPIs({_uri: 'manage_machine_product_relation', _type:[1,2]}) "
-							type="primary">清单绑定/解绑<i class="el-icon-edit el-icon--right"></i></el-button>
+							type="primary">绑定<i class="el-icon-edit el-icon--right"></i></el-button>
 					</div>
 					<el-input placeholder="请输入内容" v-model="searchVal" class="_searchVal">
 						<el-select v-model="searchName" class="_searchVal_select" slot="prepend" placeholder="请选择">
-							<el-option label="清单名称/ID" value="name"></el-option>
+							<el-option label="配置名" value="bunkerConfigName"></el-option>
 						</el-select>
 					</el-input>
 					<div class="_search_centent">
@@ -50,10 +50,16 @@
 
 				<template>
 					<el-table :data="tableData" stripe style="width: 100%" border>
-						<el-table-column prop="listId" label="清单ID">
+                        <el-table-column prop="machineBunkerConfigId" label="ID">
+                        </el-table-column>
+						<el-table-column prop="bunkerConfigName" label="名称">
 						</el-table-column>
-						<el-table-column prop="listName" label="清单名称">
-						</el-table-column>
+						<el-table-column prop="bindMachine" label="绑定机器">
+                        </el-table-column>
+                        <el-table-column prop="createTime" label="创建时间">
+                        </el-table-column>
+                        <el-table-column prop="isSys" label="是否系统配置">
+                        </el-table-column>
 						<el-table-column label="设备类型">
 							<template slot-scope="scope">
 								<div slot="reference" class="name-wrapper">
@@ -70,10 +76,6 @@
 								<el-button type="text" size="small"
 									@click="listoperation({_tag:'manage_prodcut_list_list',_evt: scope.row,_type: 'S'}); TableAndVisible = true">
 									清单详情
-								</el-button>
-								<el-button type="text" size="small"
-									@click="listoperation({_tag:'manage_prodcut_list_list',_evt: scope.row,_type: 'D'});">
-									删除
 								</el-button>
 							</template>
 						</el-table-column>

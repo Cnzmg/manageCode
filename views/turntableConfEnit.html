@@ -26,22 +26,22 @@
                         <el-input v-model="ruleForm.title" class="w400"></el-input>
                     </el-form-item>
 
-                    <el-form-item label="活动时间" prop="startTime">
+                    <!-- <el-form-item label="活动时间" prop="startTime">
                         <el-date-picker v-model="ruleForm.startTime" type="daterange" align="right" unlink-panels
                             range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期"
                             :picker-options="pickerOptions">
                         </el-date-picker>
-                    </el-form-item>
+                    </el-form-item> -->
 
-                    <el-form-item label="转盘类型" prop="raffleType">
+                    <!-- <el-form-item label="转盘类型" prop="raffleType">
                         <el-radio-group v-model="ruleForm.raffleType">
                             <el-radio :label="1">通用版</el-radio>
                             <el-radio :label="2" style="margin: 0 10px">机器版</el-radio>
                             <el-radio :label="3">网页版</el-radio>
                         </el-radio-group>
-                    </el-form-item>
+                    </el-form-item> -->
 
-                    <el-form-item label="时间单位" prop="timeUnit">
+                    <!-- <el-form-item label="时间单位" prop="timeUnit">
                         <el-radio-group v-model="ruleForm.timeUnit">
                             <el-radio :label="-1">无限制</el-radio>
                             <el-radio :label="1" style="margin: 0 10px">周期</el-radio>
@@ -50,11 +50,11 @@
                             <el-radio :label="4" style="margin: 0 10px">周</el-radio>
                             <el-radio :label="5">日</el-radio>
                         </el-radio-group>
-                    </el-form-item>
+                    </el-form-item> -->
 
-                    <el-form-item label="抽奖次数" prop="limitCount">
+                    <!-- <el-form-item label="抽奖次数" prop="limitCount">
                         <el-input v-model="ruleForm.limitCount" class="w400"></el-input>
-                    </el-form-item>
+                    </el-form-item> -->
 
                     <el-form-item label="状态" prop="status">
                         <el-radio-group v-model="ruleForm.status">
@@ -70,6 +70,7 @@
                             <el-table-column prop="itemType" label="奖品类型"></el-table-column>
                             <el-table-column prop="objectId" label="奖品对象"></el-table-column>
                             <el-table-column prop="isMember" label="首重"></el-table-column>
+                            <el-table-column prop="sort" label="排序"></el-table-column>
                             <el-table-column prop="probability" label="获奖概率"></el-table-column>
                             <el-table-column>
                                 <template slot-scope="scope">
@@ -116,6 +117,9 @@
                                 <el-radio :label="0">否</el-radio>
                             </el-radio-group>
                         </el-form-item>
+                        <el-form-item label="排序">
+                            <el-input v-model="formDataObject.sort"></el-input>
+                        </el-form-item>
                         <el-form-item label="概率">
                             <el-input v-model="formDataObject.probability"></el-input>
                         </el-form-item>
@@ -141,15 +145,14 @@
 
                 <el-dialog title="礼券数据" :visible.sync="dialogVisibleTables">
                     <el-form :model="formDataObject" label-width="100px"
-                        ref="multipleTable" tooltip-effect="dark">
+                        ref="multipleTable" tooltip-effect="dark" @selection-change="handleSelectionChange">
                         <el-table :data="tableDataVip">
                             <el-table-column type="selection"></el-table-column>
                             <el-table-column type="index"></el-table-column>
-                            <el-table-column prop="itemName" label="奖品名称"></el-table-column>
-                            <el-table-column prop="itemType" label="奖品类型"></el-table-column>
-                            <el-table-column prop="objectId" label="奖品对象"></el-table-column>
-                            <el-table-column prop="isMember" label="首重"></el-table-column>
-                            <el-table-column prop="probability" label="获奖概率"></el-table-column>
+                            <el-table-column prop="couponName" label="名称"></el-table-column>
+                            <el-table-column prop="couponMoney" label="类型"></el-table-column>
+                            <el-table-column prop="couponTime" label="时间"></el-table-column>
+                            <el-table-column prop="couponType" label="类型"></el-table-column>
                         </el-table>
                         <el-button type="primary" @click="setVipAndCon()">
                             提交</el-button>

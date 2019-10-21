@@ -738,8 +738,10 @@ new Vue({
                                 break;
                             case 'get_draw_raffle_info':  //抽奖配置
                                 it.ruleForm.title = res.data.title;
-                                it.ruleForm.startTime.push(ym.init.getDateTime(res.data.startTime).split(' ')[0]);
-                                it.ruleForm.startTime.push(ym.init.getDateTime(res.data.endTime).split(' ')[0]);
+                                if (res.data.startTime) {
+                                    it.ruleForm.startTime.push(ym.init.getDateTime(res.data.startTime).split(' ')[0]);
+                                    it.ruleForm.startTime.push(ym.init.getDateTime(res.data.endTime).split(' ')[0]);
+                                }
                                 it.ruleForm.raffleType = res.data.raffleType;
                                 it.ruleForm.limitCount = res.data.limitCount;
                                 it.ruleForm.status = res.data.status;
@@ -1189,7 +1191,14 @@ new Vue({
         handleSelectionChange(val) {  //下拉选项
             this.ruleForm.productId = [];  //优惠券产品相关
             this.formDataObject.objectId = [];  //营销活动会员ID
-            this.formDataObject.objectId = val[0].memberRuleId;
+            if(val.length < 1) return false;
+            console.log(val)
+            if(val[0].memberRuleId){
+                this.formDataObject.objectId = val[0].memberRuleId;  //会员
+            }
+            if(val[0].couponId){
+                this.formDataObject.objectId = val[0].couponId;  //礼券
+            }
             val.forEach(e => {
                 this.ruleForm.productId.push(e.productId);  //批量操作优惠券产品
             });
@@ -1212,7 +1221,40 @@ new Vue({
                 case 2:
                     this.dialogVisibleTables = true; //礼券明细
                     this.objectIdShow = true;
-
+                    _data['page'] = 1;
+                    let __time = new Map([
+                        [1, '年'],
+                        [2, '月'],
+                        [3, '日'],
+                        [4, '周']
+                    ]);
+                    ym.init.XML({
+                        method: 'POST',
+                        uri: token._j.URLS.Development_Server_ + 'find_coupon_list',
+                        async: false,
+                        xmldata: _data,
+                        done: function (res) {
+                            try {
+                                ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
+                                    setTimeout(() => {
+                                        it.tableDataVip = [];
+                                        res.couponInfoList.forEach((key, index) => {
+                                            it.tableDataVip.push({
+                                                couponName: key.couponName,
+                                                couponMoney: key.couponMoney,
+                                                couponTime: key.couponTime + __time.get(key.timeUnit),
+                                                couponType: key.couponType
+                                            })
+                                        })
+                                    }, 500);
+                                })() : (() => {
+                                    throw "收集到错误：\n\n" + res.statusCode.msg;
+                                })();
+                            } catch (error) {
+                                it.IError(error);
+                            }
+                        }
+                    })
                     break;
                 case 3:
                     this.dialogVisibleTable = true;  //会员明细
@@ -1249,7 +1291,7 @@ new Vue({
             }
         },
         setVipAndCon() {
-            // this.formDataObject.objectId = this.formDataObject.objectId;
+            //this.formDataObject.objectId = this.formDataObject.objectId;
             this.dialogVisibleTable = false;  //礼券明细
             this.dialogVisibleTables = false;  //会员明细
         },
@@ -1259,12 +1301,13 @@ new Vue({
                 this.IError('概率不能大于1');
                 return false;
             }
-            if(!params._index_) params._index_ = this.tableData.length + 1;
+            if (!params._index_) params._index_ = this.tableData.length + 1;
             this.tableData.splice(params._index_ - +true, +true, {
                 itemName: params.itemName,
                 itemType: params.itemType,
                 objectId: params.objectId,
                 isMember: params.isMember,
+                sort: params.sort,
                 probability: params.probability
             });
             this.dialogVisible = false; //添加奖品
@@ -1278,13 +1321,16 @@ new Vue({
             }
             try {
                 _data['title'] = params.title;
-                _data['startTime'] = ym.init.getDateTime(params.startTime[0]);
-                _data['endTime'] = ym.init.getDateTime(params.startTime[1]);
-                _data['raffleType'] = params.raffleType;
-                _data['timeUnit'] = params.timeUnit;
-                _data['limitCount'] = params.limitCount;
+                // if(params.startTime.length > 0){
+                //     _data['startTime'] = ym.init.getDateTime(params.startTime[0]);
+                //     _data['endTime'] = ym.init.getDateTime(params.startTime[1]);
+                // }
+                // _data['raffleType'] = params.raffleType;
+                // _data['timeUnit'] = params.timeUnit;
+                // _data['limitCount'] = params.limitCount;
                 _data['status'] = params.status;
                 _data['raffleVersion'] = params.raffleVersion || '';
+                _data['sort'] = params.sort || 0;
                 //_data['items'] = JSON.stringify(tables);  //服务端不支持该结构
 
                 tables.forEach((element, index) => {
@@ -1292,6 +1338,7 @@ new Vue({
                     _data['items[' + index + '].itemType'] = element.itemType;
                     _data['items[' + index + '].objectId'] = element.objectId || '';
                     _data['items[' + index + '].isMember'] = element.isMember;
+                    _data['items[' + index + '].sort'] = element.sort;
                     _data['items[' + index + '].probability'] = element.probability;
                 });
 
@@ -1324,6 +1371,7 @@ new Vue({
                 itemType: params.itemType,
                 objectId: params.objectId,
                 isMember: params.isMember,
+                sort: params.sort,
                 probability: params.probability,
                 _index_: _index + +true
             }

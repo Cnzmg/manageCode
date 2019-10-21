@@ -27,7 +27,7 @@
 			<el-container v-loading.fullscreen.lock="loading">
 				<el-main>
 					<template>
-						<el-table :data="tableData" stripe style="width: 100%">
+						<el-table :data="tableData" stripe style="width: 100%" border>
 							<el-table-column prop="mUpdateId" label="版本ID"></el-table-column>
 							<el-table-column prop="mUpdateVersion" label="版本号"></el-table-column>
 							<el-table-column prop="versionCode" label="版本序列号"></el-table-column>

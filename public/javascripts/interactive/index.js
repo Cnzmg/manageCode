@@ -84,13 +84,14 @@ new Vue({
                 'detailedList',
                 'equipmentList',
                 'equipmentLongUpdate',
+                'bunkerConf', //设备料仓配置
                 'smallLocationConfig',
                 'machineAmap',
                 'machineLog',
                 'advertisementRootList',
                 'adRootDetailedList',
-                'turntableConf',  //  未上线测试服功能
-                'turntableConfUserLogs',  // 未上线测试服功能
+                'turntableConf',  
+                'turntableConfUserLogs', 
                 'chartsUser',
                 'chartsFinance',
                 'chartsActive',
@@ -99,12 +100,14 @@ new Vue({
                 'feedbackList',
                 // 'systemUserLvSearch',
                 'couponList',
-                'orderList',
-                'refundOrder',
-                'orderEverDayList',
-                'financialManagement',
+                'orderList',  //订单 
+                'refundOrder',  //退款订单
+                'orderEverDayList',  //订单统计
+                // 'financialManagement',    分润记录
+                'orderLogs',   //上新订单日志  +++
                 'RepairPersonnelList',
                 'materialLog',
+                'maintenanceLogs',  //运维日志
                 // 'information'
             ],
             _shop: [
@@ -117,29 +120,52 @@ new Vue({
             ]
         }, num = 0;
         for (let i = 0; i < tag.length - 1; i++) {
-            _tag += `<el-submenu index="${i + 1}">
-                        <template slot="title">
-                            <i class="${icons[i]}"></i>
-                            <span>${tag[i].permissionName}</span>
-                        </template>
-                        <el-menu-item-group>`;
-            for (let j = 0; j < tag[i].pageInfoList.length; j++) {
-                // _tag += `<el-menu-item @click=Href({'uri':'${tag[i].pageInfoList[j].pageUrl}','title':'${tag[i].pageInfoList[j].pageName}'}) index="${i + 1}-${j}">${tag[i].pageInfoList[j].pageName}</el-menu-item>`;
-                switch (tag.length) {  //启用本地路由
-                    case 9:
-                        _tag += `<el-menu-item u="${_lists._system[num]}" v-on:click=Href({'uri':'../${_lists._system[num]}.html?hash:iforx${parseInt(13 * num / j + 2)}','title':'${tag[i].pageInfoList[j].pageName}'}) index="${i + 1}-${j}">${tag[i].pageInfoList[j].pageName}</el-menu-item>`;
-                        break;
-                    case 3:
-                        _tag += `<el-menu-item v-on:click=Href({'uri':'../${_lists._admin[num]}.html?hash:iforx${parseInt(13 * num / j + 2)}','title':'${tag[i].pageInfoList[j].pageName}'}) index="${i + 1}-${j}">${tag[i].pageInfoList[j].pageName}</el-menu-item>`;
-                        break;
-                    default:
-                        _tag += `<el-menu-item v-on:click=Href({'uri':'../${_lists._shop[num]}.html?hash:iforx${parseInt(13 * num / j + 2)}','title':'${tag[i].pageInfoList[j].pageName}'}) index="${i + 1}-${j}">${tag[i].pageInfoList[j].pageName}</el-menu-item>`;
-                        break;
+            if (this.adminName != 'yuanmenghhx' && this.adminName != 'yuanmengKSX') {
+                _tag += `<el-submenu index="${i + 1}">
+                <template slot="title">
+                    <i class="${icons[i]}"></i>
+                    <span>${tag[i].permissionName}</span>
+                </template>
+                <el-menu-item-group>`;
+                for (let j = 0; j < tag[i].pageInfoList.length; j++) {
+                    // _tag += `<el-menu-item @click=Href({'uri':'${tag[i].pageInfoList[j].pageUrl}','title':'${tag[i].pageInfoList[j].pageName}'}) index="${i + 1}-${j}">${tag[i].pageInfoList[j].pageName}</el-menu-item>`;
+                    switch (tag.length) {  //启用本地路由
+                        case 9:
+                            _tag += `<el-menu-item u="${_lists._system[num]}" v-on:click=Href({'uri':'../${_lists._system[num]}.html?hash:iforx${parseInt(13 * num / j + 2)}','title':'${tag[i].pageInfoList[j].pageName}'}) index="${i + 1}-${j}">${tag[i].pageInfoList[j].pageName}</el-menu-item>`;
+                            break;
+                        case 3:
+                            _tag += `<el-menu-item v-on:click=Href({'uri':'../${_lists._admin[num]}.html?hash:iforx${parseInt(13 * num / j + 2)}','title':'${tag[i].pageInfoList[j].pageName}'}) index="${i + 1}-${j}">${tag[i].pageInfoList[j].pageName}</el-menu-item>`;
+                            break;
+                        default:
+                            _tag += `<el-menu-item v-on:click=Href({'uri':'../${_lists._shop[num]}.html?hash:iforx${parseInt(13 * num / j + 2)}','title':'${tag[i].pageInfoList[j].pageName}'}) index="${i + 1}-${j}">${tag[i].pageInfoList[j].pageName}</el-menu-item>`;
+                            break;
+                    };
+                    num++;
                 };
-                num++;
-            };
-            _tag += `</el-menu-item-group>
+                _tag += `</el-menu-item-group>
+        </el-submenu>`;
+            } else {  //此为特殊系管账号
+                _tag = `<el-submenu index="1">
+                <template slot="title">
+                    <i class="${icons[0]}"></i>
+                    <span>设备管理</span>
+                </template>
+                <el-menu-item-group><el-menu-item  v-on:click=Href({'uri':'../equipmentList.html?hash:iforx','title':'设备列表'}) index="1-1">设备列表</el-menu-item>
+                <el-menu-item  v-on:click=Href({'uri':'../equipmentLongUpdate.html?hash:iforx','title':'应用更新'}) index="1-2">应用更新</el-menu-item>
+                <el-menu-item  v-on:click=Href({'uri':'../smallLocationConfig.html?hash:iforx','title':'地址配置'}) index="1-3">地址配置</el-menu-item>
+                <el-menu-item  v-on:click=Href({'uri':'../machineAmap.html?hash:iforx','title':'设备地图'}) index="1-4">设备地图</el-menu-item>
+                <el-menu-item  v-on:click=Href({'uri':'../machineLog.html?hash:iforx','title':'运行日志'}) index="1-5">运行日志</el-menu-item></el-menu-item-group>
+                </el-submenu><el-submenu index="2">
+                <template slot="title">
+                    <i class="${icons[1]}"></i>
+                    <span>运维管理</span>
+                </template>
+                <el-menu-item  v-on:click=Href({'uri':'../RepairPersonnelList.html?hash:iforx','title':'运维人员'}) index="2-1">运维人员</el-menu-item>
+                <el-menu-item  v-on:click=Href({'uri':'../materialLog.html?hash:iforx','title':'物料日志'}) index="2-2">物料日志</el-menu-item></el-menu-item-group>
                 </el-submenu>`;
+
+            }
+
         };
         document.getElementsByClassName('menu')[0].innerHTML = _tag;
         if (!/(iPhone|iPad|iPod|iOS|Android)/i.test(navigator.userAgent)) {
@@ -290,8 +316,8 @@ new Vue({
                     break;
                 default:
                     if (dom.offsetWidth - ow < 1) {
-                        if(parseInt(liw.style.marginLeft) == 0) return false;
-                        liw.style.marginLeft = `${ parseInt(liw.style.marginLeft) + dom.offsetWidth}px`
+                        if (parseInt(liw.style.marginLeft) == 0) return false;
+                        liw.style.marginLeft = `${parseInt(liw.style.marginLeft) + dom.offsetWidth}px`
                     }
                     break;
             }
@@ -382,7 +408,7 @@ document.getElementById('ym-menu-left').addEventListener('click', function (para
     let _o, _;
     if (bools) {
         bools = false;
-        clearInterval(_o);  
+        clearInterval(_o);
         _o = setInterval(() => {
             if (time < 1) clearInterval(_o)
             this.childNodes[0].style.transform = "rotate(" + time-- + "deg)";
@@ -392,7 +418,7 @@ document.getElementById('ym-menu-left').addEventListener('click', function (para
         }, 0);
     } else {
         bools = true;
-        clearInterval(_);  
+        clearInterval(_);
         _ = setInterval(() => {
             if (time > 89) clearInterval(_)
             this.childNodes[0].style.transform = "rotate(" + time++ + "deg)";

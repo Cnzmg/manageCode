@@ -29,6 +29,7 @@ new Vue({
     el: '#c-container-list',
     data: () => {
         return {
+            fileUpdata: (process.env.NODE_ENV == "development" ? parent.all.json._j.URLS.Development_Files_ : parent.all.json._j.URLS.ForMal_Files_) + 'upload_file',
             loading: false,
             more: false,
             tableData: [],
@@ -39,6 +40,7 @@ new Vue({
             select: '',
             searchVal: '',
             searchName: 'name',
+            selectLong: '',
             machineNumbers: {
                 machineCount: 0
             },
@@ -149,10 +151,12 @@ new Vue({
             statues: {
                 user: false,
                 flow: false,
-                state: false
+                state: false,
+                ount: false
             }, // 状态的显示/f
             overdueTime: '',
             grantCount: '',
+            ount: '',  //赠送抽奖次数
             user_state: 1,
             order: {},
             refundMoney: {},  //订单退款
@@ -636,7 +640,7 @@ new Vue({
                                         drawId: res.data[i].drawId,
                                         title: res.data[i].title,
                                         startTime: res.data[i].startTime ? ym.init.getDateTime(res.data[i].startTime) : '无',
-                                        endTime: res.data[i].endTime ? ym.init.getDateTime(res.data[i].endTime): '无',
+                                        endTime: res.data[i].endTime ? ym.init.getDateTime(res.data[i].endTime) : '无',
                                         raffleType: res.data[i].raffleType,
                                         limit: res.data[i].limit,
                                         status: res.data[i].status,
@@ -664,6 +668,47 @@ new Vue({
                                         status: res.data[i].status,
                                         hasAddress: res.data[i].hasAddress,
                                         addressId: res.data[i].addressId
+                                    })
+                                }
+                                break;
+                            case `order_log_list`:  // order_log_list order logs
+                                for (let i = 0; i < res.data.length; i++) {
+                                    xml.push({
+                                        orderId: res.data[i].orderId,
+                                        userId: res.data[i].userId,
+                                        nickName: res.data[i].nickName,
+                                        machineNumber: res.data[i].machineNumber,
+                                        orderMoney: parseFloat(res.data[i].orderMoney).toFixed(2),
+                                        paymentMoney: parseFloat(res.data[i].paymentMoney).toFixed(2),
+                                        orderType: res.data[i].orderType,
+                                        paymentType: res.data[i].paymentType,
+                                        paymentTime: res.data[i].paymentTime
+                                    })
+                                }
+                                break;
+                            case `maintain_flow_log_list`:  //maintenanceLogs 
+                                for (let i = 0; i < res.data.length; i++) {
+                                    xml.push({
+                                        maintainFlowLogId: res.data[i].maintainFlowLogId,
+                                        maintainerId: res.data[i].maintainerId,
+                                        maintainerName: res.data[i].maintainerName,
+                                        machineNumber: res.data[i].machineNumber,
+                                        flowType: res.data[i].flowType,
+                                        createTime: res.data[i].createTime,
+                                        endTime: res.data[i].endTime,
+                                        status: res.data[i].status
+                                    })
+                                }
+                                break;
+                            case `machine_bunker_config_list`:  //bunkerConf 
+                                for (let i = 0; i < res.data.length; i++) {
+                                    xml.push({
+                                        bindMachine: res.data[i].bindMachine,
+                                        bunkerConfigName: res.data[i].bunkerConfigName,
+                                        createTime: ym.init.getDateTime(res.data[i].createTime),
+                                        isSys: res.data[i].isSys,
+                                        machineBunkerConfigId: res.data[i].machineBunkerConfigId,
+                                        machineType: it.StatusName.get('free').machineType.get(res.data[i].machineType)
                                     })
                                 }
                                 break;
@@ -1323,7 +1368,22 @@ new Vue({
                             delete _data['overdueTime']
                             it.list(); //刷新列表
                             break;
-                        default:
+                        default:  //赠送抽奖次数
+                            _data['grantCount'] = it.ount;
+                            it.userMode.forEach(_evnt => {
+                                _data['userId'] = _evnt.userId;
+                                ym.init.XML({
+                                    method: 'POST',
+                                    uri: token._j.URLS.Development_Server_ + _sess._uri,
+                                    async: false,
+                                    xmldata: _data,
+                                    done: function (res) {
+                                        it.detailTableAndVisible = false;
+                                        it.ISuccessfull(res.statusCode.msg);
+                                    }
+                                })
+                            })
+                            delete _data['grantCount']
                             break;
                     }
                     break;
@@ -1599,18 +1659,25 @@ new Vue({
                         it.statues.user = true;
                         it.statues.state = false;
                         it.statues.flow = false;
+                        it.statues.ount = false;
                     } else {  //更改用户状态
                         it.statues.user = false;
                         it.statues.state = true;
                         it.statues.flow = false;
+                        it.statues.ount = false;
                     }
                     break;
                 case 'grant_compensate_milliliter':  //更改用户毫升数
                     it.statues.user = false;
                     it.statues.state = false;
                     it.statues.flow = true;
+                    it.statues.ount = false;
                     break;
-                default:
+                default:  //赠送抽奖次数
+                    it.statues.user = false;
+                    it.statues.state = false;
+                    it.statues.ount = true;
+                    it.statues.flow = false;
                     break;
             }
         },
@@ -1686,7 +1753,7 @@ new Vue({
             it.loading = true;
             _data['orderId'] = _event.orderId;
             _data['refundLimit'] = parseFloat(_event.payNum * 100).toFixed(0) || 0;
-            _data['milliliterLimit'] = it.milliliterLimit || '';
+            _data['milliliterLimit'] = _event.milliliterLimit || '';
             ym.init.XML({
                 method: 'POST',
                 uri: token._j.URLS.Development_Server_ + 'order_refund',
@@ -1699,6 +1766,7 @@ new Vue({
                             it.InputAndVisible = false;
                             setTimeout(() => {
                                 it.loading = false;
+                                it.list();
                             }, 500)
                         })() : (() => {
                             throw "收集到错误：\n\n" + res.statusCode.msg;
@@ -1709,7 +1777,7 @@ new Vue({
                 }
             })
         },
-        exportOrder(_event){ // 订单导出 excel
+        exportOrder(_event) { // 订单导出 excel
             const it = this;
             it.loading = true
             _data['name'] = JSON.stringify({
@@ -1728,6 +1796,37 @@ new Vue({
             ym.init.XML({
                 method: 'POST',
                 uri: token._j.URLS.Development_Server_ + 'export_order_list',
+                async: false,
+                xmldata: _data,
+                done: function (res) {
+                    try {
+                        ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
+                            setTimeout(() => {
+                                it.loading = false;
+                            }, 500)
+                            location.href = token._j.URLS.Development_Server_ + res.path;
+                        })() : (() => {
+                            throw "收集到错误：\n\n" + res.statusCode.msg;
+                        })();
+                    } catch (error) {
+                        it.IError(error);
+                    }
+                }
+            })
+        },
+        exportPushOrder(_event) { // 资金管理导出 excel
+            const it = this;
+            it.loading = true
+            _data['orderId'] = _event.consumptionType || '';
+            _data['machineNumber'] = _event.orderStatus || '';
+            _data['startTime'] = it.optionsTime[0] || '';
+            _data['endTime'] = it.optionsTime[1] || '';
+            _data['adminName'] = _event.orderLine || '';
+            _data['userId'] = _event.sort || '';
+            _data['orderType'] = _event.orderType || '';
+            ym.init.XML({
+                method: 'POST',
+                uri: token._j.URLS.Development_Server_ + 'export_order_log_list',
                 async: false,
                 xmldata: _data,
                 done: function (res) {
@@ -1909,6 +2008,71 @@ new Vue({
                     }
                 }
             })
-        }
+        },
+
+        exportTurntableUserLogs(params) {
+            const it = this;
+            _data['userId'] = params.userId || '';
+            _data['drawInstanceId'] = params.drawInstanceId || '';
+            _data['drawId'] = params.drawId || '';
+            _data['drawName'] = params.drawName || '';
+            _data['raffleVersion'] = params.raffleVersion || '';
+            _data['itemName'] = params.itemName || '';
+            _data['itemType'] = params.itemType || '';
+            _data['status'] = params.status || '';
+            _data['hasAddress'] = params.hasAddress || '';
+            if (params.startTime > 1) {
+                _data['startTime'] = ym.init.getDateTime(params.startTime[0]) || '';
+                _data['endTime'] = ym.init.getDateTime(params.startTime[1]) || '';
+            }
+
+            ym.init.XML({
+                method: 'POST',
+                uri: token._j.URLS.Development_Server_ + 'export_user_draw_raffle_log_list',
+                async: false,
+                xmldata: _data,
+                done: function (res) {
+                    try {
+                        ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
+                            location.href = token._j.URLS.Development_Server_ + res.path;
+                        })() : (() => {
+                            throw "收集到错误：\n\n" + res.statusCode.msg;
+                        })();
+                    } catch (error) {
+                        it.IError(error);
+                    }
+                }
+            })
+        },
+
+        //查询运维流程详情
+        exportTurntableUserLogs(params) {
+            const it = this;
+            _data['maintainerId'] = params.maintainerId
+            _data['maintainFlowId'] = params.maintainFlowLogId
+            ym.init.XML({
+                method: 'GET',
+                uri: token._j.URLS.Development_Server_ + 'maintain_question_log_list',
+                async: false,
+                xmldata: _data,
+                done: function (res) {
+                    try {
+                        ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
+                            it.UnFormData = [];
+                            res.data.forEach(element => {
+                                it.UnFormData.push({
+                                    question: element.question,
+                                    answer: element.answer
+                                })
+                            })
+                        })() : (() => {
+                            throw "收集到错误：\n\n" + res.statusCode.msg;
+                        })();
+                    } catch (error) {
+                        it.IError(error);
+                    }
+                }
+            })
+        },
     }
 });

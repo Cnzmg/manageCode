@@ -77,7 +77,7 @@
                         <el-button type="danger">运维总数 {{ machineNumbers.maintainNum }}</el-button>
                         <el-button type="danger">维修总数 {{ machineNumbers.repairNum }}</el-button>
                     </el-form>
-                    <el-table :data="tableData" stripe style="width: 100%">
+                    <el-table :data="tableData" stripe style="width: 100%" border> 
                         <el-table-column prop="machineNumber" label="设备编号"></el-table-column>
                         <el-table-column prop="adminName" label="绑定商户"></el-table-column>
                         <el-table-column prop="machineAddrDesc" label="设备地址"></el-table-column>
