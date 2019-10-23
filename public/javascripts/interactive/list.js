@@ -706,7 +706,7 @@ new Vue({
                                         bindMachine: res.data[i].bindMachine,
                                         bunkerConfigName: res.data[i].bunkerConfigName,
                                         createTime: ym.init.getDateTime(res.data[i].createTime),
-                                        isSys: res.data[i].isSys,
+                                        isSys: (res.data[i].isSys == 1 ? '是' : '否'),
                                         machineBunkerConfigId: res.data[i].machineBunkerConfigId,
                                         machineType: it.StatusName.get('free').machineType.get(res.data[i].machineType)
                                     })
@@ -2062,6 +2062,7 @@ new Vue({
                             res.data.forEach(element => {
                                 it.UnFormData.push({
                                     question: element.question,
+                                    answerPic: element.answerPic,
                                     answer: element.answer
                                 })
                             })
