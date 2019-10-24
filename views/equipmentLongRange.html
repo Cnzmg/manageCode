@@ -18,7 +18,8 @@
 
 <body class="_scrollbar">
 	<div id="c-container-list" data-uri="remote_operation" data-asset="/manage/equipmentList.html"
-		data-goback="../equipmentList.html" v-loading.fullscreen.lock="loading" data-search="manage_machine" style="height:100%;">
+		data-goback="../equipmentList.html" v-loading.fullscreen.lock="loading" data-search="manage_machine"
+		style="height:100%;">
 
 		<el-container>
 			<el-main style="margin-bottom:60px;">
@@ -26,22 +27,30 @@
 					<div>机器远程操作指令：</div>
 					<br />
 					<el-button v-show="bigAndsmall" @click="sendMachine({_operationType: 1})"><i
-							class="el-icon-s-promotion"></i>大门指令</el-button>
+							class="el-icon-s-promotion"></i>大门打开</el-button>
 					<el-button v-show="bigAndsmall" @click="sendMachine({_operationType: 2})"><i
-							class="el-icon-s-promotion"></i>小门指令</el-button>
-					<el-button @click="sendMachine({_operationType: 5})"><i class="el-icon-s-promotion"></i>推送菜单指令
-					</el-button>
+							class="el-icon-s-promotion"></i>大门关闭</el-button>
 					<el-button v-show="bigAndsmall" @click="sendMachine({_operationType: 3})"><i
-							class="el-icon-s-promotion"></i>机器清洗指令
-					</el-button>
+							class="el-icon-s-promotion"></i>小门打开</el-button>
 					<el-button v-show="bigAndsmall" @click="sendMachine({_operationType: 4})"><i
+							class="el-icon-s-promotion"></i>小门关闭</el-button>
+					<el-button v-show="bigAndsmall" @click="sendMachine({_operationType: 5})">
+						<i class="el-icon-s-promotion"></i>机器清洗指令
+					</el-button>
+					<el-button v-show="bigAndsmall" @click="sendMachine({_operationType: 6})"><i
 							class="el-icon-s-promotion"></i>机器消毒指令
 					</el-button>
-					<el-button @click="sendMachine({_operationType: 6})"><i class="el-icon-s-promotion"></i>推送视频指令
+					<el-button @click="sendMachine({_operationType: 7})"><i class="el-icon-s-promotion"></i>推送菜单指令
 					</el-button>
-					<el-button @click="sendMachine({_operationType: 7})"><i class="el-icon-s-promotion"></i>日志上传指令
+					<el-button @click="sendMachine({_operationType: 8})"><i class="el-icon-s-promotion"></i>推送视频指令
 					</el-button>
-					<el-button @click="sendMachine({_operationType: 8})"><i class="el-icon-s-promotion"></i>维修状态指令
+					<el-button @click="sendMachine({_operationType: 9})"><i class="el-icon-s-promotion"></i>日志上传指令
+					</el-button>
+					<el-button @click="sendMachine({_operationType: 10})"><i class="el-icon-s-promotion"></i>机器更新料仓配置
+					</el-button>
+					<el-button @click="sendMachine({_operationType: 11})"><i class="el-icon-s-promotion"></i>机器复位
+					</el-button>
+					<el-button @click="sendMachine({_operationType: 12})"><i class="el-icon-s-promotion"></i>维修状态指令
 					</el-button>
 				</div>
 

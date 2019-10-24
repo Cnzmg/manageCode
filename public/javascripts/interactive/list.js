@@ -19,7 +19,7 @@ const [
         parent.document.getElementById('tagHref').getAttribute('src').replace('..', '/manage').split('?')[0],
         document.getElementById('c-container-list').getAttribute('data-uri'),
     ];
-const _data = {
+var _data = {
     id: ym.init.COMPILESTR.decrypt(token.id),
     token: ym.init.COMPILESTR.decrypt(token.asset),
     // url: u.toLowerCase(),
@@ -62,6 +62,75 @@ new Vue({
                 adminMobile: '',
                 named: '',
                 roleId: '',
+                isShow: 1,  //是否显示
+                isSys: 1, //是否系统配置
+                machineBunkerConfigAllId: '',//绑定机器的配置ID
+                numberBigConf: [  //料仓配置
+                    {
+                        name: '',
+                        isShow: 1,
+                        number: 1
+                    },
+                    {
+                        name: '',
+                        isShow: 1,
+                        number: 2
+                    },
+                    {
+                        name: '',
+                        isShow: 1,
+                        number: 3
+                    },
+                    {
+                        name: '',
+                        isShow: 1,
+                        number: 4
+                    },
+                    {
+                        name: '',
+                        isShow: 1,
+                        number: 5
+                    },
+                    {
+                        name: '',
+                        isShow: 1,
+                        number: 6
+                    },
+                    {
+                        name: '水',
+                        isShow: 0,
+                        number: 100
+                    },
+                    {
+                        name: '咖啡',
+                        isShow: 1,
+                        number: 170
+                    },
+                    {
+                        name: '杯子',
+                        isShow: 0,
+                        number: 160
+                    },
+                ],
+                numberSmallConf: [
+                    {
+                        name: '水',
+                        isShow: 0,
+                        number: 100
+                    },
+                    {
+                        name: '咖啡',
+                        isShow: 0,
+                        number: 170
+                    },
+                    {
+                        name: '牛奶',
+                        isShow: 0,
+                        number: 180
+                    }
+                ],
+                has: '',
+                bunkerConfigName: ''
             },
             imageList: {
                 mUpdateUrl: [], //图片li
@@ -103,6 +172,11 @@ new Vue({
             adevtmodel: false,  //视频添加/编辑
             adIds: [],
             html: '',
+            bunkerConf: {
+                name: '',
+                time: ''
+            },
+            bunkerConfNumber: true, //大小机器的料仓显示
             pickerOptions: {  //时间节点
                 shortcuts: [{
                     text: '最近一周',
@@ -1069,12 +1143,12 @@ new Vue({
             this.adminIds = [];
             this.userMode = [];
             val.forEach(e => {
-                this.productId.push(e.productId)
-                this.machineNumber.push(e.machineNumber)
-                this.adminIds.push(e.adminId)
-                this.adIds.push(e.madId)
+                this.productId.push(e.productId || [])
+                this.machineNumber.push(e.machineNumber || [])  //机器编号数组
+                this.adminIds.push(e.adminId || [])
+                this.adIds.push(e.madId || [])
                 e.userId != "无" ? this.userIdts.push(e.userId) : null;
-                this.userMode.push(e); //批量操作用户类型
+                this.userMode.push(e || []); //批量操作用户类型
             });
         },
         filterTag(value, row) {
@@ -1087,6 +1161,29 @@ new Vue({
             const it = this;
             switch (_v._uri) {
                 case 'manage_machine_product_relation':  //清单的绑定解绑
+                    if(_v._type == 4){  //针对料仓配置绑定的机器查询
+                        _data['adminId'] = _v._id;
+                        delete _data['page']
+                        delete _data['listId']
+                        delete _data['type']
+                        delete _data['machineNumber']
+                        ym.init.XML({
+                            method: 'GET',
+                            uri: token._j.URLS.Development_Server_ + 'find_admin_machine',  //查询绑定关系
+                            async: false,
+                            xmldata: _data,
+                            done: function (res) {
+                                res.data.forEach(_params_ => {
+                                    it.UnFormData.push({
+                                        machineNumber: _params_.machineNumber,
+                                        listName: _params_.listName,
+                                        machineType: it.StatusName.get('free').machineType.get(_params_.machineType),
+                                    })
+                                })
+                            }
+                        });
+                        return false;
+                    }
                     _v._type.forEach(e => {
                         _data['type'] = e;
                         _data['adminId'] = _v._id || '';
@@ -1100,6 +1197,7 @@ new Vue({
                             done: function (res) {
                                 try {
                                     ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
+                                        console.log(res)
                                         switch (e) {
                                             case 1:
                                                 it.listIds = [];
@@ -1978,7 +2076,7 @@ new Vue({
                 }
             })
         },
-        showtruntablelogs(params) {
+        showtruntablelogs(params) {  //转盘记录
             console.log(params)
             const it = this;
             _data['addressId'] = params;
@@ -2010,7 +2108,7 @@ new Vue({
             })
         },
 
-        exportTurntableUserLogs(params) {
+        exportTurntableUserLogs(params) {  //导出用户抽奖记录
             const it = this;
             _data['userId'] = params.userId || '';
             _data['drawInstanceId'] = params.drawInstanceId || '';
@@ -2046,7 +2144,7 @@ new Vue({
         },
 
         //查询运维流程详情
-        exportTurntableUserLogs(params) {
+        machineMaintenance(params) {
             const it = this;
             _data['maintainerId'] = params.maintainerId
             _data['maintainFlowId'] = params.maintainFlowLogId
@@ -2075,5 +2173,122 @@ new Vue({
                 }
             })
         },
+
+        //查看料仓配置
+        machineBunkerConfig(params, enitBunkerConf) {
+            const it = this;
+            _data['machineBunkerConfigId'] = params.machineBunkerConfigId
+            ym.init.XML({
+                method: 'GET',
+                uri: token._j.URLS.Development_Server_ + 'machine_bunker_config',
+                async: false,
+                xmldata: _data,
+                done: function (res) {
+                    try {
+                        ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
+                            it.TableFormData = [];
+                            it.formData.numberBigConf = [];  //编辑显示
+                            it.bunkerConf = {
+                                name: res.bunkerConfig.bunkerConfigName,
+                                time: ym.init.getDateTime(res.bunkerConfig.createTime)
+                            };
+                            JSON.parse(res.bunkerConfig.bunkerConfiguration).forEach(element => {
+                                it.TableFormData.push({
+                                    name: element.name,
+                                    number: element.number,
+                                    isShow: element.isShow == +true ? '是' : '否',
+                                });
+                                if (enitBunkerConf) {
+                                    it.has = res.bunkerConfig.machineBunkerConfigId; //是编辑操作的ID
+                                    it.formData.bunkerConfigName = res.bunkerConfig.bunkerConfigName;  //配置名称
+                                    it.formData.machineType = res.bunkerConfig.machineType; //设备类型
+                                    it.formData.isSys = res.bunkerConfig.isSys;  //是否系统配置 
+                                    it.formData.numberBigConf.push({
+                                        name: element.name,
+                                        number: element.number,
+                                        isShow: element.isShow,
+                                    })
+                                }
+                            })
+                        })() : (() => {
+                            throw "收集到错误：\n\n" + res.statusCode.msg;
+                        })();
+                    } catch (error) {
+                        it.IError(error);
+                    }
+                }
+            })
+        },
+
+        numberConf(params) { //切换料仓类型
+            if (params == +true) {
+                this.bunkerConfNumber = true;
+            } else {
+                this.bunkerConfNumber = false;
+            }
+        },
+
+        pushNumberConf(params) { //提交 料仓配置
+            const it = this;
+            _data['bunkerConfigName'] = params.bunkerConfigName;
+            _data['machineType'] = params.machineType;
+            _data['bunkerConfiguration'] = JSON.stringify(params.numberBigConf);
+            _data['isSys'] = params.isSys;
+            if (it.has) {
+                _data['machineBunkerConfigId'] = it.has;
+            }
+            ym.init.XML({
+                method: 'POST',
+                uri: token._j.URLS.Development_Server_ + 'add_or_update_machine_bunker_config',
+                async: false,
+                xmldata: _data,
+                done: function (res) {
+                    try {
+                        ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
+                            it.InputAndVisible = false;
+                            it.ISuccessfull(res.statusCode.msg);
+                            delete _data['machineBunkerConfigId']
+                            delete _data['bunkerConfigName'];
+                            delete _data['machineType'];
+                            delete _data['bunkerConfiguration'];
+                            delete _data['isShow'];
+                            delete _data['isSys'];
+                            it.list();
+                        })() : (() => {
+                            throw "收集到错误：\n\n" + res.statusCode.msg;
+                        })();
+                    } catch (error) {
+                        it.IError(error);
+                    }
+                }
+            })
+        },
+
+        bindMachineBunker(params){
+            const it = this;
+            _data['machineBunkerConfigId'] = it.formData.machineBunkerConfigAllId;
+            _data['machineNumbers'] = it.machineNumber;  //数组
+            ym.init.XML({
+                method: 'POST',
+                uri: token._j.URLS.Development_Server_ + 'bind_machine_bunker',
+                async: false,
+                xmldata: _data,
+                done: function (res) {
+                    try {
+                        ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
+                            it.detailTableAndVisible = false;
+                            it.ISuccessfull(res.statusCode.msg);
+                            delete _data['machineBunkerConfigId']
+                            delete _data['machineNumbers'];
+                            it.list();
+                        })() : (() => {
+                            throw "收集到错误：\n\n" + res.statusCode.msg;
+                        })();
+                    } catch (error) {
+                        it.IError(error);
+                    }
+                }
+            })
+        }
     }
 });

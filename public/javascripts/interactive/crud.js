@@ -1097,7 +1097,7 @@ new Vue({
         },
         sendMachine(_) {  //发送控制指令
             const it = this;
-            if (_._operationType == 8) {  //发送运维状态指令 machineSn
+            if (_._operationType == 12) {  //发送运维状态指令 machineSn
                 _data['machineSn'] = JSON.parse(decodeURI(dataHref.split('*')[1])).machineSn;
                 if (JSON.parse(decodeURI(dataHref.split('*')[1])).runTimeStatus == 5) {
                     _data['status'] = 6;
