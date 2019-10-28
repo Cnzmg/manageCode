@@ -399,7 +399,7 @@ new Vue({
                 _data['officeFormulaMakeList[0].formulaType'] = e.formulaMakeList[0].formulaType || '';
                 _data['officeFormulaMakeList[0].milkFlow'] = e.formulaMakeList[0].milkFlow || '';
             } else {
-                for (let i = 0; i < e.formulaMakeList.length; i++) {
+                for (let i = 0; i < e.formulaMakeList.length; i++) {  //大机器
                     _data['formulaMakeList[' + i + '].canisterId'] = e.formulaMakeList[i].canisterId || '';
                     _data['formulaMakeList[' + i + '].delayTime'] = e.formulaMakeList[i].delayTime || '';
                     _data['formulaMakeList[' + i + '].flavorCanChange'] = e.formulaMakeList[i].flavorCanChange || '';
@@ -479,7 +479,7 @@ new Vue({
                     res.statusCode.status = '6666';
                     ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
                         switch (uri) {
-                            case 'manage_formula':
+                            case 'manage_formula':   //配方设置
                                 if (res.formulaInfo.machineType == 1) {
                                     try {
                                         res.formulaInfo.formulaMakeList.forEach(e => {
@@ -628,9 +628,9 @@ new Vue({
                                 });
 
                                 break;
-                            case 'remote_operation':
+                            case 'remote_operation':   //远程操作
                                 try {
-                                    if (JSON.parse(e).machineNumber[0] == '2') {
+                                    if (JSON.parse(e).machineNumber[0] == '2') {  //小机器
                                         it.bigAndsmall = false;
                                         it.longStatusSm.push({
                                             machineStatus: res.machineStatus,
@@ -653,15 +653,15 @@ new Vue({
                                             failureStatus: res.machineStatus.failureStatus,
                                             bootTime: res.machineStatus.bootTime,
                                             canister: {
-                                                at: [+parseFloat(res.canister[0] / res.canister[1] * 100).toFixed(2), res.canister[1]],
-                                                bt: [+parseFloat(res.canister[2] / res.canister[3] * 100).toFixed(2), res.canister[3]],
-                                                ct: [+parseFloat(res.canister[4] / res.canister[5] * 100).toFixed(2), res.canister[5]],
-                                                dt: [+parseFloat(res.canister[6] / res.canister[7] * 100).toFixed(2), res.canister[7]],
-                                                et: [+parseFloat(res.canister[8] / res.canister[9] * 100).toFixed(2), res.canister[9]],
-                                                ft: [+parseFloat(res.canister[10] / res.canister[11] * 100).toFixed(2), res.canister[11]],
-                                                gt: [+parseFloat(res.canister[12] / res.canister[13] * 100).toFixed(2), res.canister[13]],
-                                                ht: [+parseFloat(res.canister[14] / res.canister[15] * 100).toFixed(2), res.canister[15]],
-                                                it: [+parseFloat(res.canister[16] / res.canister[17] * 100).toFixed(2), res.canister[17]],
+                                                at: [+parseFloat(res.canisterList[0].residue / res.canisterList[0].sum * 100).toFixed(2), res.canisterList[0].sum, res.canisterList[0].bunkerName],
+                                                bt: [+parseFloat(res.canisterList[1].residue / res.canisterList[1].sum * 100).toFixed(2), res.canisterList[1].sum, res.canisterList[1].bunkerName],
+                                                ct: [+parseFloat(res.canisterList[2].residue / res.canisterList[2].sum * 100).toFixed(2), res.canisterList[2].sum, res.canisterList[2].bunkerName],
+                                                dt: [+parseFloat(res.canisterList[3].residue / res.canisterList[3].sum * 100).toFixed(2), res.canisterList[3].sum, res.canisterList[3].bunkerName],
+                                                et: [+parseFloat(res.canisterList[4].residue / res.canisterList[4].sum * 100).toFixed(2), res.canisterList[4].sum, res.canisterList[4].bunkerName],
+                                                ft: [+parseFloat(res.canisterList[5].residue / res.canisterList[5].sum * 100).toFixed(2), res.canisterList[5].sum, res.canisterList[5].bunkerName],
+                                                gt: [+parseFloat(res.canisterList[6].residue / res.canisterList[6].sum * 100).toFixed(2), res.canisterList[6].sum, res.canisterList[6].bunkerName],
+                                                ht: [+parseFloat(res.canisterList[7].residue / res.canisterList[7].sum * 100).toFixed(2), res.canisterList[7].sum, res.canisterList[7].bunkerName],
+                                                it: [+parseFloat(res.canisterList[8].residue / res.canisterList[8].sum * 100).toFixed(2), res.canisterList[8].sum, res.canisterList[8].bunkerName],
                                                 version: res.machineStatus.version,
                                                 machineNumber: JSON.parse(e).machineNumber,
                                                 machinePwd: res.machinePwd
@@ -1191,12 +1191,12 @@ new Vue({
         handleSelectionChange(val) {  //下拉选项
             this.ruleForm.productId = [];  //优惠券产品相关
             this.formDataObject.objectId = [];  //营销活动会员ID
-            if(val.length < 1) return false;
+            if (val.length < 1) return false;
             console.log(val)
-            if(val[0].memberRuleId){
+            if (val[0].memberRuleId) {
                 this.formDataObject.objectId = val[0].memberRuleId;  //会员
             }
-            if(val[0].couponId){
+            if (val[0].couponId) {
                 this.formDataObject.objectId = val[0].couponId;  //礼券
             }
             val.forEach(e => {

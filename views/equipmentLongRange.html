@@ -91,7 +91,7 @@
 
 					<div style="width: 100%;height:800px;overflow:auto;">
 						<el-form-item style="float: left;margin: 10px 60px" name="at">
-							<div style="margin: 10px 0">料仓1</div>
+							<div style="margin: 10px 0">{{ data.canister.at[2] }}</div>
 							<el-progress type="circle" :percentage="data.canister.at[0]"
 								:color="(()=>{ return data.canister.at[0] < 10 ? 'red' : '' })()"></el-progress>
 							<div>余量：{{ parseFloat(data.canister.at[0] * data.canister.at[1] / 100).toFixed(2) }}
@@ -100,7 +100,7 @@
 						</el-form-item>
 
 						<el-form-item style="float: left;margin: 10px 60px" name="bt">
-							<div style="margin: 10px 0">料仓2</div>
+							<div style="margin: 10px 0">{{ data.canister.bt[2] }}</div>
 							<el-progress type="circle" :percentage="data.canister.bt[0]"
 								:color="(()=>{ return data.canister.bt[0] < 10 ? 'red' : '' })()"></el-progress>
 							<div>余量：{{ parseFloat(data.canister.bt[0] * data.canister.bt[1] / 100).toFixed(2) }}
@@ -109,7 +109,7 @@
 						</el-form-item>
 
 						<el-form-item style="float: left;margin: 10px 60px" name="ct">
-							<div style="margin: 10px 0">料仓3</div>
+							<div style="margin: 10px 0">{{ data.canister.ct[2] }}</div>
 							<el-progress type="circle" :percentage="data.canister.ct[0]"
 								:color="(()=>{ return data.canister.ct[0] < 10 ? 'red' : '' })()"></el-progress>
 							<div>余量：{{ parseFloat(data.canister.ct[0] * data.canister.ct[1] / 100).toFixed(2) }}
@@ -118,7 +118,7 @@
 						</el-form-item>
 
 						<el-form-item style="float: left;margin: 10px 60px" name="dt">
-							<div style="margin: 10px 0">料仓4</div>
+							<div style="margin: 10px 0">{{ data.canister.dt[2] }}</div>
 							<el-progress type="circle" :percentage="data.canister.dt[0]"
 								:color="(()=>{ return data.canister.dt[0] < 10 ? 'red' : '' })()"></el-progress>
 							<div>余量：{{ parseFloat(data.canister.dt[0] * data.canister.dt[1] / 100).toFixed(2) }}
@@ -127,7 +127,7 @@
 						</el-form-item>
 
 						<el-form-item style="float: left;margin: 10px 60px" name="et">
-							<div style="margin: 10px 0">料仓5</div>
+							<div style="margin: 10px 0">{{ data.canister.et[2] }}</div>
 							<el-progress type="circle" :percentage="data.canister.et[0]"
 								:color="(()=>{ return data.canister.et[0] < 10 ? 'red' : '' })()"></el-progress>
 							<div>余量：{{ parseFloat(data.canister.et[0] * data.canister.et[1] / 100).toFixed(2) }}
@@ -136,7 +136,7 @@
 						</el-form-item>
 
 						<el-form-item style="float: left;margin: 10px 60px" name="ft">
-							<div style="margin: 10px 0">料仓6</div>
+							<div style="margin: 10px 0">{{ data.canister.ft[2] }}</div>
 							<el-progress type="circle" :percentage="data.canister.ft[0]"
 								:color="(()=>{ return data.canister.ft[0] < 10 ? 'red' : '' })()"></el-progress>
 							<div>余量：{{ parseFloat(data.canister.ft[0] * data.canister.ft[1] / 100).toFixed(2) }}
@@ -145,7 +145,7 @@
 						</el-form-item>
 
 						<el-form-item style="float: left;margin: 10px 60px" name="gt">
-							<div style="margin: 10px 0">料仓7</div>
+							<div style="margin: 10px 0">{{ data.canister.gt[2] }}</div>
 							<el-progress type="circle" :percentage="data.canister.gt[0]"
 								:color="(()=>{ return data.canister.gt[0] < 10 ? 'red' : '' })()"></el-progress>
 							<div>余量：{{ parseFloat(data.canister.gt[0] * data.canister.gt[1] / 100).toFixed(2) }}
@@ -154,7 +154,7 @@
 						</el-form-item>
 
 						<el-form-item style="float: left;margin: 10px 60px" name="ht">
-							<div style="margin: 10px 0">杯子</div>
+							<div style="margin: 10px 0">{{ data.canister.ht[2] }}</div>
 							<el-progress type="circle" :percentage="data.canister.ht[0]"
 								:color="(()=>{ return data.canister.ht[0] < 10 ? 'red' : '' })()"></el-progress>
 							<div>余量：{{ parseFloat(data.canister.ht[0] * data.canister.ht[1] / 100).toFixed(2) }}
@@ -163,7 +163,7 @@
 						</el-form-item>
 
 						<el-form-item style="float: left;margin: 10px 60px" name="it">
-							<div style="margin: 10px 0">水</div>
+							<div style="margin: 10px 0">{{ data.canister.it[2] }}</div>
 							<el-progress type="circle" :percentage="data.canister.it[0]"
 								:color="(()=>{ return data.canister.it[0] < 10 ? 'red' : '' })()"></el-progress>
 							<div>余量：{{ parseFloat(data.canister.it[0] * data.canister.it[1] / 100).toFixed(2) }}

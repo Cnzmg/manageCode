@@ -2161,7 +2161,20 @@ new Vue({
                                 it.UnFormData.push({
                                     question: element.question,
                                     answerPic: element.answerPic,
-                                    answer: element.answer
+                                    answer: (()=>{
+                                        let _code = element.answer.split('$')[0], _code_ = '';
+                                        element.answer.split('$')[0].includes('{') ? void function(){
+                                            Object.keys(JSON.parse(_code)).forEach((element, index)=>{
+                                                if(Object.keys(JSON.parse(_code)).length <= 2){
+                                                    _code_ = `料仓：${Object.values(JSON.parse(_code))[0]},坏料：${Object.values(JSON.parse(_code))[1]}`;
+                                                }else{
+                                                    _code_ += ` 【 料仓：${index + 1}, 数值：${Object.values(JSON.parse(_code))[index]} 】 `;
+                                                }
+                                            });
+                                            _code = _code_;
+                                        }() : null;
+                                        return _code;
+                                    })()
                                 })
                             })
                         })() : (() => {
