@@ -24,8 +24,75 @@
 			<el-main>
 				<el-form>
 					<div style="width: 100%;margin-bottom:10px;">
-						<el-button @click="InputAndVisible = true;" type="primary">添加配置<i
-								class="el-icon-plus el-icon--right"></i></el-button>
+						<el-button @click="InputAndVisible = true; formData.disableConf = false; formData = {
+							bunkerConfigName: '',
+							machineType: 1,
+							isSys: 0,
+							numberBigConf: [  //料仓配置
+                    {
+                        name: '',
+                        isShow: 1,
+                        number: 1
+                    },
+                    {
+                        name: '',
+                        isShow: 1,
+                        number: 2
+                    },
+                    {
+                        name: '',
+                        isShow: 1,
+                        number: 3
+                    },
+                    {
+                        name: '',
+                        isShow: 1,
+                        number: 4
+                    },
+                    {
+                        name: '',
+                        isShow: 1,
+                        number: 5
+                    },
+                    {
+                        name: '',
+                        isShow: 1,
+                        number: 6
+                    },
+                    {
+                        name: '水',
+                        isShow: 1,
+                        number: 100
+                    },
+                    {
+                        name: '咖啡',
+                        isShow: 1,
+                        number: 170
+                    },
+                    {
+                        name: '杯子',
+                        isShow: 1,
+                        number: 160
+                    },
+                ],
+                numberSmallConf: [
+                    {
+                        name: '水',
+                        isShow: 1,
+                        number: 100
+                    },
+                    {
+                        name: '咖啡',
+                        isShow: 1,
+                        number: 170
+                    },
+                    {
+                        name: '牛奶',
+                        isShow: 1,
+                        number: 180
+                    }
+                ]
+						}" type="primary">添加配置<i class="el-icon-plus el-icon--right"></i></el-button>
 					</div>
 					<el-input placeholder="请输入内容" v-model="searchVal" class="_searchVal">
 						<el-select v-model="searchName" class="_searchVal_select" slot="prepend" placeholder="请选择">
@@ -52,6 +119,14 @@
 						<el-table-column prop="bunkerConfigName" label="名称">
 						</el-table-column>
 						<el-table-column prop="bindMachine" label="绑定机器">
+							<template slot-scope="scope">
+								<el-popover trigger="hover" placement="top" width="300">
+									<p>{{ scope.row.bindMachine }}</p>
+									<div slot="reference" class="name-wrapper">
+										<el-tag size="medium">{{ scope.row.bindMachine.substr(0,8) + `...` }}</el-tag>
+									</div>
+								</el-popover>
+							</template>
 						</el-table-column>
 						<el-table-column prop="createTime" label="创建时间">
 						</el-table-column>
@@ -93,20 +168,21 @@
 				</el-pagination>
 
 
-				<el-dialog title="管理配置" :visible.sync="InputAndVisible">
+				<el-dialog title="操作配置" :visible.sync="InputAndVisible">
 					<el-form :model="formData">
 
 						<el-form-item label="配置名称">
 							<el-input v-model="formData.bunkerConfigName"></el-input>
 						</el-form-item>
 
-						<el-form-item label="机器类型">
-							<el-radio-group v-model="formData.machineType" @change="numberConf(formData.machineType)">
+						<el-form-item label="机器类型:">
+							<el-radio-group v-model="formData.machineType" @change="numberConf(formData.machineType)" v-show="!formData.disableConf">
 								<el-radio :label="1">大型柜式机</el-radio>
 								<el-radio :label="2">小型桌面机</el-radio>
 							</el-radio-group>
+							<div v-show="formData.disableConf">{{ formData.disableConfMahineName }}</div>
 						</el-form-item>
-						<el-form-item label="系统配置">
+						<el-form-item label="系统配置" v-show="false">
 							<el-radio-group v-model="formData.isSys">
 								<el-radio :label="1">是</el-radio>
 								<el-radio :label="0">否</el-radio>
@@ -133,7 +209,7 @@
 									<template slot-scope="scope">
 										<el-radio-group v-model="formData.numberBigConf[scope.$index].isShow">
 											<el-radio :label="1">是</el-radio>
-											<el-radio :label="0">否</el-radio>
+											<!-- <el-radio :label="0">否</el-radio> -->
 										</el-radio-group>
 									</template>
 								</el-table-column>
@@ -158,7 +234,7 @@
 									<template slot-scope="scope">
 										<el-radio-group v-model="formData.numberSmallConf[scope.$index].isShow">
 											<el-radio :label="1">是</el-radio>
-											<el-radio :label="0">否</el-radio>
+											<!-- <el-radio :label="0">否</el-radio> -->
 										</el-radio-group>
 									</template>
 								</el-table-column>
@@ -189,55 +265,6 @@
 					</el-table>
 				</el-dialog>
 
-				<el-dialog title="更新清单产品" :visible.sync="UpdateTableAndVisible" width="60%">
-					<div>
-						已选产品数量：{{ productCount }}
-					</div>
-					<el-table :data="UpdateTableFormData" height="500px" tooltip-effect="dark"
-						@selection-change="handleSelectionChange" ref="multipleTable">
-						<el-table-column type="selection" width="55">
-						</el-table-column>
-						<el-table-column property="productId" label="ID" fixed></el-table-column>
-						<el-table-column property="productName" label="产品名称">
-							<template slot-scope="scope">
-								<el-popover trigger="hover" placement="top">
-									<p>产品全称: {{ scope.row.productName }}</p>
-									<div slot="reference" class="name-wrapper">
-										<el-tag size="medium">{{ scope.row.productName.split(',')[0] }}</el-tag>
-									</div>
-								</el-popover>
-							</template>
-						</el-table-column>
-						<el-table-column property="productPrice" label="产品价格"></el-table-column>
-						<el-table-column property="productPicurl" label="产品图片">
-							<template slot-scope="scope">
-								<div slot="reference" class="name-wrapper">
-									<el-image :src="scope.row.productPicurl" lazy></el-image>
-								</div>
-							</template>
-						</el-table-column>
-						<el-table-column property="formulaName" label="配方名称"></el-table-column>
-						<el-table-column property="bunkerNumber" label="料仓"></el-table-column>
-						<el-table-column property="createTime" label="创建时间"></el-table-column>
-						<el-table-column property="productRank" label="排序"></el-table-column>
-						<!-- <el-table-column property="machineType" label="设备类型"
-							:filters="[{ text: '大型柜式机', value: '大型柜式机' }, { text: '小型桌面机', value: '小型桌面机' }]"
-							:filter-method="filterTag" filter-placement="bottom-end">
-							<template slot-scope="scope">
-								<el-tag :type="scope.row.machineType === '大型柜式机' ? 'primary' : 'success'"
-									disable-transitions>{{scope.row.machineType}}</el-tag>
-							</template>
-						</el-table-column> -->
-						<el-table-column property="productComment" label="说明"></el-table-column>
-					</el-table>
-					<template>
-						<el-button type="primary" style="margin: 10px auto;"
-							@click="listoperation({_tag:'manage_prodcut_list_list',_type: 'P'});">
-							确定
-						</el-button>
-					</template>
-				</el-dialog>
-
 				<el-dialog title="管理绑定" :visible.sync="detailTableAndVisible">
 					<el-form :model="unbinadmin">
 						<el-select v-model="unbinadmin.adminId" placeholder="请选择商户"
@@ -250,7 +277,7 @@
 							@selection-change="handleSelectionChange" ref="multipleTable">
 							<el-table-column type="selection"></el-table-column>
 							<el-table-column property="machineNumber" label="设备编号"></el-table-column>
-							<el-table-column property="listName" label="清单名称"></el-table-column>
+							<el-table-column property="listName" label="配置名称"></el-table-column>
 							<el-table-column property="machineType" label="设备类型">
 								<template slot-scope="scope">
 									<div slot="reference" class="name-wrapper">
@@ -264,8 +291,7 @@
 						</el-table>
 						<template>
 							<div style="margin-top: 10px">
-								<el-button type="primary"
-									@click="bindMachineBunker()">
+								<el-button type="primary" @click="bindMachineBunker()">
 									绑定
 								</el-button>
 							</div>

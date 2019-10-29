@@ -63,7 +63,9 @@ new Vue({
                 named: '',
                 roleId: '',
                 isShow: 1,  //是否显示
-                isSys: 1, //是否系统配置
+                isSys: 0, //是否系统配置
+                disableConf: false, //disable 是否可操作
+                disableConfMahineName: '', //机器类型名
                 machineBunkerConfigAllId: '',//绑定机器的配置ID
                 numberBigConf: [  //料仓配置
                     {
@@ -98,7 +100,7 @@ new Vue({
                     },
                     {
                         name: '水',
-                        isShow: 0,
+                        isShow: 1,
                         number: 100
                     },
                     {
@@ -108,24 +110,24 @@ new Vue({
                     },
                     {
                         name: '杯子',
-                        isShow: 0,
+                        isShow: 1,
                         number: 160
                     },
                 ],
                 numberSmallConf: [
                     {
                         name: '水',
-                        isShow: 0,
+                        isShow: 1,
                         number: 100
                     },
                     {
                         name: '咖啡',
-                        isShow: 0,
+                        isShow: 1,
                         number: 170
                     },
                     {
                         name: '牛奶',
-                        isShow: 0,
+                        isShow: 1,
                         number: 180
                     }
                 ],
@@ -1173,6 +1175,7 @@ new Vue({
                             async: false,
                             xmldata: _data,
                             done: function (res) {
+                                it.UnFormData = [];
                                 res.data.forEach(_params_ => {
                                     it.UnFormData.push({
                                         machineNumber: _params_.machineNumber,
@@ -2200,7 +2203,8 @@ new Vue({
                     try {
                         ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
                             it.TableFormData = [];
-                            it.formData.numberBigConf = [];  //编辑显示
+                            it.formData.numberBigConf = [];  //编辑时的回显
+                            it.formData.numberSmallConf = []; // 小机器
                             it.bunkerConf = {
                                 name: res.bunkerConfig.bunkerConfigName,
                                 time: ym.init.getDateTime(res.bunkerConfig.createTime)
@@ -2211,16 +2215,27 @@ new Vue({
                                     number: element.number,
                                     isShow: element.isShow == +true ? '是' : '否',
                                 });
-                                if (enitBunkerConf) {
+                                if (enitBunkerConf) {  //编辑的时候回显
+                                    it.numberConf(res.bunkerConfig.machineType); //重置大小机器的tag
+                                    it.formData.disableConf = true; 
+                                    it.formData.disableConfMahineName = res.bunkerConfig.machineType == 2 ? "小型桌面机" : "大型柜式机";
                                     it.has = res.bunkerConfig.machineBunkerConfigId; //是编辑操作的ID
                                     it.formData.bunkerConfigName = res.bunkerConfig.bunkerConfigName;  //配置名称
                                     it.formData.machineType = res.bunkerConfig.machineType; //设备类型
                                     it.formData.isSys = res.bunkerConfig.isSys;  //是否系统配置 
-                                    it.formData.numberBigConf.push({
-                                        name: element.name,
-                                        number: element.number,
-                                        isShow: element.isShow,
-                                    })
+                                    if(res.bunkerConfig.machineType == 2){
+                                        it.formData.numberSmallConf.push({
+                                            name: element.name,
+                                            number: element.number,
+                                            isShow: element.isShow,
+                                        });
+                                    }else{
+                                        it.formData.numberBigConf.push({
+                                            name: element.name,
+                                            number: element.number,
+                                            isShow: element.isShow,
+                                        });
+                                    }
                                 }
                             })
                         })() : (() => {
