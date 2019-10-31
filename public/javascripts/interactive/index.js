@@ -72,6 +72,7 @@ new Vue({
             'el-icon-s-finance',
             'el-icon-s-grid',
             'el-icon-s-tools',
+            'el-icon-toilet-paper',
             'el-icon-s-unfold'
         ], _lists = {
             _admin: [
@@ -108,6 +109,12 @@ new Vue({
                 'RepairPersonnelList',
                 'materialLog',
                 'maintenanceLogs',  //运维日志
+                'miniTurntableConf', //小程序大转盘配置
+                'miniTurntablePrize', //小程序大转盘奖品列表
+                'jackpotList', //小程序抽奖奖池用户信息列表
+                'opportunityLog',  //机会获取记录列表
+                'miniSharedLogs', //分享记录列表
+                'miniTurntablePrizeDrawLog', //抽奖记录
                 // 'information'
             ],
             _shop: [
@@ -130,7 +137,7 @@ new Vue({
                 for (let j = 0; j < tag[i].pageInfoList.length; j++) {
                     // _tag += `<el-menu-item @click=Href({'uri':'${tag[i].pageInfoList[j].pageUrl}','title':'${tag[i].pageInfoList[j].pageName}'}) index="${i + 1}-${j}">${tag[i].pageInfoList[j].pageName}</el-menu-item>`;
                     switch (tag.length) {  //启用本地路由
-                        case 9:
+                        case 10:
                             _tag += `<el-menu-item u="${_lists._system[num]}" v-on:click=Href({'uri':'../${_lists._system[num]}.html?hash:iforx${parseInt(13 * num / j + 2)}','title':'${tag[i].pageInfoList[j].pageName}'}) index="${i + 1}-${j}">${tag[i].pageInfoList[j].pageName}</el-menu-item>`;
                             break;
                         case 3:

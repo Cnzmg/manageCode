@@ -249,7 +249,8 @@ new Vue({
                 machineUrl: [],
                 memberPicUrl: [],
                 memberHeadPic: [],
-                couponUrl: []
+                couponUrl: [],
+                turntablePrize: []
             },
             address: regionData,   // 地址选择
             percentage: 90,   //进度条数值0-100
@@ -313,7 +314,8 @@ new Vue({
                 }]
             },
             formDataObject: {
-                objectId: ''
+                objectId: '',
+                itemPicUrl: ''
             }, // 大转盘活动对象
             dialogVisibleTable: false,  //会员views
             dialogVisibleTables: false,  //礼券views
@@ -466,17 +468,20 @@ new Vue({
                     uri = "get_draw_raffle_info";
                     _data['drawId'] = JSON.parse(e).drawId;
                     break;
+                case 'add_or_update_sys_draw_item_info': //add_or_update_sys_draw_item_info
+                    uri = "sys_draw_item_info";
+                    _data['itemId'] = JSON.parse(e).itemId;
+                    break;
                 default:
                     break;
             }
             it.loading = true;
             ym.init.XML({
-                method: uri != 'get_draw_raffle_info' ? 'POST' : 'GET',
+                method: uri != 'get_draw_raffle_info' && uri != 'sys_draw_item_info'? 'POST' : 'GET',
                 uri: token._j.URLS.Development_Server_ + uri,
                 async: false,
                 xmldata: _data,
                 done: function (res) {
-                    res.statusCode.status = '6666';
                     ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
                         switch (uri) {
                             case 'manage_formula':   //配方设置
@@ -785,6 +790,9 @@ new Vue({
         filecouponUrlChange() {
             this.fileData['type'] = 6;  //动态配置
         },
+        fileChangeTurntablePrize() {
+            this.fileData['type'] = 17;  //动态配置
+        },
         filememberPicUrlSuccess(e) {
             this.ruleForm.memberPicUrl = e.realPath;
         },
@@ -793,6 +801,9 @@ new Vue({
         },
         filememberHeadPicSuccess(e) {
             this.ruleForm.memberHeadPic = e.realPath;
+        },
+        TurntablePrizeSuccess(e) {
+            this.formDataObject.itemPicUrl = e.realPath;  //小程序大转盘配置图片
         },
         fileMachineSuccess(e) {
             this.ruleForm.productMachinePicurl = e.realPath;
@@ -1378,6 +1389,36 @@ new Vue({
         },
         deleteTableData(_index_) {
             this.tableData.splice(_index_, +true);
+        },
+
+        submitFormMiniTurntable(params) {  //小程序大转盘提交
+            const it = this;
+            Object.keys(params).forEach((ele, index) => {
+                _data[ele] = Object.values(params)[index];
+            })
+            if (params.itemType != 2 || params.itemType != 3) {
+                delete _data['objectId']
+            }
+            ym.init.XML({
+                method: 'POST',
+                uri: token._j.URLS.Development_Server_ + uri,
+                async: false,
+                xmldata: _data,
+                done: function (res) {
+                    try {
+                        ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
+                            it.ISuccessfull(res.statusCode.msg);
+                            setTimeout(() => {
+                                parent.document.getElementById('tagHref').setAttribute('src', callBackHtml);
+                            }, 500);
+                        })() : (() => {
+                            throw "收集到错误：\n\n" + res.statusCode.msg;
+                        })();
+                    } catch (error) {
+                        it.IError(error);
+                    }
+                }
+            })
         }
 
     }

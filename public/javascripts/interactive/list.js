@@ -104,14 +104,14 @@ new Vue({
                         number: 100
                     },
                     {
-                        name: '咖啡',
-                        isShow: 1,
-                        number: 170
-                    },
-                    {
                         name: '杯子',
                         isShow: 1,
                         number: 160
+                    },
+                    {
+                        name: '咖啡',
+                        isShow: 1,
+                        number: 170
                     },
                 ],
                 numberSmallConf: [
@@ -132,7 +132,14 @@ new Vue({
                     }
                 ],
                 has: '',
-                bunkerConfigName: ''
+                bunkerConfigName: '',
+                raffleName: '',   //小程序大转盘配置
+                allowConsumeChance: 0,
+                allowMemberConvert: 0,
+                allowShareChance: 0,
+                convertMilliliter: 0,
+                maxLuckyValue: 500,
+                status: 1
             },
             imageList: {
                 mUpdateUrl: [], //图片li
@@ -272,7 +279,8 @@ new Vue({
                         [4, '周']
                     ])
                 }]
-            ])
+            ]),
+            miniTurnableMore: true,  //小程序大转盘添加按钮是否显示
         }
     },
     created: function () {
@@ -337,7 +345,7 @@ new Vue({
             if (uri == 'manage_dividend_list') _data['type'] = 1;
             _data['page'] = it.page;
             ym.init.XML({
-                method: (uri == 'find_machine_poi_list' || uri == 'get_activity_list' || uri == 'statistics_list' || uri == 'maintainer_list' ? "GET" : 'POST'),
+                method: (uri == 'find_machine_poi_list' || uri == 'get_activity_list' || uri == 'statistics_list' || uri == 'maintainer_list' || uri == 'sys_draw_raffle_info' || uri == 'sys_user_raffle_share_list'? "GET" : 'POST'),
                 uri: token._j.URLS.Development_Server_ + uri,
                 async: false,
                 xmldata: _data,
@@ -788,6 +796,69 @@ new Vue({
                                     })
                                 }
                                 break;
+                            case `sys_draw_raffle_info`:  //sys_draw_raffle_info 
+                                it.miniTurnableMore = false;
+                                let _obj = {};
+                                Object.keys(res.data).forEach((element, index) => {
+                                    _obj[element] = Object.values(res.data)[index] == -1 ? "无" : Object.values(res.data)[index];
+                                })
+                                xml.push(_obj);
+                                break;
+                            case `sys_draw_item_info_list`:  //add_or_update_sys_draw_item_info 
+                                for (let i = 0; i < res.data.length; i++) {
+                                    xml.push({
+                                        isMember: res.data[i].isMember,
+                                        itemId: res.data[i].itemId,
+                                        itemName: res.data[i].itemName,
+                                        itemPicUrl: res.data[i].itemPicUrl,
+                                        itemType: res.data[i].itemType,
+                                        probability: res.data[i].probability,
+                                        sort: res.data[i].sort,
+                                        status: res.data[i].status
+                                    })
+                                }
+                                break;
+                            case `sys_user_draw_chance_list`:  //sys_user_draw_chance_list 
+                                for (let i = 0; i < res.data.length; i++) {  // 
+                                    xml.push({
+                                        chanceId: res.data[i].chanceId,
+                                        drawChance: res.data[i].drawChance,
+                                        luckyValue: res.data[i].luckyValue,
+                                        nickName: res.data[i].nickName,
+                                        userId: res.data[i].userId
+                                    })
+                                }
+                                break;
+                            case `sys_user_draw_chance_log_list`:  //sys_user_draw_chance_list 
+                                for (let i = 0; i < res.data.length; i++) {  // 
+                                    xml.push({
+                                        chanceLogId: res.data[i].chanceLogId,
+                                        createTime: res.data[i].createTime,
+                                        logContent: res.data[i].logContent,
+                                        logType: res.data[i].logType,
+                                        orderId: res.data[i].orderId,
+                                        raffleVersion: res.data[i].raffleVersion,
+                                        status: res.data[i].status,
+                                        userId: res.data[i].userId,
+                                        nickName: res.data[i].nickName
+                                    })
+                                }
+                                break;
+                            case `sys_user_raffle_share_list`:  //分享列表 
+                                for (let i = 0; i < res.data.length; i++) {  // 
+                                    xml.push({
+                                        chanceLogId: res.data[i].chanceLogId,
+                                        createTime: res.data[i].createTime,
+                                        logContent: res.data[i].logContent,
+                                        logType: res.data[i].logType,
+                                        orderId: res.data[i].orderId,
+                                        raffleVersion: res.data[i].raffleVersion,
+                                        status: res.data[i].status,
+                                        userId: res.data[i].userId,
+                                        nickName: res.data[i].nickName
+                                    })
+                                }
+                                break;
                             default:
                                 break;
                         }
@@ -1163,7 +1234,7 @@ new Vue({
             const it = this;
             switch (_v._uri) {
                 case 'manage_machine_product_relation':  //清单的绑定解绑
-                    if(_v._type == 4){  //针对料仓配置绑定的机器查询
+                    if (_v._type == 4) {  //针对料仓配置绑定的机器查询
                         _data['adminId'] = _v._id;
                         delete _data['page']
                         delete _data['listId']
@@ -1469,7 +1540,27 @@ new Vue({
                             delete _data['overdueTime']
                             it.list(); //刷新列表
                             break;
-                        default:  //赠送抽奖次数
+                        case 'grant_sys_user_draw_chance': //小程序大转盘 赠送抽奖次数
+                            _data['grantCount'] = it.ount;
+                            it.userMode.forEach(_evnt => {
+                                _data['userId'] = _evnt.userId;
+                                ym.init.XML({
+                                    method: 'GET',
+                                    uri: token._j.URLS.Development_Server_ + _sess._uri,
+                                    async: false,
+                                    xmldata: _data,
+                                    done: function (res) {
+                                        it.detailTableAndVisible = false;
+                                        it.ISuccessfull(res.statusCode.msg);
+                                    }
+                                })
+                            })
+                            delete _data['grantCount']
+                            delete _data['name']
+                            delete _data['userId']
+                            it.list(); //刷新列表
+                            break;
+                        default:  //赠送抽奖次数 （1.0版本赠送）
                             _data['grantCount'] = it.ount;
                             it.userMode.forEach(_evnt => {
                                 _data['userId'] = _evnt.userId;
@@ -2164,13 +2255,13 @@ new Vue({
                                 it.UnFormData.push({
                                     question: element.question,
                                     answerPic: element.answerPic,
-                                    answer: (()=>{
+                                    answer: (() => {
                                         let _code = element.answer.split('$')[0], _code_ = '';
-                                        element.answer.split('$')[0].includes('{') ? void function(){
-                                            Object.keys(JSON.parse(_code)).forEach((element, index)=>{
-                                                if(Object.keys(JSON.parse(_code)).length <= 2){
+                                        element.answer.split('$')[0].includes('{') ? void function () {
+                                            Object.keys(JSON.parse(_code)).forEach((element, index) => {
+                                                if (Object.keys(JSON.parse(_code)).length <= 2) {
                                                     _code_ = `料仓：${Object.values(JSON.parse(_code))[0]},坏料：${Object.values(JSON.parse(_code))[1]}`;
-                                                }else{
+                                                } else {
                                                     _code_ += ` 【 料仓：${index + 1}, 数值：${Object.values(JSON.parse(_code))[index]} 】 `;
                                                 }
                                             });
@@ -2217,19 +2308,19 @@ new Vue({
                                 });
                                 if (enitBunkerConf) {  //编辑的时候回显
                                     it.numberConf(res.bunkerConfig.machineType); //重置大小机器的tag
-                                    it.formData.disableConf = true; 
+                                    it.formData.disableConf = true;
                                     it.formData.disableConfMahineName = res.bunkerConfig.machineType == 2 ? "小型桌面机" : "大型柜式机";
                                     it.has = res.bunkerConfig.machineBunkerConfigId; //是编辑操作的ID
                                     it.formData.bunkerConfigName = res.bunkerConfig.bunkerConfigName;  //配置名称
                                     it.formData.machineType = res.bunkerConfig.machineType; //设备类型
                                     it.formData.isSys = res.bunkerConfig.isSys;  //是否系统配置 
-                                    if(res.bunkerConfig.machineType == 2){
+                                    if (res.bunkerConfig.machineType == 2) {
                                         it.formData.numberSmallConf.push({
                                             name: element.name,
                                             number: element.number,
                                             isShow: element.isShow,
                                         });
-                                    }else{
+                                    } else {
                                         it.formData.numberBigConf.push({
                                             name: element.name,
                                             number: element.number,
@@ -2260,7 +2351,11 @@ new Vue({
             const it = this;
             _data['bunkerConfigName'] = params.bunkerConfigName;
             _data['machineType'] = params.machineType;
-            _data['bunkerConfiguration'] = JSON.stringify(params.numberBigConf);
+            if (params.machineType == +true) {
+                _data['bunkerConfiguration'] = JSON.stringify(params.numberBigConf);
+            } else {
+                _data['bunkerConfiguration'] = JSON.stringify(params.numberSmallConf);
+            }
             _data['isSys'] = params.isSys;
             if (it.has) {
                 _data['machineBunkerConfigId'] = it.has;
@@ -2292,7 +2387,7 @@ new Vue({
             })
         },
 
-        bindMachineBunker(params){
+        bindMachineBunker(params) {  //绑定料仓配置
             const it = this;
             _data['machineBunkerConfigId'] = it.formData.machineBunkerConfigAllId;
             _data['machineNumbers'] = it.machineNumber;  //数组
@@ -2308,6 +2403,79 @@ new Vue({
                             it.ISuccessfull(res.statusCode.msg);
                             delete _data['machineBunkerConfigId']
                             delete _data['machineNumbers'];
+                            it.list();
+                        })() : (() => {
+                            throw "收集到错误：\n\n" + res.statusCode.msg;
+                        })();
+                    } catch (error) {
+                        it.IError(error);
+                    }
+                }
+            })
+        },
+
+        miniTurntableUApush(params) {   //小程序大转盘新建 /跟新提交
+            const it = this;
+            _data['raffleName'] = params.raffleName;
+            _data['allowConsumeChance'] = params.allowConsumeChance;
+            _data['allowMemberConvert'] = params.allowMemberConvert;
+            _data['allowShareChance'] = params.allowShareChance;
+            _data['convertMilliliter'] = params.convertMilliliter || 0;
+            _data['maxLuckyValue'] = params.maxLuckyValue;
+            _data['status'] = params.status;
+            ym.init.XML({
+                method: 'POST',
+                uri: token._j.URLS.Development_Server_ + 'add_or_update_sys_draw_raffle_info',
+                async: false,
+                xmldata: _data,
+                done: function (res) {
+                    try {
+                        ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
+                            it.InputAndVisible = false;
+                            it.ISuccessfull(res.statusCode.msg);
+                            it.list();
+                        })() : (() => {
+                            throw "收集到错误：\n\n" + res.statusCode.msg;
+                        })();
+                    } catch (error) {
+                        it.IError(error);
+                    }
+                }
+            })
+        },
+
+        miniTurntableUA(params, prize) {  //小程序大转盘配置查看， 奖品查看
+            if (prize) {  //奖品查看
+                this.formData.raffleName = params[0].raffleName;
+                this.formData.allowConsumeChance = params[0].allowConsumeChance;
+                this.formData.allowMemberConvert = params[0].allowMemberConvert;
+                this.formData.allowShareChance = params[0].allowShareChance;
+                this.formData.convertMilliliter = params[0].convertMilliliter;
+                this.formData.maxLuckyValue = params[0].maxLuckyValue;
+                this.formData.status = params[0].status;
+            } else {
+                this.formData.raffleName = params[0].raffleName;
+                this.formData.allowConsumeChance = params[0].allowConsumeChance;
+                this.formData.allowMemberConvert = params[0].allowMemberConvert;
+                this.formData.allowShareChance = params[0].allowShareChance;
+                this.formData.convertMilliliter = params[0].convertMilliliter;
+                this.formData.maxLuckyValue = params[0].maxLuckyValue;
+                this.formData.status = params[0].status;
+            }
+        },
+
+        updateTurntableVersion() {  //大转盘版本升级，将会把所有用户数据记录重置
+            //  upgrade_sys_draw_raffle_version
+            let it = this;
+            ym.init.XML({
+                method: 'GET',
+                uri: token._j.URLS.Development_Server_ + 'upgrade_sys_draw_raffle_version',
+                async: false,
+                xmldata: _data,
+                done: function (res) {
+                    try {
+                        ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
+                            it.ISuccessfull(res.statusCode.msg);
                             it.list();
                         })() : (() => {
                             throw "收集到错误：\n\n" + res.statusCode.msg;
