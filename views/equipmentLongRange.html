@@ -48,7 +48,7 @@
 					</el-button>
 					<el-button @click="sendMachine({_operationType: 10})"><i class="el-icon-s-promotion"></i>机器更新料仓配置
 					</el-button>
-					<el-button @click="sendMachine({_operationType: 11})"><i class="el-icon-s-promotion"></i>机器复位
+					<el-button v-show="bigAndsmall" @click="sendMachine({_operationType: 11})"><i class="el-icon-s-promotion"></i>机器复位
 					</el-button>
 					<el-button @click="sendMachine({_operationType: 12})"><i class="el-icon-s-promotion"></i>维修状态指令
 					</el-button>
@@ -202,7 +202,7 @@
 
 					<div>
 						<el-form-item style="float: left;margin: 10px 60px" name="at">
-							<div style="margin: 10px 0">咖啡豆</div>
+							<div style="margin: 10px 0">{{ data.canisterSm.at[2] }}</div>
 							<el-progress type="circle" :percentage="data.canisterSm.at[0]"
 								:color="(()=>{ return data.canisterSm.at[0] < 10 ? 'red' : '' })()"></el-progress>
 							<div>余量：{{ parseFloat(data.canisterSm.at[0] * data.canisterSm.at[1] / 100).toFixed(2) }}
@@ -211,7 +211,7 @@
 						</el-form-item>
 
 						<el-form-item style="float: left;margin: 10px 60px" name="bt">
-							<div style="margin: 10px 0">奶</div>
+							<div style="margin: 10px 0">{{ data.canisterSm.bt[2] }}</div>
 							<el-progress type="circle" :percentage="data.canisterSm.bt[0]"
 								:color="(()=>{ return data.canisterSm.bt[0] < 10 ? 'red' : '' })()"></el-progress>
 							<div>余量：{{ parseFloat(data.canisterSm.bt[0] * data.canisterSm.bt[1] / 100).toFixed(2) }}
@@ -220,7 +220,7 @@
 						</el-form-item>
 
 						<el-form-item style="float: left;margin: 10px 60px" name="ct">
-							<div style="margin: 10px 0">水</div>
+							<div style="margin: 10px 0">{{ data.canisterSm.ct[2] }}</div>
 							<el-progress type="circle" :percentage="data.canisterSm.ct[0]"
 								:color="(()=>{ return data.canisterSm.ct[0] < 10 ? 'red' : '' })()"></el-progress>
 							<div>余量：{{ parseFloat(data.canisterSm.ct[0] * data.canisterSm.ct[1] / 100).toFixed(2) }}

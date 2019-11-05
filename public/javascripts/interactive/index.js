@@ -93,6 +93,7 @@ new Vue({
                 'adRootDetailedList',
                 'turntableConf',  
                 'turntableConfUserLogs', 
+                'appointmentPay', //预售记录
                 'chartsUser',
                 'chartsFinance',
                 'chartsActive',

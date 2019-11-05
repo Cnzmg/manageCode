@@ -21,14 +21,14 @@
         data-goback="../equipmentList.html" v-loading.fullscreen.lock="loading" data-search="manage_machine">
         <el-container>
             <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
-                <el-form-item label="商户名称" prop="adminId">
+                <el-form-item label="商户ID" prop="adminId">
                     <el-input v-model="ruleForm.adminId" class="w400" :disabled="true"></el-input>
                 </el-form-item>
                 <el-form-item label="商户名称" prop="adminName">
                     <el-input v-model="ruleForm.adminName" class="w400" :disabled="true"></el-input>
                 </el-form-item>
-                <el-form-item label="设备编号" prop="machineNumber">
-                    <el-input v-model="ruleForm.machineNumber" class="w400" :disabled="true"></el-input>
+                <el-form-item label="设备编号" prop="machineNumberToString">
+                    <el-input v-model="ruleForm.machineNumberToString" class="w400" :disabled="true"></el-input>
                 </el-form-item>
                 <el-form-item label="经度" prop="machineLongitude">
                     <el-input v-model="ruleForm.machineLongitude" class="w400" :disabled="true"></el-input>

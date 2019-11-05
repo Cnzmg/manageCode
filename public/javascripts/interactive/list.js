@@ -281,6 +281,7 @@ new Vue({
                 }]
             ]),
             miniTurnableMore: true,  //小程序大转盘添加按钮是否显示
+            appointmentPay: {}, //预约详情
         }
     },
     created: function () {
@@ -345,7 +346,7 @@ new Vue({
             if (uri == 'manage_dividend_list') _data['type'] = 1;
             _data['page'] = it.page;
             ym.init.XML({
-                method: (uri == 'find_machine_poi_list' || uri == 'get_activity_list' || uri == 'statistics_list' || uri == 'maintainer_list' || uri == 'sys_draw_raffle_info' || uri == 'sys_user_raffle_share_list'? "GET" : 'POST'),
+                method: (uri == 'find_machine_poi_list' || uri == 'get_activity_list' || uri == 'statistics_list' || uri == 'maintainer_list' || uri == 'sys_draw_raffle_info' || uri == 'sys_user_raffle_share_list' ? "GET" : 'POST'),
                 uri: token._j.URLS.Development_Server_ + uri,
                 async: false,
                 xmldata: _data,
@@ -856,6 +857,27 @@ new Vue({
                                         status: res.data[i].status,
                                         userId: res.data[i].userId,
                                         nickName: res.data[i].nickName
+                                    })
+                                }
+                                break;
+                            case `pre_sell_nape_log_list`:  //预约活动列表 
+                                for (let i = 0; i < res.data.length; i++) {  // 
+                                    xml.push({
+                                        address: res.data[i].address,
+                                        createTime: res.data[i].createTime,
+                                        mobile: res.data[i].mobile,
+                                        named: res.data[i].named,
+                                        napeName: res.data[i].napeName,
+                                        nickName: res.data[i].nickName,
+                                        userId: res.data[i].userId,
+                                        orderId: res.data[i].orderId,
+                                        paymentMoney: res.data[i].paymentMoney,
+                                        redeemCode: res.data[i].redeemCode,
+                                        status: res.data[i].status,
+                                        target: res.data[i].target,
+                                        targetId: res.data[i].targetId,
+                                        statusStr: res.data[i].statusStr,
+                                        preSellLogId: res.data[i].preSellLogId
                                     })
                                 }
                                 break;
@@ -2310,7 +2332,7 @@ new Vue({
                                     it.numberConf(res.bunkerConfig.machineType); //重置大小机器的tag
                                     it.formData.disableConf = true;
                                     it.formData.disableConfMahineName = res.bunkerConfig.machineType == 2 ? "小型桌面机" : "大型柜式机";
-                                    it.has = res.bunkerConfig.machineBunkerConfigId; //是编辑操作的ID
+                                    it.formData.has = res.bunkerConfig.machineBunkerConfigId; //是编辑操作的ID
                                     it.formData.bunkerConfigName = res.bunkerConfig.bunkerConfigName;  //配置名称
                                     it.formData.machineType = res.bunkerConfig.machineType; //设备类型
                                     it.formData.isSys = res.bunkerConfig.isSys;  //是否系统配置 
@@ -2357,8 +2379,8 @@ new Vue({
                 _data['bunkerConfiguration'] = JSON.stringify(params.numberSmallConf);
             }
             _data['isSys'] = params.isSys;
-            if (it.has) {
-                _data['machineBunkerConfigId'] = it.has;
+            if (it.formData.has) {
+                _data['machineBunkerConfigId'] = it.formData.has;
             }
             ym.init.XML({
                 method: 'POST',
@@ -2476,6 +2498,82 @@ new Vue({
                     try {
                         ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
                             it.ISuccessfull(res.statusCode.msg);
+                            it.list();
+                        })() : (() => {
+                            throw "收集到错误：\n\n" + res.statusCode.msg;
+                        })();
+                    } catch (error) {
+                        it.IError(error);
+                    }
+                }
+            })
+        },
+
+        exportLogExe(params){  //导出预约记录
+            let it = this;
+            it.loading = true;
+            _data = Object.assign(_data, { napeName: params.napeName || '', status: params.status })
+            ym.init.XML({
+                method: 'POST',
+                uri: token._j.URLS.Development_Server_ + 'export_pre_sell_nape_log_list',
+                async: false,
+                xmldata: _data,
+                done: function (res) {
+                    try {
+                        ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
+                            it.ISuccessfull(res.statusCode.msg);
+                            location.href = token._j.URLS.Development_Server_ + res.path;
+                            setTimeout(() => {
+                                it.loading = false;
+                            }, 1000)
+                        })() : (() => {
+                            throw "收集到错误：\n\n" + res.statusCode.msg;
+                        })();
+                    } catch (error) {
+                        it.IError(error);
+                    }
+                }
+            })
+        },
+
+        appointmentPayEdesit(params){  //预约详情
+            let it = this;
+            _data = Object.assign(_data, { preSellLogId: params })
+            ym.init.XML({
+                method: 'GET',
+                uri: token._j.URLS.Development_Server_ + 'pre_sell_nape_log_detail',
+                async: false,
+                xmldata: _data,
+                done: function (res) {
+                    try {
+                        ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
+                            it.appointmentPay = {};
+                            Object.keys(res.data).forEach((element, index) =>{
+                                it.appointmentPay[element] = Object.values(res.data)[index];
+                            });
+                        })() : (() => {
+                            throw "收集到错误：\n\n" + res.statusCode.msg;
+                        })();
+                    } catch (error) {
+                        it.IError(error);
+                    }
+                }
+            })
+        }, 
+
+        appointmentPayGrant(params){  //核销
+            let it = this;
+            _data = Object.assign(_data, { preSellLogId: params })
+            ym.init.XML({
+                method: 'GET',
+                uri: token._j.URLS.Development_Server_ + 'pre_sell_grant',
+                async: false,
+                xmldata: _data,
+                done: function (res) {
+                    try {
+                        ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
+                            it.ISuccessfull(res.statusCode.msg);
+                            delete _data['preSellLogId']
                             it.list();
                         })() : (() => {
                             throw "收集到错误：\n\n" + res.statusCode.msg;

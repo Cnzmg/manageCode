@@ -186,6 +186,7 @@ new Vue({
                 machineUrl: '', //大楼外景图
                 machineAddrDesc: '', //设备详情地址
                 machineNumber: [],
+                machineNumberToString: '',
                 addr: '',
                 hide: 1,
                 poiId: '', //修改得时候
@@ -577,6 +578,8 @@ new Vue({
                                 it.ruleForm.adminId = res.machineInfo.adminId;  //管理员id
                                 it.ruleForm.adminName = res.machineInfo.adminName;  //管理员名称
                                 it.ruleForm.machineNumber = res.machineInfo.machineNumber;  //设备编号
+                                it.ruleForm.machineNumberToString = it.ruleForm.machineNumber;  //渲染类型不能是编号数组
+
                                 it.ruleForm.machineLatitude = res.machineInfo.machineLatitude;  //纬度
                                 it.ruleForm.machineLongitude = res.machineInfo.machineLongitude;  //经度
                                 it.ruleForm.machineAddrDesc = res.machineInfo.machineAddrDesc;  //详细地址
@@ -590,9 +593,10 @@ new Vue({
                                 it.imageList.planePicUrl.push({ name: 'planePicUrl', url: res.machineInfo.planePicUrl }); //楼层平面图
                                 it.imageList.machineUrl.push({ name: 'machineUrl', url: res.machineInfo.machineUrl }); //大楼外景图
 
-                                it.ruleForm.province.push(TextToCode[res.machineInfo.province].code);
-                                it.ruleForm.province.push(TextToCode[res.machineInfo.province][res.machineInfo.city].code);
-                                it.ruleForm.province.push(TextToCode[res.machineInfo.province][res.machineInfo.city][res.machineInfo.district].code);
+                                TextToCode[res.machineInfo.province] ? it.ruleForm.province.push(TextToCode[res.machineInfo.province].code) : null;
+                                TextToCode[res.machineInfo.province][res.machineInfo.city] ? it.ruleForm.province.push(TextToCode[res.machineInfo.province][res.machineInfo.city].code) : null;
+                                TextToCode[res.machineInfo.province][res.machineInfo.city][res.machineInfo.district] ? it.ruleForm.province.push(TextToCode[res.machineInfo.province][res.machineInfo.city][res.machineInfo.district].code) : null;
+                                
 
                                 var map = new AMap.Map('cityg', {
                                     resizeEnable: true, //是否监控地图容器尺寸变化
@@ -641,9 +645,9 @@ new Vue({
                                             machineStatus: res.machineStatus,
                                             faultTime: res.faultTime,
                                             canisterSm: {
-                                                at: [+parseFloat(res.canister[0] / res.canister[1] * 100).toFixed(2), res.canister[1]],
-                                                bt: [+parseFloat(res.canister[2] / res.canister[3] * 100).toFixed(2), res.canister[3]],
-                                                ct: [+parseFloat(res.canister[4] / res.canister[5] * 100).toFixed(2), res.canister[5]],
+                                                at: [+parseFloat(res.canisterList[0].residue / res.canisterList[0].sum * 100).toFixed(2), res.canisterList[0].sum, res.canisterList[0].bunkerName],
+                                                bt: [+parseFloat(res.canisterList[1].residue / res.canisterList[1].sum * 100).toFixed(2), res.canisterList[1].sum, res.canisterList[1].bunkerName],
+                                                ct: [+parseFloat(res.canisterList[2].residue / res.canisterList[2].sum * 100).toFixed(2), res.canisterList[2].sum, res.canisterList[2].bunkerName],
                                                 version: res.version,
                                                 machineNumber: JSON.parse(e).machineNumber,
                                                 machinePwd: res.machinePwd
