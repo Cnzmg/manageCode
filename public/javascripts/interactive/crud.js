@@ -316,7 +316,15 @@ new Vue({
             },
             formDataObject: {
                 objectId: '',
-                itemPicUrl: ''
+                itemPicUrl: '',
+                itemName: '',
+                itemType: '',
+                objectId: '',
+                sort: '',
+                isMember: '',
+                probability: '',
+                itemPicUrl: '',
+                itemContent: ''
             }, // 大转盘活动对象
             dialogVisibleTable: false,  //会员views
             dialogVisibleTables: false,  //礼券views
@@ -478,7 +486,7 @@ new Vue({
             }
             it.loading = true;
             ym.init.XML({
-                method: uri != 'get_draw_raffle_info' && uri != 'sys_draw_item_info'? 'POST' : 'GET',
+                method: uri != 'get_draw_raffle_info' && uri != 'sys_draw_item_info' ? 'POST' : 'GET',
                 uri: token._j.URLS.Development_Server_ + uri,
                 async: false,
                 xmldata: _data,
@@ -596,7 +604,7 @@ new Vue({
                                 TextToCode[res.machineInfo.province] ? it.ruleForm.province.push(TextToCode[res.machineInfo.province].code) : null;
                                 TextToCode[res.machineInfo.province][res.machineInfo.city] ? it.ruleForm.province.push(TextToCode[res.machineInfo.province][res.machineInfo.city].code) : null;
                                 TextToCode[res.machineInfo.province][res.machineInfo.city][res.machineInfo.district] ? it.ruleForm.province.push(TextToCode[res.machineInfo.province][res.machineInfo.city][res.machineInfo.district].code) : null;
-                                
+
 
                                 var map = new AMap.Map('cityg', {
                                     resizeEnable: true, //是否监控地图容器尺寸变化
@@ -745,7 +753,7 @@ new Vue({
                                 it.manageCoupon(res);
 
                                 break;
-                            case 'get_draw_raffle_info':  //抽奖配置
+                            case 'get_draw_raffle_info':  //抽奖配置 
                                 it.ruleForm.title = res.data.title;
                                 if (res.data.startTime) {
                                     it.ruleForm.startTime.push(ym.init.getDateTime(res.data.startTime).split(' ')[0]);
@@ -756,6 +764,18 @@ new Vue({
                                 it.ruleForm.status = res.data.status;
                                 it.tableData = res.data.items;
                                 uri = 'add_or_update_draw_raffle'  //完成后重新把uri 复原
+                                break;
+                            case 'sys_draw_item_info':  //奖品编辑
+                                it.formDataObject.itemName = res.data.itemName;
+                                it.formDataObject.itemType = res.data.itemType;
+                                it.formDataObject.objectId = res.data.objectId;
+                                it.formDataObject.sort = res.data.sort;
+                                it.formDataObject.isMember = res.data.isMember;
+                                it.formDataObject.probability = res.data.probability;
+                                it.formDataObject.itemPicUrl = res.data.itemPicUrl;
+                                it.imageList.turntablePrize.push({ name: 'turntablePrize', url: res.data.itemPicUrl})
+                                it.formDataObject.itemContent = res.data.itemContent;
+                                uri = 'add_or_update_sys_draw_item_info'  //完成后重新把uri 复原
                                 break;
                             default:
                                 break;
@@ -1397,6 +1417,10 @@ new Vue({
 
         submitFormMiniTurntable(params) {  //小程序大转盘提交
             const it = this;
+            if(params.probability > 1){
+                it.IError('【概率】溢出了');
+                return false;
+            }
             Object.keys(params).forEach((ele, index) => {
                 _data[ele] = Object.values(params)[index];
             })

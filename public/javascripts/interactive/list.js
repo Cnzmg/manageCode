@@ -2583,6 +2583,30 @@ new Vue({
                     }
                 }
             })
-        }
+        },
+
+        statusPrize(params) { // 更改奖品状态
+            const it = this;
+            _data = Object.assign(_data, params);
+            ym.init.XML({
+                method: 'GET',
+                uri: token._j.URLS.Development_Server_ + 'change_sys_draw_item_info_status',
+                async: false,
+                xmldata: _data,
+                done: function (res) {
+                    try {
+                        ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
+                            it.ISuccessfull(res.statusCode.msg);
+                            delete _data['itemId'];
+                            it.list();
+                        })() : (() => {
+                            throw "收集到错误：\n\n" + res.statusCode.msg;
+                        })();
+                    } catch (error) {
+                        it.IError(error);
+                    }
+                }
+            })
+        },
     }
 });

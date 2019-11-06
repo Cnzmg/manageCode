@@ -85,6 +85,10 @@
                                     @click="crud({uri:'miniTurntablePrizeUa',enitId:scope.row})">
                                     查看
                                 </el-button>
+                                <el-button type="text" size="small"
+                                    @click="statusPrize({itemId: scope.row.itemId})">
+                                    更改状态
+                                </el-button>
                             </template>
                         </el-table-column>
                     </el-table>
