@@ -87,11 +87,12 @@
                 </el-dialog>
 
                 <el-dialog title="礼券数据" :visible.sync="dialogVisibleTables">
-                    <el-form :model="formDataObject" label-width="100px" ref="multipleTable" tooltip-effect="dark"
+                    <el-form :model="formDataObject" label-width="100px" >
+                        <el-table :data="tableDataVip" ref="multipleTable" tooltip-effect="dark"
                         @selection-change="handleSelectionChange">
-                        <el-table :data="tableDataVip">
                             <el-table-column type="selection"></el-table-column>
                             <el-table-column type="index"></el-table-column>
+                            <el-table-column prop="couponId" label="ID"></el-table-column>
                             <el-table-column prop="couponName" label="名称"></el-table-column>
                             <el-table-column prop="couponMoney" label="类型"></el-table-column>
                             <el-table-column prop="couponTime" label="时间"></el-table-column>

@@ -881,6 +881,19 @@ new Vue({
                                     })
                                 }
                                 break;
+                            case `sys_user_draw_log_list`:  //抽奖记录列表 
+                                for (let i = 0; i < res.data.length; i++) {  // 
+                                    xml.push({
+                                        itemId: res.data[i].itemId,
+                                        createTime: res.data[i].createTime,
+                                        userId: res.data[i].userId,
+                                        itemName: res.data[i].itemName,
+                                        createTime: res.data[i].createTime,
+                                        nickName: res.data[i].nickName,
+                                        status: res.data[i].status
+                                    })
+                                }
+                                break;
                             default:
                                 break;
                         }
@@ -2509,7 +2522,7 @@ new Vue({
             })
         },
 
-        exportLogExe(params){  //导出预约记录
+        exportLogExe(params) {  //导出预约记录
             let it = this;
             it.loading = true;
             _data = Object.assign(_data, { napeName: params.napeName || '', status: params.status })
@@ -2536,7 +2549,7 @@ new Vue({
             })
         },
 
-        appointmentPayEdesit(params){  //预约详情
+        appointmentPayEdesit(params) {  //预约详情
             let it = this;
             _data = Object.assign(_data, { preSellLogId: params })
             ym.init.XML({
@@ -2548,7 +2561,7 @@ new Vue({
                     try {
                         ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
                             it.appointmentPay = {};
-                            Object.keys(res.data).forEach((element, index) =>{
+                            Object.keys(res.data).forEach((element, index) => {
                                 it.appointmentPay[element] = Object.values(res.data)[index];
                             });
                         })() : (() => {
@@ -2559,9 +2572,9 @@ new Vue({
                     }
                 }
             })
-        }, 
+        },
 
-        appointmentPayGrant(params){  //核销
+        appointmentPayGrant(params) {  //核销
             let it = this;
             _data = Object.assign(_data, { preSellLogId: params })
             ym.init.XML({

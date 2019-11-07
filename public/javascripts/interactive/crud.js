@@ -1225,9 +1225,9 @@ new Vue({
         },
         handleSelectionChange(val) {  //下拉选项
             this.ruleForm.productId = [];  //优惠券产品相关
-            this.formDataObject.objectId = [];  //营销活动会员ID
+            this.formDataObject.objectId = '';  //营销活动会员ID
+            console.log(val);
             if (val.length < 1) return false;
-            console.log(val)
             if (val[0].memberRuleId) {
                 this.formDataObject.objectId = val[0].memberRuleId;  //会员
             }
@@ -1275,6 +1275,7 @@ new Vue({
                                         it.tableDataVip = [];
                                         res.couponInfoList.forEach((key, index) => {
                                             it.tableDataVip.push({
+                                                couponId: key.couponId,
                                                 couponName: key.couponName,
                                                 couponMoney: key.couponMoney,
                                                 couponTime: key.couponTime + __time.get(key.timeUnit),
@@ -1424,7 +1425,7 @@ new Vue({
             Object.keys(params).forEach((ele, index) => {
                 _data[ele] = Object.values(params)[index];
             })
-            if (params.itemType != 2 || params.itemType != 3) {
+            if (params.itemType != 2 && params.itemType != 3) {
                 delete _data['objectId']
             }
             ym.init.XML({

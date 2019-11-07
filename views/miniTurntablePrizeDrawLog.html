@@ -25,23 +25,28 @@
                 <el-form>
                     <el-input placeholder="请输入内容" v-model="searchVal" class="_searchVal">
                         <el-select v-model="searchName" class="_searchVal_select" slot="prepend" placeholder="请选择">
-                            <el-option label="名称" value="itemName"></el-option>
+                            <el-option label="昵称" value="nickName"></el-option>
                         </el-select>
                     </el-input>
                     <div class="_search_centent" v-show="more">
                         <el-button>奖品类型</el-button>
                         <el-select v-model="select" slot="prepend" placeholder="请选择">
                             <el-option label="不限" value="itemType:"></el-option>
-                            <el-option label="网页消费" value="itemType:6"></el-option>
-                            <el-option label="机器直销" value="itemType:5"></el-option>
+                            <el-option label="无奖品" value="itemType:1"></el-option>
+                            <el-option label="礼券" value="itemType:2"></el-option>
+                            <el-option label="会员" value="itemType:3"></el-option>
+                            <el-option label="实体奖品" value="itemType:4"></el-option>
+                            <el-option label="活动奖品" value="itemType:5"></el-option>
+                            <el-option label="再来一次" value="itemType:6"></el-option>
                         </el-select>
                     </div>
                     <div class="_search_centent" v-show="more">
                         <el-button>状态</el-button>
                         <el-select v-model="selectFil" slot="prepend" placeholder="请选择">
                             <el-option label="不限" value="status:"></el-option>
-                            <el-option label="下架" value="status:0"></el-option>
-                            <el-option label="上架" value="status:1"></el-option>
+                            <el-option label="未申领" value="status:1"></el-option>
+                            <el-option label="已申领" value="status:2"></el-option>
+                            <el-option label="已发放" value="status:3"></el-option>
                         </el-select>
                     </div>
 
@@ -57,21 +62,19 @@
                 <template>
                     <el-table :data="tableData" stripe style="width: 100%" border>
                         <el-table-column prop="itemId" label="ID"></el-table-column>
-                        <el-table-column prop="itemName" label="名称"></el-table-column>
-                        <el-table-column prop="itemPicUrl" label="图片">
+                        <el-table-column prop="nickName" label="昵称"></el-table-column>
+                        <!-- <el-table-column prop="itemPicUrl" label="图片">
                             <template slot-scope="scope">
                                 <div slot="reference" class="name-wrapper">
                                     <el-image :src="scope.row.itemPicUrl" lazy></el-image>
                                 </div>
                             </template>
+                        </el-table-column> -->
+                        <el-table-column prop="userId" label="用户ID">
                         </el-table-column>
-                        <el-table-column prop="isMember" label="是否大奖">
+                        <el-table-column prop="itemName" label="奖品名称">
                         </el-table-column>
-                        <el-table-column prop="itemType" label="类型">
-                        </el-table-column>
-                        <el-table-column prop="probability" label="概率">
-                        </el-table-column>
-                        <el-table-column prop="sort" label="排序"></el-table-column>
+                        <el-table-column prop="createTime" label="创建时间"></el-table-column>
                         <el-table-column prop="status" label="状态"></el-table-column>
 
                         <el-table-column fixed="right" label="操作">
