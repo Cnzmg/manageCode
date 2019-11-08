@@ -89,6 +89,9 @@
                                 <el-button type="text" size="small" @click="UpdateTableAndVisible = true;">
                                     礼券明细
                                 </el-button>
+                                <el-button type="text" size="small" @click="addressTable = true;addressTables = []; addressTableList({userId:scope.row.userId});">
+                                    地址
+                                </el-button>
                             </template>
                         </el-table-column>
                     </el-table>
@@ -188,8 +191,15 @@
                             <el-table-column property="userId" label="类型码"></el-table-column>
                             <el-table-column property="userId" label="类型名称"></el-table-column>
                         </el-table>
-
                     </el-form>
+                </el-dialog>
+
+                <el-dialog title="地址信息" :visible.sync="addressTable">
+                    <el-table :data="addressTables" height="600px">
+                        <el-table-column property="named" label="名称"></el-table-column>
+                        <el-table-column property="phone" label="手机号"></el-table-column>
+                        <el-table-column property="address" label="地址"></el-table-column>
+                    </el-table>
                 </el-dialog>
 
             </el-main>

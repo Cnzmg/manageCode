@@ -39,16 +39,12 @@
                 </el-form>
                 <template>
                     <el-table :data="tableData" stripe style="width: 100%" border>
-                        <el-table-column prop="chanceLogId" label="ID"></el-table-column>
-                        <el-table-column prop="nickName" label="昵称"></el-table-column>
-                        <el-table-column prop="userId" label="ID"></el-table-column>
-                        <el-table-column prop="createTime" label="创建时间"></el-table-column>
-
-                        <el-table-column prop="logContent" label="说明"></el-table-column>
-                        <el-table-column prop="logType" label="类型"></el-table-column>
+                        <el-table-column prop="raffleShareId" label="ID"></el-table-column>
+                        <el-table-column prop="newNickName" label="新用户昵称"></el-table-column>
+                        <el-table-column prop="newUserId" label="新用户ID"></el-table-column>
+                        <el-table-column prop="originNickName" label="老用户昵称"></el-table-column>
+                        <el-table-column prop="originUserId" label="老用户ID"></el-table-column>
                         <el-table-column prop="orderId" label="订单ID"></el-table-column>
-                        <el-table-column prop="raffleVersion" label="版本"></el-table-column>
-                        <el-table-column prop="status" label="状态"></el-table-column>
                     </el-table>
                 </template>
 

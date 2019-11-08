@@ -162,6 +162,11 @@ new Vue({
                 bindMachine: '',
                 state: ''
             },
+            addressTable: false, //用户地址 
+            addressTables:[],//地址数组
+            pageTableNum: 1, //循环数组起始值
+            pageTimerOut: false, // 终止值
+            pageCount: 0, //总数值
             UnFormData: [],
             adminIds: [],
             listIds: [],
@@ -320,8 +325,10 @@ new Vue({
             it.loading = true;
             arg == '' ? null : ~function () {
                 arg.forEach((arr, index) => {
-                    if (arr.indexOf(':') != -1) {  //处理2、3数据
-                        _data[arr.split(':')[0]] = arr.split(':')[1];
+                    if (arr) {
+                        if (arr.indexOf(':') != -1) {  //处理2、3数据
+                            _data[arr.split(':')[0]] = arr.split(':')[1];
+                        }
                     }
                 })
                 if (arg[0] != '' && arg[1] != '') {  //处理0、1数据
@@ -848,15 +855,12 @@ new Vue({
                             case `sys_user_raffle_share_list`:  //分享列表 
                                 for (let i = 0; i < res.data.length; i++) {  // 
                                     xml.push({
-                                        chanceLogId: res.data[i].chanceLogId,
-                                        createTime: res.data[i].createTime,
-                                        logContent: res.data[i].logContent,
-                                        logType: res.data[i].logType,
-                                        orderId: res.data[i].orderId,
-                                        raffleVersion: res.data[i].raffleVersion,
-                                        status: res.data[i].status,
-                                        userId: res.data[i].userId,
-                                        nickName: res.data[i].nickName
+                                        raffleShareId: res.data[i].raffleShareId,
+                                        newNickName: res.data[i].newNickName,
+                                        newUserId: res.data[i].newUserId,
+                                        originNickName: res.data[i].originNickName,
+                                        originUserId: res.data[i].originUserId,
+                                        orderId: res.data[i].orderId
                                     })
                                 }
                                 break;
@@ -884,7 +888,7 @@ new Vue({
                             case `sys_user_draw_log_list`:  //抽奖记录列表 
                                 for (let i = 0; i < res.data.length; i++) {  // 
                                     xml.push({
-                                        itemId: res.data[i].itemId,
+                                        drawLogId: res.data[i].drawLogId,
                                         createTime: res.data[i].createTime,
                                         userId: res.data[i].userId,
                                         itemName: res.data[i].itemName,
@@ -2612,6 +2616,73 @@ new Vue({
                             it.ISuccessfull(res.statusCode.msg);
                             delete _data['itemId'];
                             it.list();
+                        })() : (() => {
+                            throw "收集到错误：\n\n" + res.statusCode.msg;
+                        })();
+                    } catch (error) {
+                        it.IError(error);
+                    }
+                }
+            })
+        },
+
+        addressTableList(params){  //查看单个用户地址
+            const it = this;
+            let xml = [];
+            typeof params === 'object' ? params['page'] = it.pageTableNum : params['page'] = params;
+            _data = Object.assign(_data, params);
+            ym.init.XML({
+                method: 'GET',
+                uri: token._j.URLS.Development_Server_ + 'user_address_list',
+                async: false,
+                xmldata: _data,
+                done: function (res) {
+                    try {
+                        ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
+                            it.addressTables = [];
+                            for (let i = 0; i < res.data.length; i++) {  // 
+                                xml.push({
+                                    address: res.data[i].address,
+                                    phone: res.data[i].phone,
+                                    named: res.data[i].named
+                                });
+                            }
+                            it.addressTables = xml;
+                            // page++;
+                            
+                            // it.pageTimerOut = setTimeout(() => {
+                            //     if (it.pageCount - page < 0) {  //页数 > 总页数
+                            //       clearTimeout(it.pageTimerOut);
+                            //       return false;
+                            //     }
+                            //     it.addressTableList(page);
+                            //   }, 500);
+                              
+                        })() : (() => {
+                            throw "收集到错误：\n\n" + res.statusCode.msg;
+                        })();
+                    } catch (error) {
+                        it.IError(error);
+                    }
+                }
+            })
+        },
+
+        addressTableShowDeilte(params){  //抽奖记录地址详情
+            const it = this;
+            _data = Object.assign(_data, params);
+            ym.init.XML({
+                method: 'GET',
+                uri: token._j.URLS.Development_Server_ + 'user_address_detail',
+                async: false,
+                xmldata: _data,
+                done: function (res) {
+                    try {
+                        ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
+                            it.appointmentPay = {};
+                            Object.keys(res.data).forEach((element, index) => {
+                                it.appointmentPay[element] = Object.values(res.data)[index];
+                            });
                         })() : (() => {
                             throw "收集到错误：\n\n" + res.statusCode.msg;
                         })();
