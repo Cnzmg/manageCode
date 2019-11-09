@@ -808,7 +808,11 @@ new Vue({
                                 it.miniTurnableMore = false;
                                 let _obj = {};
                                 Object.keys(res.data).forEach((element, index) => {
-                                    _obj[element] = Object.values(res.data)[index] == -1 ? "无" : Object.values(res.data)[index];
+                                    if(element == 'createTime' || element == 'updateTime'){
+                                        _obj[element] = Object.values(res.data)[index] == -1 ? "无" : ym.init.getDateTime(Object.values(res.data)[index]);
+                                    }else{
+                                        _obj[element] = Object.values(res.data)[index] == -1 ? "无" : Object.values(res.data)[index];
+                                    }
                                 })
                                 xml.push(_obj);
                                 break;
@@ -841,7 +845,7 @@ new Vue({
                                 for (let i = 0; i < res.data.length; i++) {  // 
                                     xml.push({
                                         chanceLogId: res.data[i].chanceLogId,
-                                        createTime: res.data[i].createTime,
+                                        createTime: ym.init.getDateTime(res.data[i].createTime),
                                         logContent: res.data[i].logContent,
                                         logType: res.data[i].logType,
                                         orderId: res.data[i].orderId,
@@ -894,6 +898,7 @@ new Vue({
                                         itemName: res.data[i].itemName,
                                         createTime: res.data[i].createTime,
                                         nickName: res.data[i].nickName,
+                                        address: res.data[i].address,
                                         status: res.data[i].status
                                     })
                                 }
@@ -2668,29 +2673,5 @@ new Vue({
             })
         },
 
-        addressTableShowDeilte(params){  //抽奖记录地址详情
-            const it = this;
-            _data = Object.assign(_data, params);
-            ym.init.XML({
-                method: 'GET',
-                uri: token._j.URLS.Development_Server_ + 'user_address_detail',
-                async: false,
-                xmldata: _data,
-                done: function (res) {
-                    try {
-                        ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
-                            it.appointmentPay = {};
-                            Object.keys(res.data).forEach((element, index) => {
-                                it.appointmentPay[element] = Object.values(res.data)[index];
-                            });
-                        })() : (() => {
-                            throw "收集到错误：\n\n" + res.statusCode.msg;
-                        })();
-                    } catch (error) {
-                        it.IError(error);
-                    }
-                }
-            })
-        },
     }
 });

@@ -76,16 +76,16 @@
                         </el-table-column>
                         <el-table-column prop="createTime" label="创建时间"></el-table-column>
                         <el-table-column prop="status" label="状态"></el-table-column>
-
-                        <el-table-column fixed="right" label="操作">
+                        <el-table-column prop="address" label="地址">
                             <template slot-scope="scope">
-                                <el-button type="text" size="small"
-                                    @click="addressTableShowDeilte({addressId:scope.row.addressId}); InputAndVisible = true">
-                                    查看地址
-                                </el-button>
+                                <el-popover trigger="hover" placement="top" width="300">
+                                    <p>{{ scope.row.address != "未填写" ? "地址："+ scope.row.address.split(",")[0]+ "，姓名："+ scope.row.address.split(",")[1]+"，电话："+ scope.row.address.split(",")[2] : "未填写" }}</p>
+                                    <div slot="reference" class="name-wrapper">
+                                        <el-tag size="medium">{{ scope.row.address.substr(0,8) + `...` }}</el-tag>
+                                    </div>
+                                </el-popover>
                             </template>
                         </el-table-column>
-
                     </el-table>
                 </template>
 
