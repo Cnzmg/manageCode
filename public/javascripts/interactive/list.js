@@ -40,6 +40,7 @@ new Vue({
             select: '',
             searchVal: '',
             searchName: 'name',
+            listSearch: {},  //新的列表查询对象
             selectLong: '',
             machineNumbers: {
                 machineCount: 0
@@ -163,7 +164,7 @@ new Vue({
                 state: ''
             },
             addressTable: false, //用户地址 
-            addressTables:[],//地址数组
+            addressTables: [],//地址数组
             pageTableNum: 1, //循环数组起始值
             pageTimerOut: false, // 终止值
             pageCount: 0, //总数值
@@ -287,6 +288,8 @@ new Vue({
             ]),
             miniTurnableMore: true,  //小程序大转盘添加按钮是否显示
             appointmentPay: {}, //预约详情
+            objectId: '', //开通会员的查询 会员id
+            objectIds: [], //开通会员的查询 会员id
         }
     },
     created: function () {
@@ -320,7 +323,15 @@ new Vue({
             this.page = e;
             this.list();
         },
-        list(...arg) {
+        list(arg) {
+            if(arg && arg.value && arg.name){
+                arg[arg.name] = arg.value;
+                arg = Object.assign(arg, arg[arg.name])
+                console.log(arg);
+            }
+            let _data_ = Object.assign(_data, arg);
+            console.log(_data_);
+            console.log(arg); return false;
             let it = this, xml = [];
             it.loading = true;
             arg == '' ? null : ~function () {
@@ -808,9 +819,9 @@ new Vue({
                                 it.miniTurnableMore = false;
                                 let _obj = {};
                                 Object.keys(res.data).forEach((element, index) => {
-                                    if(element == 'createTime' || element == 'updateTime'){
+                                    if (element == 'createTime' || element == 'updateTime') {
                                         _obj[element] = Object.values(res.data)[index] == -1 ? "无" : ym.init.getDateTime(Object.values(res.data)[index]);
-                                    }else{
+                                    } else {
                                         _obj[element] = Object.values(res.data)[index] == -1 ? "无" : Object.values(res.data)[index];
                                     }
                                 })
@@ -1604,6 +1615,25 @@ new Vue({
                             delete _data['userId']
                             it.list(); //刷新列表
                             break;
+                        case 'dredge_member': //后台开通会员
+                            _data['memberRuleId'] = it.objectId;
+                            it.userMode.forEach(_evnt => {
+                                _data['userId'] = _evnt.userId;
+                                ym.init.XML({
+                                    method: 'GET',
+                                    uri: token._j.URLS.Development_Server_ + _sess._uri,
+                                    async: false,
+                                    xmldata: _data,
+                                    done: function (res) {
+                                        it.detailTableAndVisible = false;
+                                        it.ISuccessfull(res.statusCode.msg);
+                                    }
+                                })
+                            })
+                            delete _data['memberRuleId']
+                            delete _data['userId']
+                            it.list(); //刷新列表
+                            break;
                         default:  //赠送抽奖次数 （1.0版本赠送）
                             _data['grantCount'] = it.ount;
                             it.userMode.forEach(_evnt => {
@@ -1896,11 +1926,13 @@ new Vue({
                         it.statues.state = false;
                         it.statues.flow = false;
                         it.statues.ount = false;
+                        it.statues.objectId = false;
                     } else {  //更改用户状态
                         it.statues.user = false;
                         it.statues.state = true;
                         it.statues.flow = false;
                         it.statues.ount = false;
+                        it.statues.objectId = false;
                     }
                     break;
                 case 'grant_compensate_milliliter':  //更改用户毫升数
@@ -1908,12 +1940,46 @@ new Vue({
                     it.statues.state = false;
                     it.statues.flow = true;
                     it.statues.ount = false;
+                    it.statues.objectId = false;
+                    break;
+                case 'dredge_member':  //后台开通会员-- 查询会员
+                    it.statues.user = false;
+                    it.statues.state = false;
+                    it.statues.flow = false;
+                    it.statues.ount = false;
+                    it.statues.objectId = true;
+                    ym.init.XML({
+                        method: 'POST',
+                        uri: token._j.URLS.Development_Server_ + 'get_member_list',
+                        async: false,
+                        xmldata: _data,
+                        done: function (res) {
+                            try {
+                                ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
+                                    setTimeout(() => {
+                                        it.objectIds = [];
+                                        res.memberRuleList.forEach((key, index) => {
+                                            it.objectIds.push({
+                                                memberRuleId: key.memberRuleId,
+                                                memberRuleName: key.memberRuleName
+                                            })
+                                        })
+                                    }, 500);
+                                })() : (() => {
+                                    throw "收集到错误：\n\n" + res.statusCode.msg;
+                                })();
+                            } catch (error) {
+                                it.IError(error);
+                            }
+                        }
+                    })
                     break;
                 default:  //赠送抽奖次数
                     it.statues.user = false;
                     it.statues.state = false;
                     it.statues.ount = true;
                     it.statues.flow = false;
+                    it.statues.objectId = false;
                     break;
             }
         },
@@ -2631,7 +2697,7 @@ new Vue({
             })
         },
 
-        addressTableList(params){  //查看单个用户地址
+        addressTableList(params) {  //查看单个用户地址
             const it = this;
             let xml = [];
             typeof params === 'object' ? params['page'] = it.pageTableNum : params['page'] = params;
@@ -2654,7 +2720,7 @@ new Vue({
                             }
                             it.addressTables = xml;
                             // page++;
-                            
+
                             // it.pageTimerOut = setTimeout(() => {
                             //     if (it.pageCount - page < 0) {  //页数 > 总页数
                             //       clearTimeout(it.pageTimerOut);
@@ -2662,7 +2728,7 @@ new Vue({
                             //     }
                             //     it.addressTableList(page);
                             //   }, 500);
-                              
+
                         })() : (() => {
                             throw "收集到错误：\n\n" + res.statusCode.msg;
                         })();

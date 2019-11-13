@@ -28,8 +28,8 @@
                             操作用户
                         </el-button>
                     </div>
-                    <el-input placeholder="请输入内容" v-model="searchVal" class="_searchVal">
-                        <el-select v-model="searchName" class="_searchVal_select" slot="prepend" placeholder="请选择">
+                    <el-input placeholder="请输入内容" v-model="listSearch.value" class="_searchVal">
+                        <el-select v-model="listSearch.name" class="_searchVal_select" slot="prepend" placeholder="请选择">
                             <el-option label="用户昵称" value="nickName"></el-option>
                             <el-option label="用户ID" value="userId"></el-option>
                             <el-option label="用户来源" value="adminName"></el-option>
@@ -38,29 +38,29 @@
 
                     <div class="_search_centent">
                         <el-button>用户类型</el-button>
-                        <el-select v-model="select" slot="prepend" placeholder="请选择">
-                            <el-option label="不限" value="userType:"></el-option>
-                            <el-option label="普通用户" value="userType:1"></el-option>
-                            <el-option label="测试用户" value="userType:2"></el-option>
-                            <el-option label="免单用户" value="userType:3"></el-option>
+                        <el-select v-model="listSearch.userType" slot="prepend" placeholder="请选择">
+                            <el-option label="不限" value=""></el-option>
+                            <el-option label="普通用户" value="1"></el-option>
+                            <el-option label="测试用户" value="2"></el-option>
+                            <el-option label="免单用户" value="3"></el-option>
                         </el-select>
                     </div>
 
                     <div class="_search_centent">
                         <el-button>会员类型</el-button>
-                        <el-select v-model="selectFil" slot="prepend" placeholder="请选择">
-                            <el-option label="不限" value="memberId:"></el-option>
-                            <el-option label="月卡会员" value="memberId:7"></el-option>
-                            <el-option label="女神礼包" value="memberId:11"></el-option>
-                            <el-option label="春日套餐" value="memberId:12"></el-option>
-                            <el-option label="520套餐" value="memberId:13"></el-option>
-                            <el-option label="季卡会员" value="memberId:8"></el-option>
-                            <el-option label="年卡会员" value="memberId:9"></el-option>
+                        <el-select v-model="listSearch.memberId" slot="prepend" placeholder="请选择">
+                            <el-option label="不限" value=""></el-option>
+                            <el-option label="月卡会员" value="7"></el-option>
+                            <el-option label="女神礼包" value="11"></el-option>
+                            <el-option label="春日套餐" value="12"></el-option>
+                            <el-option label="520套餐" value="13"></el-option>
+                            <el-option label="季卡会员" value="8"></el-option>
+                            <el-option label="年卡会员" value="9"></el-option>
                         </el-select>
                     </div>
 
                     <el-button icon="el-icon-search" class="_search_btn"
-                        @click="list(searchName,searchVal,select,selectFil)">搜索
+                        @click="list(listSearch)">搜索
                     </el-button>
                 </el-form>
                 <template>
@@ -74,7 +74,7 @@
                         <el-table-column prop="nickName" label="昵称"></el-table-column>
                         <el-table-column prop="mobile" label="手机号码"></el-table-column>
                         <el-table-column prop="userType" label="用户类型"></el-table-column>
-                        <el-table-column prop="source" label="会员等级"></el-table-column>
+                        <el-table-column prop="source" label="用户来源"></el-table-column>
                         <el-table-column prop="userStatus" label="状态"></el-table-column>
                         <el-table-column prop="registerTime" label="注册时间"></el-table-column>
                         <el-table-column prop="compensateMilliliter" label="会员流量"></el-table-column>
@@ -131,9 +131,9 @@
                                 </el-option>
                                 <el-option label="赠送抽奖" value='{"_uri": "grant_draw_chance"}'>
                                 </el-option>
-                                <el-option label="赠送抽奖" value='{"_uri": "grant_sys_user_draw_chance"}'>
+                                <el-option label="赠送抽奖【小程序】" value='{"_uri": "grant_sys_user_draw_chance"}'>
                                 </el-option>
-                                <!-- <el-option label="开通会员" value='{"_uri": "manage_client_user", "_type": "3"}'></el-option> -->
+                                <el-option label="开通会员" value='{"_uri": "dredge_member" }'></el-option>
                             </el-select>
                         </div>
                         <template>
@@ -156,6 +156,12 @@
                             </div>
                             <div v-show="statues.ount">
                                 <el-input placeholder="请输入赠送次数" name="ount" v-model="ount"></el-input>
+                            </div>
+                            <div v-show="statues.objectId">
+                                <el-select v-model="objectId" slot="prepend" placeholder="请选择会员">
+                                    <el-option v-for="item in objectIds" :key="item.memberRuleId" :label="item.memberRuleName" :value="item.memberRuleId">
+                                    </el-option>
+                                </el-select>
                             </div>
                         </template>
 
