@@ -323,51 +323,37 @@ new Vue({
             this.page = e;
             this.list();
         },
-        list(arg) {
-            if(arg && arg.value && arg.name){
-                arg[arg.name] = arg.value;
-                arg = Object.assign(arg, arg[arg.name])
-                console.log(arg);
-            }
-            let _data_ = Object.assign(_data, arg);
-            console.log(_data_);
-            console.log(arg); return false;
-            let it = this, xml = [];
-            it.loading = true;
-            arg == '' ? null : ~function () {
-                arg.forEach((arr, index) => {
-                    if (arr) {
-                        if (arr.indexOf(':') != -1) {  //处理2、3数据
-                            _data[arr.split(':')[0]] = arr.split(':')[1];
-                        }
-                    }
-                })
-                if (arg[0] != '' && arg[1] != '') {  //处理0、1数据
-                    _data[arg[0]] = arg[1]
-                };
-                if (arg[4]) {  //处理时间
-                    _data['startDate'] = ym.init.getDateTime(arg[4][0]).split(' ')[0];
-                    _data['endDate'] = ym.init.getDateTime(arg[4][1]).split(' ')[0];
-                    if (uri == 'statistics_shop') {
-                        _data['startTime'] = _data['startDate'];
-                        _data['endTime'] = _data['endDate'];
-                        delete _data['startDate']
-                        delete _data['endDate']
+        list(params) {
+            let _data_ = {}, it = this, xml = [];
+            if (params) {
+                params._name_ && params._value_ ? params[params._name_] = params._value_ : null;  //第一搜索key of value
+                if (params._time_) {
+                    params['startDate'] = ym.init.getDateTime(params._time_[0]).split(' ')[0];
+                    params['endDate'] = ym.init.getDateTime(params._time_[1]).split(' ')[0];
+                    console.log(params);
+                    if (uri == 'statistics_shop' || uri == 'find_order_list') {
+                        params['startTime'] = params['startDate'];
+                        params['endTime'] = params['endDate'];
+                        delete params['startDate']
+                        delete params['endDate']
                     }
                 }
-            }();
-            if (uri == 'manage_prodcut_list_list') _data['type'] = 1;  //临时处理存在此接口存在type 数值问题
-            if (uri == 'manage_machine_version') _data['type'] = 1;  //临时处理存在此接口存在type 数值问题
-            if (uri == 'find_machine_advertisement_list') _data['type'] = 1;
-            if (uri == 'manage_advertisement_list_list') _data['type'] = 1;
-            if (uri == 'client_user_list') _data['type'] = 1;
-            if (uri == 'manage_dividend_list') _data['type'] = 1;
-            _data['page'] = it.page;
+            }
+            _data_ = Object.assign(_data, params)
+            it.loading = true;
+
+            if (uri == 'manage_prodcut_list_list') _data_['type'] = 1;  //临时处理存在此接口存在type 数值问题
+            if (uri == 'manage_machine_version') _data_['type'] = 1;  
+            if (uri == 'find_machine_advertisement_list') _data_['type'] = 1;
+            if (uri == 'manage_advertisement_list_list') _data_['type'] = 1;
+            if (uri == 'client_user_list') _data_['type'] = 1;
+            if (uri == 'manage_dividend_list') _data_['type'] = 1;
+            _data_['page'] = it.page;
             ym.init.XML({
                 method: (uri == 'find_machine_poi_list' || uri == 'get_activity_list' || uri == 'statistics_list' || uri == 'maintainer_list' || uri == 'sys_draw_raffle_info' || uri == 'sys_user_raffle_share_list' ? "GET" : 'POST'),
                 uri: token._j.URLS.Development_Server_ + uri,
                 async: false,
-                xmldata: _data,
+                xmldata: _data_,
                 done: function (res) {
                     ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
                         switch (uri) {
@@ -1912,10 +1898,6 @@ new Vue({
                     break;
             }
         },
-        getTime(e) {
-            this.userCharts[0] = ym.init.getDateTime(e[0]);
-            this.userCharts[1] = ym.init.getDateTime(e[1]);
-        },
         userSelect(_event) {  //用户批量操作
             _event = JSON.parse(_event);
             const it = this;
@@ -2649,12 +2631,36 @@ new Vue({
             })
         },
 
-        appointmentPayGrant(params) {  //核销
+        appointmentPayGrant(params) {  //核销 发券
             let it = this;
             _data = Object.assign(_data, { preSellLogId: params })
             ym.init.XML({
                 method: 'GET',
                 uri: token._j.URLS.Development_Server_ + 'pre_sell_grant',
+                async: false,
+                xmldata: _data,
+                done: function (res) {
+                    try {
+                        ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
+                            it.ISuccessfull(res.statusCode.msg);
+                            delete _data['preSellLogId'];
+                            it.TableAndVisible = false;
+                            it.list();
+                        })() : (() => {
+                            throw "收集到错误：\n\n" + res.statusCode.msg;
+                        })();
+                    } catch (error) {
+                        it.IError(error);
+                    }
+                }
+            })
+        },
+        appointmentPayGrantCancel(params) {  //确认核销 信息【不发券】
+            let it = this;
+            _data = Object.assign(_data, { preSellLogId: params })
+            ym.init.XML({
+                method: 'GET',
+                uri: token._j.URLS.Development_Server_ + 'pre_sell_cancel',
                 async: false,
                 xmldata: _data,
                 done: function (res) {

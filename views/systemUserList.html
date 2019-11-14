@@ -28,8 +28,8 @@
                             操作用户
                         </el-button>
                     </div>
-                    <el-input placeholder="请输入内容" v-model="listSearch.value" class="_searchVal">
-                        <el-select v-model="listSearch.name" class="_searchVal_select" slot="prepend" placeholder="请选择">
+                    <el-input placeholder="请输入内容" v-model="listSearch._value_" class="_searchVal">
+                        <el-select v-model="listSearch._name_" class="_searchVal_select" slot="prepend" placeholder="请选择">
                             <el-option label="用户昵称" value="nickName"></el-option>
                             <el-option label="用户ID" value="userId"></el-option>
                             <el-option label="用户来源" value="adminName"></el-option>

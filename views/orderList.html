@@ -25,38 +25,38 @@
                     <div style="width: 100%;margin-bottom:10px;">
                         <el-button @click="UpdateTableAndVisible = true;pathUrlExe = {}" type="primary">导出订单</el-button>
                     </div>
-                    <el-input placeholder="请输入内容" v-model="searchVal" class="_searchVal">
-                        <el-select v-model="searchName" class="_searchVal_select" slot="prepend" placeholder="请选择">
-                            <el-option label="编号/订单" value="name"></el-option>
+                    <el-input placeholder="请输入内容" v-model="listSearch._value_" class="_searchVal">
+                        <el-select v-model="listSearch._name_" class="_searchVal_select" slot="prepend" placeholder="请选择" :change="listSearch._name_ = 'name'">
+                            <el-option label="订单号" value="name"></el-option>
                         </el-select>
                     </el-input>
                     <div class="_search_centent" v-show="more">
                         <el-button>消费类型</el-button>
-                        <el-select v-model="select" slot="prepend" placeholder="请选择">
-                            <el-option label="不限" value="consumptionType:"></el-option>
-                            <el-option label="网页消费" value="consumptionType:6"></el-option>
-                            <el-option label="机器直销" value="consumptionType:5"></el-option>
-                            <el-option label="会员开通" value="consumptionType:4"></el-option>
+                        <el-select v-model="listSearch.consumptionType" slot="prepend" placeholder="请选择">
+                            <el-option label="不限" value=""></el-option>
+                            <el-option label="网页消费" value="6"></el-option>
+                            <el-option label="机器直销" value="5"></el-option>
+                            <el-option label="会员开通" value="4"></el-option>
                         </el-select>
                     </div>
                     <div class="_search_centent" v-show="more">
                         <el-button>订单状态</el-button>
-                        <el-select v-model="selectFil" slot="prepend" placeholder="请选择">
-                            <el-option label="不限" value="orderStatus:"></el-option>
-                            <el-option label="未支付" value="orderStatus:1"></el-option>
-                            <el-option label="已支付" value="orderStatus:2"></el-option>
-                            <el-option label="已退款" value="orderStatus:3"></el-option>
-                            <el-option label="已完成" value="orderStatus:4"></el-option>
-                            <el-option label="已取消" value="orderStatus:5"></el-option>
-                            <el-option label="制作中" value="orderStatus:6"></el-option>
-                            <el-option label="未兑换" value="orderStatus:7"></el-option>
-                            <el-option label="已兑换" value="orderStatus:8"></el-option>
-                            <el-option label="已过期" value="orderStatus:9"></el-option>
+                        <el-select v-model="listSearch.orderStatus" slot="prepend" placeholder="请选择">
+                            <el-option label="不限" value=""></el-option>
+                            <el-option label="未支付" value="1"></el-option>
+                            <el-option label="已支付" value="2"></el-option>
+                            <el-option label="已退款" value="3"></el-option>
+                            <el-option label="已完成" value="4"></el-option>
+                            <el-option label="已取消" value="5"></el-option>
+                            <el-option label="制作中" value="6"></el-option>
+                            <el-option label="未兑换" value="7"></el-option>
+                            <el-option label="已兑换" value="8"></el-option>
+                            <el-option label="已过期" value="9"></el-option>
                         </el-select>
                     </div>
 
                     <div class="_search_centent" v-show="more">
-                        <el-date-picker v-model="timeout" type="daterange" align="right" unlink-panels
+                        <el-date-picker v-model="listSearch._time_" type="daterange" align="right" unlink-panels
                             range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期"
                             :picker-options="pickerOptions" @change="getTime">
                         </el-date-picker>
@@ -67,7 +67,7 @@
                     <div class="more_search el-icon-remove-outline" v-show="more" @click="more = !more"> 收起 </div>
 
                     <el-button icon="el-icon-search" class="_search_btn"
-                        @click="list(searchName,searchVal,select,selectFil,timeout)">搜索
+                        @click="list(listSearch)">搜索
                     </el-button>
                 </el-form>
 
