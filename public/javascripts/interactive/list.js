@@ -1690,25 +1690,26 @@ new Vue({
             })
         },
         fileChange(e) { //上传结构
+            console.log(e)
             _data['type'] = 4;
             _data['mUpdateVersion'] = this.formData.mUpdateVersion;
-            this.dialogImageUrl = '../images/Android.svg';
+            this.dialogImageUrl = 'http://www.cbcoffee.cn/rundev/manage/images/Android.svg';
         },
         filemadUrlChange(e) {
             _data['type'] = 9;
         },
         fileExceed() {
-            this.IError('只允许一张图片')
+            this.IError('只允许单个上传')
         },
         machineSceneSuccess(e) {
-            this.formData.mUpdateUrl = e.realPath;
-            this.formData.madUrl = e.realPath;
+            this.formData.mUpdateUrl = e.realPath;  // 应用地址
+            this.formData.madUrl = e.realPath;  //视频地址
         },
         handleRemove(file, fileList) {
             console.log(file, fileList);
         },
         handlePictureCardPreview(file) {
-            this.dialogImageUrl = '../images/Android.svg';
+            this.dialogImageUrl = 'http://www.cbcoffee.cn/rundev/manage/images/Android.svg';
             this.dialogVisible = true;
         },
         machineVersion(_idata) {
@@ -1716,7 +1717,7 @@ new Vue({
             _data['type'] = _idata._type;
             _data['machineType'] = _idata._machineType;
             _data['mUpdateVersion'] = _idata._d.mUpdateVersion;
-            _data['versionCode'] = _idata._d.versionCode;
+            _data['versionCode'] = _idata._d.versionCode;   
             _data['mUpdateDes'] = _idata._d.mUpdateDes;
             _data['mUpdateUrl'] = this.formData.mUpdateUrl;
             ym.init.XML({
@@ -1864,6 +1865,7 @@ new Vue({
                             xmldata: _data,
                             done: function (res) {
                                 ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
+                                    it.imageList.madUrl = []; // 先清空视频地址列表
                                     it.ISuccessfull(res.statusCode.msg);
                                     it.formData.madTitle = res.machineAdvertisementInfo.madTitle
                                     it.formData.madUrl = res.machineAdvertisementInfo.madUrl

@@ -22,23 +22,23 @@
         <el-container>
             <el-main>
                 <el-form>
-                    <el-input placeholder="请输入内容" v-model="searchVal" class="_searchVal">
-                        <el-select v-model="searchName" class="_searchVal_select" slot="prepend" placeholder="请选择">
+                    <el-input placeholder="请输入内容" v-model="listSearch._value_" class="_searchVal">
+                        <el-select v-model="listSearch._name_" class="_searchVal_select" slot="prepend" placeholder="请选择" :change="listSearch._name_ = 'name'">
                             <el-option label="订单号" value="name"></el-option>
                         </el-select>
                     </el-input>
                     <div class="_search_centent" v-show="more">
                         <el-button>消费类型</el-button>
-                        <el-select v-model="select" slot="prepend" placeholder="请选择">
-                            <el-option label="不限" value="orderType:"></el-option>
-                            <el-option label="人工退款" value="orderType:6"></el-option>
-                            <el-option label="自动退款" value="orderType:5"></el-option>
+                        <el-select v-model="listSearch.orderType" slot="prepend" placeholder="请选择">
+                            <el-option label="不限" value=""></el-option>
+                            <el-option label="人工退款" value="6"></el-option>
+                            <el-option label="自动退款" value="5"></el-option>
                         </el-select>
                     </div>
 
                     <div class="_search_centent" v-show="more">
                         <div class="block">
-                            <el-date-picker v-model="dateLog" type="daterange" range-separator="至"
+                            <el-date-picker v-model="listSearch._time_" type="daterange" range-separator="至"
                                 start-placeholder="开始日期" end-placeholder="结束日期">
                             </el-date-picker>
                         </div>
@@ -49,7 +49,7 @@
                     <div class="more_search el-icon-remove-outline" v-show="more" @click="more = !more"> 收起 </div>
 
                     <el-button icon="el-icon-search" class="_search_btn"
-                        @click="list(searchName,searchVal,select,dateLog)">搜索
+                        @click="list(listSearch)">搜索
                     </el-button>
                 </el-form>
 

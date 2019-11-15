@@ -28,33 +28,33 @@
                             推送绑定/解绑
                         </el-button>
                     </div>
-                    <el-input placeholder="请输入内容" v-model="searchVal" class="_searchVal">
-                        <el-select v-model="searchName" class="_searchVal_select" slot="prepend" placeholder="请选择">
+                    <el-input placeholder="请输入内容" v-model="listSearch._value_" class="_searchVal">
+                        <el-select v-model="listSearch._name_" class="_searchVal_select" slot="prepend" placeholder="请选择" :change="listSearch._name_ = 'name'">
                             <el-option label="商户名称/ID" value="name"></el-option>
                         </el-select>
                     </el-input>
                     <div class="_search_centent" v-show="more">
                         <el-button>在线状态</el-button>
-                        <el-select v-model="select" slot="prepend" placeholder="请选择">
-                            <el-option label="不限" value="onlineStatus:"></el-option>
-                            <el-option label="离线" value="onlineStatus:1"></el-option>
-                            <el-option label="在线" value="onlineStatus:2"></el-option>
+                        <el-select v-model="listSearch.onlineStatus" slot="prepend" placeholder="请选择">
+                            <el-option label="不限" value=""></el-option>
+                            <el-option label="离线" value="1"></el-option>
+                            <el-option label="在线" value="2"></el-option>
                         </el-select>
                     </div>
                     <div class="_search_centent" v-show="more">
                         <el-button>故障状态</el-button>
-                        <el-select v-model="selectFil" slot="prepend" placeholder="请选择">
-                            <el-option label="不限" value="failureStatus:"></el-option>
-                            <el-option label="故障" value="failureStatus:1"></el-option>
-                            <el-option label="正常" value="failureStatus:2"></el-option>
+                        <el-select v-model="listSearch.failureStatus" slot="prepend" placeholder="请选择">
+                            <el-option label="不限" value=""></el-option>
+                            <el-option label="故障" value="1"></el-option>
+                            <el-option label="正常" value="2"></el-option>
                         </el-select>
                     </div>
                     <div class="_search_centent" v-show="more">
                         <el-button>物料状态</el-button>
-                        <el-select v-model="selectMater" slot="prepend" placeholder="请选择">
-                            <el-option label="不限" value="materialStatus:"></el-option>
-                            <el-option label="缺料" value="materialStatus:1"></el-option>
-                            <el-option label="正常" value="materialStatus:2"></el-option>
+                        <el-select v-model="listSearch.materialStatus" slot="prepend" placeholder="请选择">
+                            <el-option label="不限" value=""></el-option>
+                            <el-option label="缺料" value="1"></el-option>
+                            <el-option label="正常" value="2"></el-option>
                         </el-select>
                     </div>
 
@@ -63,7 +63,7 @@
                     <div class="more_search el-icon-remove-outline" v-show="more" @click="more = !more"> 收起 </div>
 
                     <el-button icon="el-icon-search" class="_search_btn"
-                        @click="list(searchName,searchVal,select,selectFil,selectMater)">搜索
+                        @click="list(listSearch)">搜索
                     </el-button>
                 </el-form>
 

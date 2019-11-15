@@ -22,13 +22,13 @@
         <el-container>
             <el-main>
                 <el-form>
-                    <el-input placeholder="请输入内容" v-model="searchVal" class="_searchVal">
-                        <el-select v-model="searchName" class="_searchVal_select" slot="prepend" placeholder="请选择">
+                    <el-input placeholder="请输入内容" v-model="listSearch._value_" class="_searchVal">
+                        <el-select v-model="listSearch._name_" class="_searchVal_select" slot="prepend" placeholder="请选择" :change="listSearch._name_ = 'name'">
                             <el-option label="商户名称/设备号" value="name"></el-option>
                         </el-select>
                     </el-input>
 
-                    <el-button icon="el-icon-search" class="_search_btn" @click="list(searchName,select)">搜索
+                    <el-button icon="el-icon-search" class="_search_btn" @click="list(listSearch)">搜索
                     </el-button>
                 </el-form>
                 <template>

@@ -28,25 +28,25 @@
                             新增
                         </el-button>
                     </div>
-                    <el-input placeholder="请输入内容" v-model="searchVal" class="_searchVal">
-                        <el-select v-model="searchName" class="_searchVal_select" slot="prepend" placeholder="请选择">
+                    <el-input placeholder="请输入内容" v-model="listSearch._value_" class="_searchVal">
+                        <el-select v-model="listSearch._name_" class="_searchVal_select" slot="prepend" placeholder="请选择" :change="listSearch._name_ = 'itemName'">
                             <el-option label="名称" value="itemName"></el-option>
                         </el-select>
                     </el-input>
                     <div class="_search_centent" v-show="more">
                         <el-button>奖品类型</el-button>
-                        <el-select v-model="select" slot="prepend" placeholder="请选择">
-                            <el-option label="不限" value="itemType:"></el-option>
-                            <el-option label="网页消费" value="itemType:6"></el-option>
-                            <el-option label="机器直销" value="itemType:5"></el-option>
+                        <el-select v-model="listSearch.itemType" slot="prepend" placeholder="请选择">
+                            <el-option label="不限" value=""></el-option>
+                            <el-option label="网页消费" value="6"></el-option>
+                            <el-option label="机器直销" value="5"></el-option>
                         </el-select>
                     </div>
                     <div class="_search_centent" v-show="more">
                         <el-button>状态</el-button>
-                        <el-select v-model="selectFil" slot="prepend" placeholder="请选择">
-                            <el-option label="不限" value="status:"></el-option>
-                            <el-option label="下架" value="status:0"></el-option>
-                            <el-option label="上架" value="status:1"></el-option>
+                        <el-select v-model="listSearch.status" slot="prepend" placeholder="请选择">
+                            <el-option label="不限" value=""></el-option>
+                            <el-option label="下架" value="0"></el-option>
+                            <el-option label="上架" value="1"></el-option>
                         </el-select>
                     </div>
 
@@ -55,7 +55,7 @@
                     <div class="more_search el-icon-remove-outline" v-show="more" @click="more = !more"> 收起 </div>
 
                     <el-button icon="el-icon-search" class="_search_btn"
-                        @click="list(searchName,searchVal,select,selectFil)">搜索
+                        @click="list(listSearch)">搜索
                     </el-button>
                 </el-form>
 

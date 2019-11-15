@@ -23,30 +23,30 @@
         <el-container>
             <el-main>
                 <el-form>
-                    <el-input placeholder="请输入内容" v-model="searchVal" class="_searchVal">
-                        <el-select v-model="searchName" class="_searchVal_select" slot="prepend" placeholder="请选择">
+                    <el-input placeholder="请输入内容" v-model="listSearch._value_" class="_searchVal">
+                        <el-select v-model="listSearch._name_" class="_searchVal_select" slot="prepend" placeholder="请选择" :change="listSearch._name_ = 'nikeName'">
                             <el-option label="昵称" value="nickName"></el-option>
                         </el-select>
                     </el-input>
                     <div class="_search_centent" v-show="more">
                         <el-button>奖品类型</el-button>
-                        <el-select v-model="select" slot="prepend" placeholder="请选择">
-                            <el-option label="不限" value="itemType:"></el-option>
-                            <el-option label="无奖品" value="itemType:1"></el-option>
-                            <el-option label="礼券" value="itemType:2"></el-option>
-                            <el-option label="会员" value="itemType:3"></el-option>
-                            <el-option label="实体奖品" value="itemType:4"></el-option>
-                            <el-option label="活动奖品" value="itemType:5"></el-option>
-                            <el-option label="再来一次" value="itemType:6"></el-option>
+                        <el-select v-model="listSearch.itemType" slot="prepend" placeholder="请选择">
+                            <el-option label="不限" value=""></el-option>
+                            <el-option label="无奖品" value="1"></el-option>
+                            <el-option label="礼券" value="2"></el-option>
+                            <el-option label="会员" value="3"></el-option>
+                            <el-option label="实体奖品" value="4"></el-option>
+                            <el-option label="活动奖品" value="5"></el-option>
+                            <el-option label="再来一次" value="6"></el-option>
                         </el-select>
                     </div>
                     <div class="_search_centent" v-show="more">
                         <el-button>状态</el-button>
-                        <el-select v-model="selectFil" slot="prepend" placeholder="请选择">
-                            <el-option label="不限" value="status:"></el-option>
-                            <el-option label="未申领" value="status:1"></el-option>
-                            <el-option label="已申领" value="status:2"></el-option>
-                            <el-option label="已发放" value="status:3"></el-option>
+                        <el-select v-model="listSearch.status" slot="prepend" placeholder="请选择">
+                            <el-option label="不限" value=""></el-option>
+                            <el-option label="未申领" value="1"></el-option>
+                            <el-option label="已申领" value="2"></el-option>
+                            <el-option label="已发放" value="3"></el-option>
                         </el-select>
                     </div>
 
@@ -55,7 +55,7 @@
                     <div class="more_search el-icon-remove-outline" v-show="more" @click="more = !more"> 收起 </div>
 
                     <el-button icon="el-icon-search" class="_search_btn"
-                        @click="list(searchName,searchVal,select,selectFil)">搜索
+                        @click="list(listSearch)">搜索
                     </el-button>
                 </el-form>
 

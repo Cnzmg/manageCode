@@ -23,8 +23,8 @@
         <el-container>
             <el-main>
                 <el-form>
-                    <el-input placeholder="请输入内容" v-model="searchVal" class="_searchVal">
-                        <el-select v-model="searchName" class="_searchVal_select" slot="prepend" placeholder="请选择">
+                    <el-input placeholder="请输入内容" v-model="listSearch._value_" class="_searchVal">
+                        <el-select v-model="listSearch._name_" class="_searchVal_select" slot="prepend" placeholder="请选择" :change="listSearch._name_ = 'nikeName'">
                             <el-option label="昵称" value="nickName"></el-option>
                         </el-select>
                     </el-input>
@@ -34,7 +34,7 @@
                     <div class="more_search el-icon-remove-outline" v-show="more" @click="more = !more"> 收起 </div>
 
                     <el-button icon="el-icon-search" class="_search_btn"
-                        @click="list(searchName,searchVal,select,selectFil)">搜索
+                        @click="list(listSearch)">搜索
                     </el-button>
                 </el-form>
                 <template>

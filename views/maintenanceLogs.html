@@ -22,8 +22,8 @@
         <el-container>
             <el-main>
                 <el-form>
-                    <el-input placeholder="请输入内容" v-model="searchVal" class="_searchVal">
-                        <el-select v-model="searchName" class="_searchVal_select" slot="prepend" placeholder="请选择">
+                    <el-input placeholder="请输入内容" v-model="listSearch._value_" class="_searchVal">
+                        <el-select v-model="listSearch._name_" class="_searchVal_select" slot="prepend" placeholder="请选择">
                             <el-option label="机器编号" value="machineNumber"></el-option>
                             <el-option label="运维人员名称" value="maintainerName"></el-option>
                         </el-select>
@@ -31,24 +31,24 @@
 
                     <div class="_search_centent" v-show="more">
                         <el-button>流程类型</el-button>
-                        <el-select v-model="select" slot="prepend" placeholder="请选择">
-                            <el-option label="不限" value="flowType:"></el-option>
-                            <el-option label="清洗" value="flowType:1"></el-option>
-                            <el-option label="补料" value="flowType:2"></el-option>
+                        <el-select v-model="listSearch.flowType" slot="prepend" placeholder="请选择">
+                            <el-option label="不限" value=""></el-option>
+                            <el-option label="清洗" value="1"></el-option>
+                            <el-option label="补料" value="2"></el-option>
                         </el-select>
                     </div>
                     <div class="_search_centent" v-show="more">
                         <el-button>状态</el-button>
-                        <el-select v-model="selectLong" slot="prepend" placeholder="请选择">
-                            <el-option label="不限" value="status:"></el-option>
-                            <el-option label="进行中" value="status:1"></el-option>
-                            <el-option label="已完成" value="status:2"></el-option>
+                        <el-select v-model="listSearch.status" slot="prepend" placeholder="请选择">
+                            <el-option label="不限" value=""></el-option>
+                            <el-option label="进行中" value="1"></el-option>
+                            <el-option label="已完成" value="2"></el-option>
                         </el-select>
                     </div>
 
                     <div class="_search_centent" v-show="more">
                         <div class="block">
-                            <el-date-picker v-model="dateLog" type="daterange" range-separator="至"
+                            <el-date-picker v-model="listSearch._time_" type="daterange" range-separator="至"
                                 start-placeholder="开始日期" end-placeholder="结束日期">
                             </el-date-picker>
                         </div>
@@ -59,7 +59,7 @@
                     <div class="more_search el-icon-remove-outline" v-show="more" @click="more = !more"> 收起 </div>
 
                     <el-button icon="el-icon-search" class="_search_btn"
-                        @click="list(searchName,searchVal,select,selectLong,dateLog)">搜索
+                        @click="list(listSearch)">搜索
                     </el-button>
                 </el-form>
 

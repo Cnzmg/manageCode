@@ -27,18 +27,18 @@
                             新增配置
                         </el-button>
                     </div>
-                    <el-input placeholder="请输入内容" v-model="searchVal" class="_searchVal">
-                        <el-select v-model="searchName" class="_searchVal_select" slot="prepend" placeholder="请选择">
+                    <el-input placeholder="请输入内容" v-model="listSearch._value_" class="_searchVal">
+                        <el-select v-model="listSearch._name_" class="_searchVal_select" slot="prepend" placeholder="请选择">
                             <el-option label="ID" value="drawId"></el-option>
                             <el-option label="标题" value="title">
                         </el-select>
                     </el-input>
                     <div class="_search_centent" v-show="more">
                         <el-button>状态</el-button>
-                        <el-select v-model="select" slot="prepend" placeholder="请选择">
-                            <el-option label="不限" value="status:"></el-option>
-                            <el-option label="上架" value="status:1"></el-option>
-                            <el-option label="下架" value="status:0"></el-option>
+                        <el-select v-model="listSearch.status" slot="prepend" placeholder="请选择">
+                            <el-option label="不限" value=""></el-option>
+                            <el-option label="上架" value="1"></el-option>
+                            <el-option label="下架" value="0"></el-option>
                         </el-select>
                     </div>
 
@@ -47,7 +47,7 @@
                     <div class="more_search el-icon-remove-outline" v-show="more" @click="more = !more"> 收起 </div>
 
                     <el-button icon="el-icon-search" class="_search_btn"
-                        @click="list(searchName,searchVal,select)">搜索
+                        @click="list(listSearch)">搜索
                     </el-button>
                 </el-form>
 

@@ -24,16 +24,17 @@
             <el-main>
                 <el-form>
                     <div style="width: 100%;margin-bottom:10px;">
-                        <el-button @click="adevtmodel = true; formData = {}" type="primary">添加<i
+                        <el-button @click="adevtmodel = true; formData = {}; imageList.madUrl = []" type="primary">添加<i
                                 class="el-icon-plus el-icon--right"></i></el-button>
                     </div>
-                    <el-input placeholder="请输入内容" v-model="searchVal" class="_searchVal">
-                        <el-select v-model="searchName" class="_searchVal_select" slot="prepend" placeholder="请选择">
-                            <el-option label="视频名称/ID" value="name"></el-option>
+                    <el-input placeholder="请输入内容" v-model="listSearch._value_" class="_searchVal">
+                        <el-select v-model="listSearch._name_" class="_searchVal_select" slot="prepend"
+                            placeholder="请选择" :change="listSearch._name_ = 'name'">
+                            <el-option label="名称/ID" value="name"></el-option>
                         </el-select>
                     </el-input>
 
-                    <el-button icon="el-icon-search" class="_search_btn" @click="list(searchName,searchVal)">搜索
+                    <el-button icon="el-icon-search" class="_search_btn" @click="list(listSearch)">搜索
                     </el-button>
                 </el-form>
                 <template>
@@ -83,7 +84,7 @@
                 </el-pagination>
 
 
-                <el-dialog title="添加/编辑" :visible.sync="adevtmodel">
+                <el-dialog title="管理视频" :visible.sync="adevtmodel">
                     <el-form :model="formData" label-width="100px">
                         <el-form-item label="视频名称">
                             <el-input v-model="formData.madTitle"></el-input>
@@ -93,8 +94,8 @@
                         </el-form-item>
                         <el-form-item label="视频文件">
                             <template v-model="formData.madUrl">
-                                <el-upload prop="madUrl" :action="fileUpdata"
-                                    list-type="picture-card" :file-list="imageList.madUrl" :limit="num" :data="fileData"
+                                <el-upload prop="madUrl" :action="fileUpdata" list-type="picture-card"
+                                    :file-list="imageList.madUrl" :limit="num" :data="fileData"
                                     :on-change="filemadUrlChange" :on-success="machineSceneSuccess"
                                     :on-exceed="fileExceed" :on-preview="handlePictureCardPreview"
                                     :on-remove="handleRemove" accept=".mp4">
@@ -105,6 +106,12 @@
                                 </el-dialog>
                             </template>
                         </el-form-item>
+                        <div style="display: none;">
+                            <!-- 装视频的盒子，抽出视频截图 -->
+                            <video :src="formData.video">
+
+                            </video>
+                        </div>
                         <el-form-item>
                             <el-button
                                 @click="addEventData({_uri: 'manage_machine_advertisement', _type: 3, _parameter: formData})"
