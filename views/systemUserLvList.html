@@ -27,7 +27,8 @@
                                 class="el-icon-plus el-icon--right"></i></el-button>
                     </div>
                     <el-input placeholder="请输入内容" v-model="listSearch._value_" class="_searchVal">
-                        <el-select v-model="listSearch._name_" class="_searchVal_select" slot="prepend" placeholder="请选择" :change="listSearch._name_ = 'name'">
+                        <el-select v-model="listSearch._name_" class="_searchVal_select" slot="prepend"
+                            placeholder="请选择" :change="listSearch._name_ = 'name'">
                             <el-option label="用户昵称/ID" value="name"></el-option>
                         </el-select>
                     </el-input>
@@ -56,7 +57,14 @@
 
                         <el-table-column prop="memberPicUrl" label="会员底图">
                             <template slot-scope="scope">
-                                <el-image :src="scope.row.memberPicUrl"></el-image>
+                                <el-popover trigger="hover" placement="top">
+                                    <el-image :src="scope.row.memberPicUrl" :preview-src-list="scope.row.memberPicUrl"
+                                        style="text-align: center;"></el-image>
+                                    <div slot="reference" class="name-wrapper">
+                                        <el-image :src="scope.row.memberPicUrl"
+                                            :preview-src-list="scope.row.memberPicUrl" lazy></el-image>
+                                    </div>
+                                </el-popover>
                             </template>
                         </el-table-column>
 
@@ -65,7 +73,8 @@
                                 <el-button type="text" size="small" @click="statusVip(scope.row.memberRuleId)">
                                     更改状态
                                 </el-button>
-                                <el-button type="text" size="small" @click="crud({uri:'systemUserLvAdd',enitId:scope.row})">
+                                <el-button type="text" size="small"
+                                    @click="crud({uri:'systemUserLvAdd',enitId:scope.row})">
                                     编辑
                                 </el-button>
                             </template>

@@ -29,10 +29,19 @@
                         </el-button>
                     </div>
                     <el-input placeholder="请输入内容" v-model="listSearch._value_" class="_searchVal">
-                        <el-select v-model="listSearch._name_" class="_searchVal_select" slot="prepend" placeholder="请选择" :change="listSearch._name_ = 'name'">
+                        <el-select v-model="listSearch._name_" class="_searchVal_select" slot="prepend"
+                            placeholder="请选择" :change="listSearch._name_ = 'name'">
                             <el-option label="商户名称/ID" value="name"></el-option>
                         </el-select>
                     </el-input>
+                    <div class="_search_centent" v-show="more">
+                        <el-button>设备类型</el-button>
+                        <el-select v-model="listSearch.machineType" slot="prepend" placeholder="请选择">
+                            <el-option label="不限" value=""></el-option>
+                            <el-option label="大型柜式机" value="1"></el-option>
+                            <el-option label="小型桌面机" value="2"></el-option>
+                        </el-select>
+                    </div>
                     <div class="_search_centent" v-show="more">
                         <el-button>在线状态</el-button>
                         <el-select v-model="listSearch.onlineStatus" slot="prepend" placeholder="请选择">
@@ -62,22 +71,27 @@
                     </div>
                     <div class="more_search el-icon-remove-outline" v-show="more" @click="more = !more"> 收起 </div>
 
-                    <el-button icon="el-icon-search" class="_search_btn"
-                        @click="list(listSearch)">搜索
+                    <el-button icon="el-icon-search" class="_search_btn" @click="list(listSearch)">搜索
                     </el-button>
                 </el-form>
 
                 <template>
 
                     <el-form :model="machineNumbers">
-                        <el-button type="success">设备总数 {{ machineNumbers.machineCount }}</el-button>
-                        <el-button type="info">离线总数 {{ machineNumbers.offLineNum }} </el-button>
-                        <el-button type="warning">缺料总数 {{ machineNumbers.starvingNum }} </el-button>
-                        <el-button type="danger">故障总数 {{ machineNumbers.faultNum }}</el-button>
-                        <el-button type="danger">运维总数 {{ machineNumbers.maintainNum }}</el-button>
-                        <el-button type="danger">维修总数 {{ machineNumbers.repairNum }}</el-button>
+                        <el-button type="success" @click="page = 1;list()">设备总数 {{ machineNumbers.machineCount }}
+                        </el-button>
+                        <el-button type="info" @click="page = 1;list({onlineStatus:1})">离线总数
+                            {{ machineNumbers.offLineNum }} </el-button>
+                        <el-button type="warning" @click="page = 1;list({materialStatus:1})">缺料总数
+                            {{ machineNumbers.starvingNum }} </el-button>
+                        <el-button type="danger" @click="page = 1;list({failureStatus:1})">故障总数
+                            {{ machineNumbers.faultNum }}</el-button>
+                        <el-button type="warning" @click="page = 1;list({maintainStatus:1})">维护总数
+                            {{ machineNumbers.maintainNum }}</el-button>
+                        <el-button type="danger" @click="page = 1;list({repairStatus:1})">维修总数
+                            {{ machineNumbers.repairNum }}</el-button>
                     </el-form>
-                    <el-table :data="tableData" stripe style="width: 100%" border> 
+                    <el-table :data="tableData" stripe style="width: 100%" border>
                         <el-table-column prop="machineNumber" label="设备编号"></el-table-column>
                         <el-table-column prop="adminName" label="绑定商户"></el-table-column>
                         <el-table-column prop="machineAddrDesc" label="设备地址"></el-table-column>
@@ -95,18 +109,67 @@
                         <el-table-column prop="machineSn" label="设备SN号"></el-table-column>
                         <el-table-column prop="machineScenePicUrl" label="设备场景图片">
                             <template slot-scope="scope">
-                                <el-image :src="scope.row.machineScenePicUrl"></el-image>
+                                <el-popover trigger="hover" placement="top">
+                                    <el-image :src="scope.row.machineScenePicUrl"
+                                        :preview-src-list="scope.row.machineScenePicUrl" style="text-align: center;">
+                                    </el-image>
+                                    <div slot="reference" class="name-wrapper">
+                                        <el-image :src="scope.row.machineScenePicUrl"
+                                            :preview-src-list="scope.row.machineScenePicUrl" lazy></el-image>
+                                    </div>
+                                </el-popover>
                             </template>
                         </el-table-column>
                         <el-table-column prop="wxacode" label="设备二维码">
                             <template slot-scope="scope">
-                                <el-image :src="scope.row.wxacode" :preview-src-list="scope.row.wxacode"></el-image>
+                                <el-popover trigger="hover" placement="top">
+                                    <!-- <p>{{ scope.row.couponRangeName }}</p> -->
+                                    <el-image :src="scope.row.wxacode" :preview-src-list="scope.row.wxacode"
+                                        style="text-align: center;"></el-image>
+                                    <div slot="reference" class="name-wrapper">
+                                        <el-image :src="scope.row.wxacode" :preview-src-list="scope.row.wxacode" lazy>
+                                        </el-image>
+                                    </div>
+                                </el-popover>
                             </template>
                         </el-table-column>
 
-                        <el-table-column prop="onlineStatus" label="在线状态"></el-table-column>
-                        <el-table-column prop="failureStatus" label="故障状态"></el-table-column>
-                        <el-table-column prop="materialStatus" label="物料状态"></el-table-column>
+                        <el-table-column prop="onlineStatus" label="在线状态">
+                            <template slot-scope="scope">
+                                <div slot="reference" class="name-wrapper">
+                                    <el-tag :type="scope.row.onlineStatus == '离线' ? 'info' : 'success'" size="medium"
+                                        effect="dark">
+                                        {{ scope.row.onlineStatus }}</el-tag>
+                                </div>
+                            </template>
+                        </el-table-column>
+                        <el-table-column prop="failureStatus" label="故障状态">
+                            <template slot-scope="scope">
+                                <div slot="reference" class="name-wrapper">
+                                    <el-tag
+                                        :type="scope.row.failureStatus == '故障' ? 'danger' : scope.row.failureStatus != '无' ? 'success' : 'info' "
+                                        size="medium" effect="dark">{{ scope.row.failureStatus }}</el-tag>
+                                </div>
+                            </template>
+                        </el-table-column>
+                        <el-table-column prop="materialStatus" label="物料状态">
+                            <template slot-scope="scope">
+                                <div slot="reference" class="name-wrapper">
+                                    <el-tag
+                                        :type="scope.row.materialStatus == '缺失' ? 'danger' : scope.row.materialStatus != '无' ? 'success' : 'info'"
+                                        size="medium" effect="dark">{{ scope.row.materialStatus }}</el-tag>
+                                </div>
+                            </template>
+                        </el-table-column>
+                        <el-table-column prop="maintainStatus" label="运维状态">
+                            <template slot-scope="scope">
+                                <div slot="reference" class="name-wrapper">
+                                    <el-tag
+                                        :type="scope.row.maintainStatus == '维护中' || scope.row.maintainStatus == '维修中' ? 'danger' : scope.row.maintainStatus != '无' ? 'success' : 'info'"
+                                        size="medium" effect="dark">{{ scope.row.maintainStatus }}</el-tag>
+                                </div>
+                            </template>
+                        </el-table-column>
 
                         <el-table-column fixed="right" label="操作">
                             <template slot-scope="scope">

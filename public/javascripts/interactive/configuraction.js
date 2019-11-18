@@ -212,3 +212,9 @@ Date.prototype.format = function() {  //原型
 	s += day; // 获取日。
 	return (s); // 返回日期。
 };
+
+window.addEventListener('pageshow', function(e) {
+    if (e.persisted) {
+        location.reload();
+    }
+})

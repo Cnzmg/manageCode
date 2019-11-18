@@ -29,7 +29,8 @@
                         </el-button>
                     </div>
                     <el-input placeholder="请输入内容" v-model="listSearch._value_" class="_searchVal">
-                        <el-select v-model="listSearch._name_" class="_searchVal_select" slot="prepend" placeholder="请选择" :change="listSearch._name_ = 'itemName'">
+                        <el-select v-model="listSearch._name_" class="_searchVal_select" slot="prepend"
+                            placeholder="请选择" :change="listSearch._name_ = 'itemName'">
                             <el-option label="名称" value="itemName"></el-option>
                         </el-select>
                     </el-input>
@@ -54,8 +55,7 @@
                     </div>
                     <div class="more_search el-icon-remove-outline" v-show="more" @click="more = !more"> 收起 </div>
 
-                    <el-button icon="el-icon-search" class="_search_btn"
-                        @click="list(listSearch)">搜索
+                    <el-button icon="el-icon-search" class="_search_btn" @click="list(listSearch)">搜索
                     </el-button>
                 </el-form>
 
@@ -65,9 +65,14 @@
                         <el-table-column prop="itemName" label="名称"></el-table-column>
                         <el-table-column prop="itemPicUrl" label="图片">
                             <template slot-scope="scope">
-                                <div slot="reference" class="name-wrapper">
-                                    <el-image :src="scope.row.itemPicUrl" lazy></el-image>
-                                </div>
+                                <el-popover trigger="hover" placement="top">
+                                    <el-image :src="scope.row.itemPicUrl" :preview-src-list="scope.row.itemPicUrl"
+                                        style="text-align: center;"></el-image>
+                                    <div slot="reference" class="name-wrapper">
+                                        <el-image :src="scope.row.itemPicUrl" :preview-src-list="scope.row.itemPicUrl"
+                                            lazy></el-image>
+                                    </div>
+                                </el-popover>
                             </template>
                         </el-table-column>
                         <el-table-column prop="isMember" label="是否大奖">
@@ -85,8 +90,7 @@
                                     @click="crud({uri:'miniTurntablePrizeUa',enitId:scope.row})">
                                     查看
                                 </el-button>
-                                <el-button type="text" size="small"
-                                    @click="statusPrize({itemId: scope.row.itemId})">
+                                <el-button type="text" size="small" @click="statusPrize({itemId: scope.row.itemId})">
                                     更改状态
                                 </el-button>
                             </template>

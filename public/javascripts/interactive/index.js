@@ -421,9 +421,9 @@ document.getElementById('ym-menu-left').addEventListener('click', function (para
             if (time < 1) clearInterval(_o)
             this.childNodes[0].style.transform = "rotate(" + time-- + "deg)";
             // document.getElementById('menui').style.width = parseInt(w * time) +'px';
-            document.getElementById('content').style.width = '100%';
-            document.getElementById('menui').style.width = '0px';
         }, 0);
+        document.getElementById('content').style.width = '100%';
+        document.getElementById('menui').style.width = '0px';
     } else {
         bools = true;
         clearInterval(_);
@@ -431,9 +431,9 @@ document.getElementById('ym-menu-left').addEventListener('click', function (para
             if (time > 89) clearInterval(_)
             this.childNodes[0].style.transform = "rotate(" + time++ + "deg)";
             // document.getElementById('menui').style.width = parseInt(w * time) + 'px';
-            document.getElementById('menui').style.width = '200px';
-            document.getElementById('content').style.width = c + '%';
         }, 0);
+        document.getElementById('menui').style.width = '200px';
+        document.getElementById('content').style.width = '89.2%';
     }
 })
 

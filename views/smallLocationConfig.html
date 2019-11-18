@@ -18,7 +18,8 @@
 
 
 <body class="_scrollbar">
-    <div id="c-container-list" style="height: 100%;" data-uri="find_machine_poi_list" v-loading.fullscreen.lock="loading">
+    <div id="c-container-list" style="height: 100%;" data-uri="find_machine_poi_list"
+        v-loading.fullscreen.lock="loading">
         <el-container>
             <el-main>
                 <el-form>
@@ -27,7 +28,8 @@
                                 class="el-icon-plus el-icon--right"></i></el-button>
                     </div>
                     <el-input placeholder="请输入内容" v-model="listSearch._value_" class="_searchVal">
-                        <el-select v-model="listSearch._name_" class="_searchVal_select" slot="prepend" placeholder="请选择" :change="listSearch._name_ = 'name'">
+                        <el-select v-model="listSearch._name_" class="_searchVal_select" slot="prepend"
+                            placeholder="请选择" :change="listSearch._name_ = 'name'">
                             <el-option label="ID" value="name"></el-option>
                         </el-select>
                     </el-input>
@@ -43,13 +45,27 @@
                         <el-table-column prop="addr" label="详细地址"></el-table-column>
                         <el-table-column prop="mapMarkerIcon" label="麻点图标">
                             <template slot-scope="scope">
-                                <el-image :src="scope.row.mapMarkerIcon"></el-image>
+                                <el-popover trigger="hover" placement="top">
+                                    <el-image :src="scope.row.mapMarkerIcon" :preview-src-list="scope.row.mapMarkerIcon"
+                                        style="text-align: center;"></el-image>
+                                    <div slot="reference" class="name-wrapper">
+                                        <el-image :src="scope.row.mapMarkerIcon"
+                                            :preview-src-list="scope.row.mapMarkerIcon" lazy></el-image>
+                                    </div>
+                                </el-popover>
                             </template>
                         </el-table-column>
                         <el-table-column prop="province" label="省/市/区"></el-table-column>
                         <el-table-column prop="machineUrl" label="大楼外景图">
                             <template slot-scope="scope">
-                                <el-image :src="scope.row.machineUrl"></el-image>
+                                <el-popover trigger="hover" placement="top">
+                                    <el-image :src="scope.row.machineUrl" :preview-src-list="scope.row.machineUrl"
+                                        style="text-align: center;"></el-image>
+                                    <div slot="reference" class="name-wrapper">
+                                        <el-image :src="scope.row.machineUrl" :preview-src-list="scope.row.machineUrl"
+                                            lazy></el-image>
+                                    </div>
+                                </el-popover>
                             </template>
                         </el-table-column>
                         <el-table-column prop="hide" label="是否显示">

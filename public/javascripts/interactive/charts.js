@@ -783,7 +783,7 @@ new Vue({
         },
         list() {
             const it = this;
-            _data['url'] = '/manage/chartsFinance.html'
+            _data['url'] = '/manage/chartsFinance.html';
             if (uri == 'statistics_machineorder') {
                 _data['checkMachineNum'] = JSON.parse(decodeURI(parent.document.getElementById('tagHref').getAttribute('src').split('*')[1])).machineNumber
                 _data['startTime'] = it.userCharts[0]
@@ -796,9 +796,11 @@ new Vue({
                 _data['endTime'] = it.userCharts[1]
                 _data['url'] = `/manage/chartsActive.html`
             }else if(uri == 'statistics_machinelist'){
-                _data['startTime'] = it.userCharts[0]
-                _data['endTime'] = it.userCharts[1]
-                _data['adminID'] = JSON.parse(decodeURI(parent.document.getElementById('tagHref').getAttribute('src').split('*')[1])).adminID
+                _data['startTime'] = it.userCharts[0];
+                _data['endTime'] = it.userCharts[1];
+                _data['adminID'] = JSON.parse(decodeURI(parent.document.getElementById('tagHref').getAttribute('src').split('*')[1])).adminID;
+                //暂定
+                JSON.parse(decodeURI(parent.document.getElementById('tagHref').getAttribute('src').split('*')[1])).adminID ? null : parent.document.getElementById('tagHref').setAttribute('src', '../chartsFinance.html?hash:iforx197'); //不存在admin ID情况下
             }
             ym.init.XML({
                 method: 'GET',

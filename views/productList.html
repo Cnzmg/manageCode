@@ -27,7 +27,8 @@
 								class="el-icon-plus el-icon--right"></i></el-button>
 					</div>
 					<el-input placeholder="请输入内容" v-model="listSearch._value_" class="w400">
-						<el-select v-model="listSearch._name_" class="_searchVal_select" slot="prepend" placeholder="请选择" :change="listSearch._name_ = 'name'">
+						<el-select v-model="listSearch._name_" class="_searchVal_select" slot="prepend"
+							placeholder="请选择" :change="listSearch._name_ = 'name'">
 							<el-option label="产品名称/ID" value="name"></el-option>
 						</el-select>
 					</el-input>
@@ -62,9 +63,14 @@
 						</el-table-column>
 						<el-table-column prop="productPicurl" label="产品图片">
 							<template slot-scope="scope">
-								<div slot="reference" class="name-wrapper">
-									<el-image :src="scope.row.productPicurl" lazy></el-image>
-								</div>
+								<el-popover trigger="hover" placement="top">
+									<el-image :src="scope.row.productPicurl" :preview-src-list="scope.row.productPicurl"
+										style="text-align: center;"></el-image>
+									<div slot="reference" class="name-wrapper">
+										<el-image :src="scope.row.productPicurl"
+											:preview-src-list="scope.row.productPicurl" lazy></el-image>
+									</div>
+								</el-popover>
 							</template>
 						</el-table-column>
 						<el-table-column label="设备类型">

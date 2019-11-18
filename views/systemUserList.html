@@ -29,7 +29,8 @@
                         </el-button>
                     </div>
                     <el-input placeholder="请输入内容" v-model="listSearch._value_" class="_searchVal">
-                        <el-select v-model="listSearch._name_" class="_searchVal_select" slot="prepend" placeholder="请选择">
+                        <el-select v-model="listSearch._name_" class="_searchVal_select" slot="prepend"
+                            placeholder="请选择">
                             <el-option label="用户昵称" value="nickName"></el-option>
                             <el-option label="用户ID" value="userId"></el-option>
                             <el-option label="用户来源" value="adminName"></el-option>
@@ -59,16 +60,22 @@
                         </el-select>
                     </div>
 
-                    <el-button icon="el-icon-search" class="_search_btn"
-                        @click="list(listSearch)">搜索
+                    <el-button icon="el-icon-search" class="_search_btn" @click="list(listSearch)">搜索
                     </el-button>
                 </el-form>
                 <template>
                     <el-table :data="tableData" stripe style="width: 100%" border>
                         <el-table-column prop="userId" label="ID"></el-table-column>
-                        <el-table-column prop="headPicUrl" label="头像">
+                        <el-table-column prop="headPicUrl" label="头像" width="80">
                             <template slot-scope="scope">
-                                <el-image :src="scope.row.headPicUrl"></el-image>
+                                <el-popover trigger="hover" placement="top">
+                                    <el-image :src="scope.row.headPicUrl" :preview-src-list="scope.row.headPicUrl"
+                                        style="text-align: center;"></el-image>
+                                    <div slot="reference" class="name-wrapper">
+                                        <el-image :src="scope.row.headPicUrl" :preview-src-list="scope.row.headPicUrl"
+                                            lazy></el-image>
+                                    </div>
+                                </el-popover>
                             </template>
                         </el-table-column>
                         <el-table-column prop="nickName" label="昵称"></el-table-column>
@@ -89,7 +96,8 @@
                                 <el-button type="text" size="small" @click="UpdateTableAndVisible = true;">
                                     礼券明细
                                 </el-button>
-                                <el-button type="text" size="small" @click="addressTable = true;addressTables = []; addressTableList({userId:scope.row.userId});">
+                                <el-button type="text" size="small"
+                                    @click="addressTable = true;addressTables = []; addressTableList({userId:scope.row.userId});">
                                     地址
                                 </el-button>
                             </template>
@@ -159,7 +167,8 @@
                             </div>
                             <div v-show="statues.objectId">
                                 <el-select v-model="objectId" slot="prepend" placeholder="请选择会员">
-                                    <el-option v-for="item in objectIds" :key="item.memberRuleId" :label="item.memberRuleName" :value="item.memberRuleId">
+                                    <el-option v-for="item in objectIds" :key="item.memberRuleId"
+                                        :label="item.memberRuleName" :value="item.memberRuleId">
                                     </el-option>
                                 </el-select>
                             </div>
