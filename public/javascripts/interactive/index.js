@@ -97,6 +97,7 @@ new Vue({
                 'chartsUser',
                 'chartsFinance',
                 'chartsActive',
+                'chartsFinanceNew',  //新商户统计
                 'systemUserList',
                 'systemUserLvList',
                 'feedbackList',

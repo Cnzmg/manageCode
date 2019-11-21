@@ -4,6 +4,7 @@ if (/(iPhone|iPad|iPod|iOS|Android)/i.test(navigator.userAgent)) {
         for (let i = 0; i < document.getElementsByClassName('w400').length; i++) {
             document.getElementsByClassName('w400')[i].style.width = '100%'; //限定的表单宽度
         }
+        document.getElementById('cityg') ? document.getElementById('cityg').style.display = 'none' : null;
     }
 }
 var [
@@ -185,6 +186,7 @@ new Vue({
                 planePicUrl: '', //楼层平面图
                 machineUrl: '', //大楼外景图
                 machineAddrDesc: '', //设备详情地址
+                orderEffectTime: '', // 订单生效日期
                 machineNumber: [],
                 machineNumberToString: '',
                 addr: '',
@@ -587,6 +589,7 @@ new Vue({
                                 it.ruleForm.adminName = res.machineInfo.adminName;  //管理员名称
                                 it.ruleForm.machineNumber = res.machineInfo.machineNumber;  //设备编号
                                 it.ruleForm.machineNumberToString = it.ruleForm.machineNumber;  //渲染类型不能是编号数组
+                                it.ruleForm.orderEffectTime = new Date(res.machineInfo.orderEffectTime);  //订单生效日期
 
                                 it.ruleForm.machineLatitude = res.machineInfo.machineLatitude;  //纬度
                                 it.ruleForm.machineLongitude = res.machineInfo.machineLongitude;  //经度
@@ -860,6 +863,7 @@ new Vue({
                     _data['machineNumber'] = formName.machineNumber;
                     _data['machineLongitude'] = formName.machineLongitude;
                     _data['machineLatitude'] = formName.machineLatitude;
+                    _data['orderEffectTime'] = ym.init.getDateTime(formName.orderEffectTime);  //订单生效日期
 
                     _data['province'] = CodeToText[formName.province[0]] || '';
                     _data['city'] = CodeToText[formName.province[1]] || '';

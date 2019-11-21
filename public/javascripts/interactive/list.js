@@ -292,6 +292,7 @@ window.addEventListener('pageshow', function (params) {
                 appointmentPay: {}, //预约详情
                 objectId: '', //开通会员的查询 会员id
                 objectIds: [], //开通会员的查询 会员id
+                pageparams: {},  // 预存的页面搜索参数
             }
         },
         created: function () {
@@ -319,20 +320,20 @@ window.addEventListener('pageshow', function (params) {
             },
             handleSizeChange(e) {
                 this.pageSize = e;
-                this.list();
+                this.list(this.pageparams ? this.pageparams : null, true);
             },
             handleCurrentChange(e) {
                 this.page = e;
-                this.list();
+                this.list(this.pageparams ? this.pageparams : null, true);
             },
-            list(params) {
+            list(params, bool) {
                 let _data_ = {}, it = this, xml = [];
                 if (params) {
+                    it.pageparams = params; //保存搜索条件
                     params._name_ && params._value_ ? params[params._name_] = params._value_ : null;  //第一搜索key of value
                     if (params._time_) {
                         params['startDate'] = ym.init.getDateTime(params._time_[0]).split(' ')[0];
                         params['endDate'] = ym.init.getDateTime(params._time_[1]).split(' ')[0];
-                        console.log(params);
                         if (uri == 'statistics_shop' || uri == 'find_order_list') {
                             params['startTime'] = params['startDate'];
                             params['endTime'] = params['endDate'];
@@ -354,7 +355,15 @@ window.addEventListener('pageshow', function (params) {
                 if (uri == 'manage_advertisement_list_list') _data_['type'] = 1;
                 if (uri == 'client_user_list') _data_['type'] = 1;
                 if (uri == 'manage_dividend_list') _data_['type'] = 1;
-                _data_['page'] = it.page;
+                if (uri == 'admin_statistics_list') {  //新商户统计
+                    _data_['startDate'] = ym.init.getDateTime(new Date().setTime(new Date().getTime() - 3600 * 1000 * 24 * 7)).split(' ')[0];
+                    _data_['endDate'] = ym.init.getDateTime(new Date()).split(' ')[0];
+                    _data_['hasTest'] = 0;
+                };
+                _data_['page'] = !bool ? (() => {
+                    it.currentPage = 1;
+                    return it.currentPage
+                })() : it.page;
                 ym.init.XML({
                     method: (uri == 'find_machine_poi_list' || uri == 'get_activity_list' || uri == 'statistics_list' || uri == 'maintainer_list' || uri == 'sys_draw_raffle_info' || uri == 'sys_user_raffle_share_list' ? "GET" : 'POST'),
                     uri: token._j.URLS.Development_Server_ + uri,
@@ -907,6 +916,17 @@ window.addEventListener('pageshow', function (params) {
                                             status: res.data[i].status
                                         })
                                     }
+                                    break;
+                                case `admin_statistics_list`:  //新商户统计 
+                                    let _obj_ = {};
+                                    Object.keys(res.data).forEach((element, index) => {
+                                        if (element == 'createTime' || element == 'updateTime') {
+                                            _obj_[element] = Object.values(res.data)[index] == -1 ? "无" : ym.init.getDateTime(Object.values(res.data)[index]);
+                                        } else {
+                                            _obj_[element] = Object.values(res.data)[index] == -1 ? "无" : Object.values(res.data)[index];
+                                        }
+                                    })
+                                    xml.push(_obj_);
                                     break;
                                 default:
                                     break;
@@ -2752,11 +2772,6 @@ window.addEventListener('pageshow', function (params) {
                     }
                 })
             },
-
-            ddd(params){
-                console.log(params);
-            },
-
         }
     });
 }, false)
