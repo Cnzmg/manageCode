@@ -42,7 +42,10 @@ window.addEventListener('pageshow', function (params) {
                 select: '',
                 searchVal: '',
                 searchName: 'name',
-                listSearch: {},  //新的列表查询对象
+                listSearch: {
+                    hasTest: 0,  //默认是排除测试数据
+                    timeUnit: 3, //默认查询的是以日为单位的统计日志
+                },  //新的列表查询对象
                 selectLong: '',
                 machineNumbers: {
                     machineCount: 0
@@ -340,6 +343,15 @@ window.addEventListener('pageshow', function (params) {
                             delete params['startDate']
                             delete params['endDate']
                         }
+                        if(uri == 'admin_statistics_log_list'){
+                            if(params.timeUnit == 2){
+                                params['startDate'] = params['startDate'].substring(0, params['startDate'].lastIndexOf('-'));
+                                params['endDate'] = params['endDate'].substring(0, params['endDate'].lastIndexOf('-'));
+                            }else if(params.timeUnit == 1){
+                                params['startDate'] = params['startDate'].split('-')[0];
+                                params['endDate'] = params['endDate'].split('-')[0];
+                            }
+                        }
                     }
                 }
                 _data_ = Object.assign({  //初始对象
@@ -355,10 +367,24 @@ window.addEventListener('pageshow', function (params) {
                 if (uri == 'manage_advertisement_list_list') _data_['type'] = 1;
                 if (uri == 'client_user_list') _data_['type'] = 1;
                 if (uri == 'manage_dividend_list') _data_['type'] = 1;
-                if (uri == 'admin_statistics_list') {  //新商户统计
-                    _data_['startDate'] = ym.init.getDateTime(new Date().setTime(new Date().getTime() - 3600 * 1000 * 24 * 7)).split(' ')[0];
-                    _data_['endDate'] = ym.init.getDateTime(new Date()).split(' ')[0];
+                if(uri == 'find_order_list'){   //处理订单的操作
+                    let _machin_ = parent.document.getElementById('tagHref').getAttribute('src').split('*'); // 处理从设备列表过来的订单查看
+                    _data_['name'] = JSON.stringify(
+                        {
+                            machineNumber: _machin_.length > 1 ? JSON.parse(decodeURI(_machin_[1])).machineNumber : '',
+                            orderId: params ? params['name'] : ''
+                        }
+                    )
+                    _data_['url'] = '/manage/orderList.html'; 
+                }
+                if (uri == 'admin_statistics_list' || uri == 'machine_statistics_list' || uri == 'admin_statistics_log_list') {  //新商户统计
+                    _data_['startDate'] = _data_['startDate'] || ym.init.getDateTime(new Date().setTime(new Date().getTime() - 3600 * 1000 * 24 * 7)).split(' ')[0];
+                    _data_['endDate'] = _data_['endDate'] || ym.init.getDateTime(new Date()).split(' ')[0];
+                    it.listSearch._time_ = [_data_['startDate'], _data_['endDate']]
                     _data_['hasTest'] = 0;
+                    if(uri == 'admin_statistics_log_list'){
+                        _data_['timeUnit'] = params ? params['timeUnit'] : it.listSearch.timeUnit;
+                    }
                 };
                 _data_['page'] = !bool ? (() => {
                     it.currentPage = 1;
@@ -918,15 +944,9 @@ window.addEventListener('pageshow', function (params) {
                                     }
                                     break;
                                 case `admin_statistics_list`:  //新商户统计 
-                                    let _obj_ = {};
-                                    Object.keys(res.data).forEach((element, index) => {
-                                        if (element == 'createTime' || element == 'updateTime') {
-                                            _obj_[element] = Object.values(res.data)[index] == -1 ? "无" : ym.init.getDateTime(Object.values(res.data)[index]);
-                                        } else {
-                                            _obj_[element] = Object.values(res.data)[index] == -1 ? "无" : Object.values(res.data)[index];
-                                        }
-                                    })
-                                    xml.push(_obj_);
+                                case `machine_statistics_list`:  //新设备统计 
+                                case `admin_statistics_log_list`:  //新商户统计日志
+                                    xml = res.data;
                                     break;
                                 default:
                                     break;

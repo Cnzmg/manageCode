@@ -98,6 +98,8 @@ new Vue({
                 'chartsFinance',
                 'chartsActive',
                 'chartsFinanceNew',  //新商户统计
+                'chartsMacchineNew', //新设备统计
+                'chartsFinanceLogsNew', //新商户统计日志
                 'systemUserList',
                 'systemUserLvList',
                 'feedbackList',

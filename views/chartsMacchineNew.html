@@ -18,7 +18,7 @@
 
 
 <body class="_scrollbar">
-    <div id="c-container-list" style="height: 100%;" data-uri="admin_statistics_list"
+    <div id="c-container-list" style="height: 100%;" data-uri="machine_statistics_list"
         v-loading.fullscreen.lock="loading">
         <el-container>
             <el-main>
@@ -29,6 +29,7 @@
                             <el-option label="商户ID" value="adminId"></el-option>
                             <el-option label="商户账号" value="adminName"></el-option>
                             <el-option label="商户真名" value="realName"></el-option>
+                            <el-option label="设备编号" value="machineNumber"></el-option>
                         </el-select>
                     </el-input>
 
@@ -37,6 +38,14 @@
                         <el-select v-model="listSearch.hasTest" slot="prepend" placeholder="请选择">
                             <el-option label="不包含" :value="0"></el-option>
                             <el-option label="包含" :value="1"></el-option>
+                        </el-select>
+                    </div>
+
+                    <div class="_search_centent">
+                        <el-button>设备类型</el-button>
+                        <el-select v-model="listSearch.machineType" slot="prepend" placeholder="请选择">
+                            <el-option label="大型柜式机" :value="1"></el-option>
+                            <el-option label="小型桌面机" :value="2"></el-option>
                         </el-select>
                     </div>
 
@@ -55,17 +64,29 @@
                 </el-form>
                 <template>
                     <el-table :data="tableData" stripe style="width: 100%" border>
-                        <el-table-column prop="adminId" label="商户ID"></el-table-column>
-                        <el-table-column prop="adminName" label="商户账号"></el-table-column>
-                        <el-table-column prop="machineCount" label="设备总数"></el-table-column>
+                        <el-table-column prop="machineNumber" label="设备编号"></el-table-column>
+                        <el-table-column prop="machineType" label="设备类型">
+                            <template slot-scope="scope">
+                                <div slot="reference" class="name-wrapper">
+                                    <el-badge :value="scope.row.machineType == '1' ? 'B' : 'S'"
+                                        :type="scope.row.machineType == '1' ? 'danger' : 'primary'" class="item">
+                                        <el-tag size="medium">{{ scope.row.machineType == 1 ? "大型柜式机" : "小型桌面机" }}
+                                        </el-tag>
+                                    </el-badge>
+                                </div>
+                            </template>
+                        </el-table-column>
+                        <el-table-column prop="machineAddress" label="设备地址">
+                            <template slot-scope="scope">
+                                {{ scope.row.machineAddress == 'null' ? '无' : scope.row.machineAddress}}
+                            </template>
+                        </el-table-column>
                         <el-table-column prop="payCount" label="支付订单数"></el-table-column>
                         <el-table-column prop="paySum" label="支付金额"></el-table-column>
                         <el-table-column prop="paymentCount" label="实收订单数"></el-table-column>
                         <el-table-column prop="paymentSum" label="实收金额"></el-table-column>
-                        <el-table-column prop="realName" label="商户名"></el-table-column>
                         <el-table-column prop="refundCount" label="退单总数"></el-table-column>
                         <el-table-column prop="refundSum" label="退单金额"></el-table-column>
-
                     </el-table>
                 </template>
 

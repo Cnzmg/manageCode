@@ -18,12 +18,14 @@ const [
     $,
     token,
     u,
-    uri
+    uri,
+    perent
 ] = [
         parent.all.jq,
         parent.all.json,
         parent.document.getElementById('tagHref').getAttribute('src').replace('..', '/manage').split('?')[0],
         document.getElementById('c-container-list').getAttribute('data-uri'),
+        document.getElementById('c-container-list').getAttribute('data-child-uri')
     ];
 const _data = {
     id: ym.init.COMPILESTR.decrypt(token.id),
@@ -86,7 +88,10 @@ new Vue({
             page: 1,
             pageSize: 20,
             currentPage: 1,
-            total: 0
+            total: 0,
+            chartsSearch: {
+                hasTest: 0,  //是否包含测试数据
+            },   //新版的统计图表
         }
     },
     created: function () {
@@ -113,6 +118,10 @@ new Vue({
             this.userCharts[1] = ym.init.getDateTime(e[1]);
             this.charts();
         },
+        newGetTime(){
+            this.userCharts[0] = ym.init.getDateTime(e[0]);
+            this.userCharts[1] = ym.init.getDateTime(e[1]);
+        },
         handleSizeChange(e) {
             this.pageSize = e;
             this.list();
@@ -121,7 +130,7 @@ new Vue({
             this.page = e;
             this.list();
         },
-        charts() {
+        charts(_params_ = {}) {
             const it = this;
             it.loading = true;
             switch (uri) {
@@ -148,7 +157,7 @@ new Vue({
                                     for (let i = 0; i < _ate.length; i++) {
                                         _DayTime.push(_ate[i]);  //记录日期
                                         _content.push(0); //先赋值 0
-                                        if(res.package.content == 0) continue
+                                        if (res.package.content == 0) continue
                                         for (let j of res.package.content) {
                                             if (_ate[i] == j.moneyDay) {
                                                 _content[i] = j.money; //对应的数值
@@ -247,7 +256,7 @@ new Vue({
                                         for (let i = 0; i < _date.length; i++) {
                                             _DayTime.push(_date[i]);  //记录日期
                                             _content.push(0); //先赋值 0
-                                            if(res.package.userContent == +false) continue; 
+                                            if (res.package.userContent == +false) continue;
                                             for (let j of res.package.userContent) {
                                                 if (_date[i] == j.registerDate) {
                                                     _content[i] = j.userCount; //对应的数值
@@ -340,7 +349,7 @@ new Vue({
                                         _DayTime.push(_date[i]);  //记录日期
                                         _content.payMoney.push(0); //总金额数值
                                         _content.countNum.push(0); //总销售数值
-                                        if(res.package.adminSoldGraphList == null)  continue
+                                        if (res.package.adminSoldGraphList == null) continue
                                         for (let j of res.package.adminSoldGraphList) {
                                             if (_date[i] == j.date) {
                                                 _content.payMoney[i] = j.payMoney; //总金额数值
@@ -467,7 +476,7 @@ new Vue({
                                         _DayTime.push(_date[i]);  //记录日期
                                         _content.payMoney.push(0); //总金额数值
                                         _content.countNum.push(0); //总销售数值
-                                        if(res.package.machineSoldGraphList == null) continue
+                                        if (res.package.machineSoldGraphList == null) continue
                                         for (let j of res.package.machineSoldGraphList) {
                                             if (_date[i] == j.date) {
                                                 _content.payMoney[i] = j.payMoney; //总金额数值
@@ -493,7 +502,7 @@ new Vue({
                         done: function (res) {
                             try {
                                 ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
-                                    if(res.package.package.machineSoldAnalyzeList == null){
+                                    if (res.package.package.machineSoldAnalyzeList == null) {
                                         _content._contentNum.push('0'); //销售元
                                         _content._contentY.push('无产品'); //产品名称
                                         _content._contentTNum.push('0'); //销售杯
@@ -652,7 +661,7 @@ new Vue({
                     break;
                 case 'get_activity_log_list':
                     it.list();
-                    let _contentBt = {unused: [], used: [], due: [], Sum: []};
+                    let _contentBt = { unused: [], used: [], due: [], Sum: [] };
                     _DayTime = []
                     ym.init.XML({   //产品销量
                         method: 'GET',
@@ -686,42 +695,44 @@ new Vue({
                             }
                         }
                     });
-                    setTimeout(()=>{
-                        let eachts = echarts.init(document.getElementById('echartsCanvasPanel')), _ = {title : {
-                            text: '活动日志明细',
-                            x:'center'
-                        },
-                        tooltip : {
-                            trigger: 'item',
-                            formatter: "{a} <br/>{b} : {c} ({d}%)"
-                        },
-                        legend: {
-                            orient: 'vertical',
-                            left: 'left',
-                            data: ['领取却未使用优惠券的用户数','领取并且已使用优惠券的用户数','领取后优惠券过期的用户数']
-                        },
-                        series : [
-                            {
-                                name: '明细',
-                                type: 'pie',
-                                radius : '55%',
-                                center: ['50%', '60%'],
-                                data:[
-                                    {value: _contentBt.unused, name:'领取却未使用优惠券的用户数'},
-                                    {value:_contentBt.used, name:'领取并且已使用优惠券的用户数'},
-                                    {value:_contentBt.due, name:'领取后优惠券过期的用户数'},
-                                ],
-                                itemStyle: {
-                                    emphasis: {
-                                        shadowBlur: 10,
-                                        shadowOffsetX: 0,
-                                        shadowColor: 'rgba(0, 0, 0, 0.5)'
+                    setTimeout(() => {
+                        let eachts = echarts.init(document.getElementById('echartsCanvasPanel')), _ = {
+                            title: {
+                                text: '活动日志明细',
+                                x: 'center'
+                            },
+                            tooltip: {
+                                trigger: 'item',
+                                formatter: "{a} <br/>{b} : {c} ({d}%)"
+                            },
+                            legend: {
+                                orient: 'vertical',
+                                left: 'left',
+                                data: ['领取却未使用优惠券的用户数', '领取并且已使用优惠券的用户数', '领取后优惠券过期的用户数']
+                            },
+                            series: [
+                                {
+                                    name: '明细',
+                                    type: 'pie',
+                                    radius: '55%',
+                                    center: ['50%', '60%'],
+                                    data: [
+                                        { value: _contentBt.unused, name: '领取却未使用优惠券的用户数' },
+                                        { value: _contentBt.used, name: '领取并且已使用优惠券的用户数' },
+                                        { value: _contentBt.due, name: '领取后优惠券过期的用户数' },
+                                    ],
+                                    itemStyle: {
+                                        emphasis: {
+                                            shadowBlur: 10,
+                                            shadowOffsetX: 0,
+                                            shadowColor: 'rgba(0, 0, 0, 0.5)'
+                                        }
                                     }
                                 }
-                            }
-                        ]}
+                            ]
+                        }
                         eachts.setOption(_, true);
-                    },1000)
+                    }, 1000)
                     setTimeout(() => {
                         let ech = echarts.init(document.getElementById('echartsCanvasBeg')), _ = {
                             title: {
@@ -776,6 +787,55 @@ new Vue({
 
                     }, 2000)
                     break;
+                case 'all_admin_statistics_list':  //新版的商户统计图表
+                    let _data_ = {};
+                    _params_['startDate'] = ym.init.getDateTime(new Date().setTime(new Date().getTime() - 3600 * 1000 * 24 * 7)).split(' ')[0];  //初始化两个时间
+                    _params_['endDate'] = ym.init.getDateTime(new Date()).split(' ')[0];
+                    _params_['hasTest'] = 0;  //默认不授权测试订单
+                    if (_params_) {
+                        _params_._name_ && _params_._value_ ? _params_[_params_._name_] = _params_._value_ : null;  //第一搜索key of value
+                        if (_params_._time_) {
+                            _params_['startDate'] = ym.init.getDateTime(_params_._time_[0]).split(' ')[0];
+                            _params_['endDate'] = ym.init.getDateTime(_params_._time_[1]).split(' ')[0];
+                        }
+                    }
+                    _data_ = Object.assign({  //初始对象
+                        id: ym.init.COMPILESTR.decrypt(token.id),
+                        token: ym.init.COMPILESTR.decrypt(token.asset),
+                        url: perent
+                    }, _params_)
+                    ym.init.XML({
+                        method: 'POST',
+                        uri: token._j.URLS.Development_Server_ + 'all_admin_statistics_list',
+                        async: false,
+                        xmldata: _data_,
+                        done: function (res) {
+                            try {
+                                ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
+                                    _contentBt.unused = res.unused || 0
+                                    _contentBt.used = res.used || 0
+                                    _contentBt.due = res.due || 0
+                                    let _date = ym.init.getAllDate(it.userCharts[0].split(' ')[0], it.userCharts[1].split(' ')[0]);
+                                    for (let i = 0; i < _date.length; i++) {
+                                        _DayTime.push(_date[i]);  //记录日期
+                                        _contentBt.Sum.push(0);  //0 
+                                        for (let j of res.dataList) {
+                                            if (_date[i] == j.date) {
+                                                _contentBt.Sum[i] = j.count; //总数量
+                                                break;
+                                            }
+                                        }
+                                    }
+                                })() :
+                                    (() => {
+                                        throw "收集到错误：\n\n" + res.statusCode.msg;
+                                    })()
+                            } catch (error) {
+                                it.IError(error);
+                            }
+                        }
+                    });
+                    break;
                 default:
                     break;
             }
@@ -795,7 +855,7 @@ new Vue({
                 _data['startTime'] = it.userCharts[0]
                 _data['endTime'] = it.userCharts[1]
                 _data['url'] = `/manage/chartsActive.html`
-            }else if(uri == 'statistics_machinelist'){
+            } else if (uri == 'statistics_machinelist') {
                 _data['startTime'] = it.userCharts[0];
                 _data['endTime'] = it.userCharts[1];
                 _data['adminID'] = JSON.parse(decodeURI(parent.document.getElementById('tagHref').getAttribute('src').split('*')[1])).adminID;
