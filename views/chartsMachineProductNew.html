@@ -17,8 +17,8 @@
 </head>
 
 <body class="_scrollbar">
-    <div id="c-container-list" style="height: 100%;" data-uri="all_admin_statistics_list"
-        data-child-uri="/manage/chartsFinanceNew.html" v-loading.fullscreen.lock="loading">
+    <div id="c-container-list" style="height: 100%;" data-uri="product_statistics_list"
+        data-child-uri="/manage/chartsMacchineNew.html" v-loading.fullscreen.lock="loading">
         <el-container>
             <el-main>
                 <el-form>
@@ -30,6 +30,13 @@
                             <el-option label="商户真名" value="realName"></el-option>
                         </el-select>
                     </el-input>
+                    <div class="_search_centent">
+                        <el-button>设备类型</el-button>
+                        <el-select v-model="chartsSearch.machineType" slot="prepend" placeholder="请选择">
+                            <el-option label="大型柜式机" :value="1"></el-option>
+                            <el-option label="小型桌面机" :value="2"></el-option>
+                        </el-select>
+                    </div>
                     <div class="_search_centent">
                         <el-button>是否含测试</el-button>
                         <el-select v-model="chartsSearch.hasTest" slot="prepend" placeholder="请选择">
@@ -49,7 +56,7 @@
                 </el-form>
 
                 <el-form>
-                    <div id="echartsCanvasNumberNew" style="height: 600px"></div>
+                    <div id="machineProductNew" style="height: 600px"></div>
                 </el-form>
             </el-main>
         </el-container>

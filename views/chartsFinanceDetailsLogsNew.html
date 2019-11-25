@@ -17,8 +17,8 @@
 </head>
 
 <body class="_scrollbar">
-    <div id="c-container-list" style="height: 100%;" data-uri="all_admin_statistics_list"
-        data-child-uri="/manage/chartsFinanceNew.html" v-loading.fullscreen.lock="loading">
+    <div id="c-container-list" style="height: 100%;" data-uri="admin_statistics_log"
+        data-child-uri="/manage/chartsFinanceLogsNew.html" v-loading.fullscreen.lock="loading">
         <el-container>
             <el-main>
                 <el-form>
@@ -37,6 +37,14 @@
                             <el-option label="包含" :value="1"></el-option>
                         </el-select>
                     </div>
+                    <div class="_search_centent">
+                        <el-button>时间单位</el-button>
+                        <el-select v-model="chartsSearch.timeUnit" slot="prepend" placeholder="请选择">
+                            <el-option label="年" :value="1"></el-option>
+                            <el-option label="月" :value="2"></el-option>
+                            <el-option label="日" :value="3"></el-option>
+                        </el-select>
+                    </div>
                     <div style="margin: 10px 0">
                         <el-date-picker v-model="chartsSearch._time_" type="daterange" align="right" unlink-panels
                             range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期"
@@ -49,7 +57,7 @@
                 </el-form>
 
                 <el-form>
-                    <div id="echartsCanvasNumberNew" style="height: 600px"></div>
+                    <div id="echartsCanvasLogsNew" style="height: 600px"></div>
                 </el-form>
             </el-main>
         </el-container>

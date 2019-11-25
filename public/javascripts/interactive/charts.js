@@ -13,6 +13,7 @@ require('echarts/lib/component/toolbox');
 require('echarts/lib/component/title');
 require('echarts/lib/component/markPoint');
 require('echarts/lib/component/markLine');
+require("echarts/lib/component/legend");
 
 const [
     $,
@@ -91,6 +92,7 @@ new Vue({
             total: 0,
             chartsSearch: {
                 hasTest: 0,  //是否包含测试数据
+                timeUnit: 3, //默认启用天的时间单位
             },   //新版的统计图表
         }
     },
@@ -118,7 +120,7 @@ new Vue({
             this.userCharts[1] = ym.init.getDateTime(e[1]);
             this.charts();
         },
-        newGetTime(){
+        newGetTime(e) {
             this.userCharts[0] = ym.init.getDateTime(e[0]);
             this.userCharts[1] = ym.init.getDateTime(e[1]);
         },
@@ -788,7 +790,16 @@ new Vue({
                     }, 2000)
                     break;
                 case 'all_admin_statistics_list':  //新版的商户统计图表
-                    let _data_ = {};
+                    let _data_ = {}, sessionData = {
+                        adminName: [],
+                        machineCount: [],
+                        payCount: [],
+                        paySum: [],
+                        paymentCount: [],
+                        paymentSum: [],
+                        refundCount: [],
+                        refundSum: []
+                    };
                     _params_['startDate'] = ym.init.getDateTime(new Date().setTime(new Date().getTime() - 3600 * 1000 * 24 * 7)).split(' ')[0];  //初始化两个时间
                     _params_['endDate'] = ym.init.getDateTime(new Date()).split(' ')[0];
                     _params_['hasTest'] = 0;  //默认不授权测试订单
@@ -812,17 +823,534 @@ new Vue({
                         done: function (res) {
                             try {
                                 ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
-                                    _contentBt.unused = res.unused || 0
-                                    _contentBt.used = res.used || 0
-                                    _contentBt.due = res.due || 0
-                                    let _date = ym.init.getAllDate(it.userCharts[0].split(' ')[0], it.userCharts[1].split(' ')[0]);
-                                    for (let i = 0; i < _date.length; i++) {
-                                        _DayTime.push(_date[i]);  //记录日期
-                                        _contentBt.Sum.push(0);  //0 
-                                        for (let j of res.dataList) {
-                                            if (_date[i] == j.date) {
-                                                _contentBt.Sum[i] = j.count; //总数量
-                                                break;
+                                    res.data.forEach((element, index) => {
+                                        sessionData['adminName'].push(element.adminName);
+                                        sessionData['payCount'].push(element.payCount);
+                                        sessionData['paySum'].push(element.paySum);
+                                        sessionData['paymentCount'].push(element.paymentCount);
+                                        sessionData['paymentSum'].push(element.paymentSum);
+                                        sessionData['refundCount'].push(element.refundCount);
+                                        sessionData['refundSum'].push(element.refundSum);
+                                        sessionData['machineCount'].push(element.machineCount);
+                                    });
+                                })() :
+                                    (() => {
+                                        throw "收集到错误：\n\n" + res.statusCode.msg;
+                                    })()
+                            } catch (error) {
+                                it.IError(error);
+                            }
+                        }
+                    });
+                    setTimeout(() => {
+                        let echartsCanvasNumberNew = echarts.init(document.getElementById('echartsCanvasNumberNew')), option = {
+                            tooltip: {
+                                trigger: 'axis',
+                                axisPointer: {            // 坐标轴指示器，坐标轴触发有效
+                                    type: 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+                                }
+                            },
+                            legend: {
+                                data: ['机器总数', '支付订单数', '支付金额', '实收订单数', '实收金额', '退单总数', '退单金额']
+                            },
+                            toolbox: {
+                                show: true,
+                                feature: {
+                                    magicType: { show: true, type: ['line', 'bar'] },
+                                    restore: { show: true },
+                                    saveAsImage: { show: true }
+                                }
+                            },
+                            grid: {
+                                left: '3%',
+                                right: '4%',
+                                bottom: '3%',
+                                containLabel: true
+                            },
+                            xAxis: {
+                                type: 'value'
+                            },
+                            yAxis: {
+                                type: 'category',
+                                data: sessionData['adminName']
+                            },
+                            series: [
+                                {
+                                    name: '机器总数',
+                                    type: 'bar',
+                                    stack: '总量',
+                                    label: {
+                                        normal: {
+                                            show: true,
+                                            position: 'insideRight'
+                                        }
+                                    },
+                                    data: sessionData['machineCount']
+                                },
+                                {
+                                    name: '支付订单数',
+                                    type: 'bar',
+                                    stack: '总量',
+                                    label: {
+                                        normal: {
+                                            show: true,
+                                            position: 'insideRight'
+                                        }
+                                    },
+                                    data: sessionData['payCount']
+                                },
+                                {
+                                    name: '支付金额',
+                                    type: 'bar',
+                                    stack: '总量',
+                                    label: {
+                                        normal: {
+                                            show: true,
+                                            position: 'insideRight'
+                                        }
+                                    },
+                                    data: sessionData['paySum']
+                                },
+                                {
+                                    name: '实收订单数',
+                                    type: 'bar',
+                                    stack: '总量',
+                                    label: {
+                                        normal: {
+                                            show: true,
+                                            position: 'insideRight'
+                                        }
+                                    },
+                                    data: sessionData['paymentCount']
+                                },
+                                {
+                                    name: '实收金额',
+                                    type: 'bar',
+                                    stack: '总量',
+                                    label: {
+                                        normal: {
+                                            show: true,
+                                            position: 'insideRight'
+                                        }
+                                    },
+                                    data: sessionData['paymentSum']
+                                },
+                                {
+                                    name: '退单总数',
+                                    type: 'bar',
+                                    stack: '总量',
+                                    label: {
+                                        normal: {
+                                            show: true,
+                                            position: 'insideRight'
+                                        }
+                                    },
+                                    data: sessionData['refundCount']
+                                },
+                                {
+                                    name: '退单金额',
+                                    type: 'bar',
+                                    stack: '总量',
+                                    label: {
+                                        normal: {
+                                            show: true,
+                                            position: 'insideRight'
+                                        }
+                                    },
+                                    data: sessionData['refundSum']
+                                }
+                            ]
+                        };
+                        echartsCanvasNumberNew.setOption(option, true);
+                        // this.autoHeight = (res.package.machineSoldAnalyzeList == null ? 0 : res.package.package.machineSoldAnalyzeList.length * 35 + 200);
+                        // usChart.getDom().style.height = this.autoHeight + "px";
+                        // usChart.resize();  //重置canvas的高度
+                    }, 1000)
+                    break;
+                case 'all_machine_statistics_list':  //新版的设备统计图表
+                    let _machineData_ = {}, _sessionData = {
+                        length: 0,
+                        machineNumber: [],
+                        payCount: [],
+                        paySum: [],
+                        paymentCount: [],
+                        paymentSum: [],
+                        refundCount: [],
+                        refundSum: []
+                    };
+                    _params_['startDate'] = ym.init.getDateTime(new Date().setTime(new Date().getTime() - 3600 * 1000 * 24 * 7)).split(' ')[0];  //初始化两个时间
+                    _params_['endDate'] = ym.init.getDateTime(new Date()).split(' ')[0];
+                    _params_['hasTest'] = 0;  //默认不授权测试订单
+                    if (_params_) {
+                        _params_._name_ && _params_._value_ ? _params_[_params_._name_] = _params_._value_ : null;  //第一搜索key of value
+                        if (_params_._time_) {
+                            _params_['startDate'] = ym.init.getDateTime(_params_._time_[0]).split(' ')[0];
+                            _params_['endDate'] = ym.init.getDateTime(_params_._time_[1]).split(' ')[0];
+                        }
+                    }
+                    _machineData_ = Object.assign({  //初始对象
+                        id: ym.init.COMPILESTR.decrypt(token.id),
+                        token: ym.init.COMPILESTR.decrypt(token.asset),
+                        url: perent
+                    }, _params_)
+                    ym.init.XML({
+                        method: 'POST',
+                        uri: token._j.URLS.Development_Server_ + 'all_machine_statistics_list',
+                        async: false,
+                        xmldata: _machineData_,
+                        done: function (res) {
+                            try {
+                                ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
+                                    _sessionData['length'] = res.data.length;
+                                    res.data.forEach((element, index) => {
+                                        _sessionData['machineNumber'].push(element.machineNumber + (element.machineType == 1 ? "(大)" : "(小)"));
+                                        _sessionData['payCount'].push(element.payCount);
+                                        _sessionData['paySum'].push(element.paySum);
+                                        _sessionData['paymentCount'].push(element.paymentCount);
+                                        _sessionData['paymentSum'].push(element.paymentSum);
+                                        _sessionData['refundCount'].push(element.refundCount);
+                                        _sessionData['refundSum'].push(element.refundSum);
+                                    });
+                                })() :
+                                    (() => {
+                                        throw "收集到错误：\n\n" + res.statusCode.msg;
+                                    })()
+                            } catch (error) {
+                                it.IError(error);
+                            }
+                        }
+                    });
+                    setTimeout(() => {
+                        let echartsCanvasNumberNew = echarts.init(document.getElementById('echartsCanvasMachineNew')), option = {
+                            tooltip: {
+                                trigger: 'axis',
+                                axisPointer: {            // 坐标轴指示器，坐标轴触发有效
+                                    type: 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+                                }
+                            },
+                            legend: {
+                                data: ['支付订单数', '支付金额', '实收订单数', '实收金额', '退单总数', '退单金额']
+                            },
+                            toolbox: {
+                                show: true,
+                                feature: {
+                                    magicType: { show: true, type: ['line', 'bar'] },
+                                    restore: { show: true },
+                                    saveAsImage: { show: true }
+                                }
+                            },
+                            grid: {
+                                left: '3%',
+                                right: '4%',
+                                bottom: '3%',
+                                containLabel: true
+                            },
+                            xAxis: {
+                                type: 'value'
+                            },
+                            yAxis: {
+                                type: 'category',
+                                data: _sessionData['machineNumber']
+                            },
+                            series: [
+                                {
+                                    name: '支付订单数',
+                                    type: 'bar',
+                                    stack: '总量',
+                                    label: {
+                                        normal: {
+                                            show: true,
+                                            position: 'insideRight'
+                                        }
+                                    },
+                                    data: _sessionData['payCount']
+                                },
+                                {
+                                    name: '支付金额',
+                                    type: 'bar',
+                                    stack: '总量',
+                                    label: {
+                                        normal: {
+                                            show: true,
+                                            position: 'insideRight'
+                                        }
+                                    },
+                                    data: _sessionData['paySum']
+                                },
+                                {
+                                    name: '实收订单数',
+                                    type: 'bar',
+                                    stack: '总量',
+                                    label: {
+                                        normal: {
+                                            show: true,
+                                            position: 'insideRight'
+                                        }
+                                    },
+                                    data: _sessionData['paymentCount']
+                                },
+                                {
+                                    name: '实收金额',
+                                    type: 'bar',
+                                    stack: '总量',
+                                    label: {
+                                        normal: {
+                                            show: true,
+                                            position: 'insideRight'
+                                        }
+                                    },
+                                    data: _sessionData['paymentSum']
+                                },
+                                {
+                                    name: '退单总数',
+                                    type: 'bar',
+                                    stack: '总量',
+                                    label: {
+                                        normal: {
+                                            show: true,
+                                            position: 'insideRight'
+                                        }
+                                    },
+                                    data: _sessionData['refundCount']
+                                },
+                                {
+                                    name: '退单金额',
+                                    type: 'bar',
+                                    stack: '总量',
+                                    label: {
+                                        normal: {
+                                            show: true,
+                                            position: 'insideRight'
+                                        }
+                                    },
+                                    data: _sessionData['refundSum']
+                                }
+                            ]
+                        };
+                        echartsCanvasNumberNew.setOption(option, true);
+                        echartsCanvasNumberNew.getDom().style.height = _sessionData.length * 35 + 200 + "px";
+                        echartsCanvasNumberNew.resize();  //重置canvas的高度
+                    }, 1000)
+                    break;
+                case 'product_statistics_list':  //新版的设备产品统计图表
+                    let _machineProductData_ = {}, _productSessionData = {
+                        length: 0,
+                        productName: [],
+                        payCount: [],
+                        paySum: [],
+                        paymentCount: [],
+                        paymentSum: [],
+                        refundCount: [],
+                        refundSum: []
+                    };
+                    _params_['startDate'] = ym.init.getDateTime(new Date().setTime(new Date().getTime() - 3600 * 1000 * 24 * 7)).split(' ')[0];  //初始化两个时间
+                    _params_['endDate'] = ym.init.getDateTime(new Date()).split(' ')[0];
+                    _params_['hasTest'] = 1;  //默认不授权测试订单
+                    if (_params_) {
+                        _params_._name_ && _params_._value_ ? _params_[_params_._name_] = _params_._value_ : null;  //第一搜索key of value
+                        if (_params_._time_) {
+                            _params_['startDate'] = ym.init.getDateTime(_params_._time_[0]).split(' ')[0];
+                            _params_['endDate'] = ym.init.getDateTime(_params_._time_[1]).split(' ')[0];
+                        }
+                    }
+                    _machineProductData_ = Object.assign({  //初始对象
+                        id: ym.init.COMPILESTR.decrypt(token.id),
+                        token: ym.init.COMPILESTR.decrypt(token.asset),
+                        url: perent
+                    }, _params_);
+                    _machineProductData_['machineNumber'] = JSON.parse(decodeURI(parent.document.getElementById('tagHref').getAttribute('src').split('*')[1])).machineNumber;
+                    ym.init.XML({
+                        method: 'POST',
+                        uri: token._j.URLS.Development_Server_ + 'product_statistics_list',
+                        async: false,
+                        xmldata: _machineProductData_,
+                        done: function (res) {
+                            try {
+                                ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
+                                    _productSessionData['length'] = res.data.length;
+                                    res.data.forEach((element, index) => {
+                                        _productSessionData['productName'].push(element.productName + `(ID:${element.productId},￥${element.productPrice})`);
+                                        _productSessionData['payCount'].push(element.payCount);
+                                        _productSessionData['paySum'].push(element.paySum);
+                                        _productSessionData['paymentCount'].push(element.paymentCount);
+                                        _productSessionData['paymentSum'].push(element.paymentSum);
+                                        _productSessionData['refundCount'].push(element.refundCount);
+                                        _productSessionData['refundSum'].push(element.refundSum);
+                                    });
+                                })() :
+                                    (() => {
+                                        throw "收集到错误：\n\n" + res.statusCode.msg;
+                                    })()
+                            } catch (error) {
+                                it.IError(error);
+                            }
+                        }
+                    });
+                    setTimeout(() => {
+                        let echartsCanvasMachineProductNew = echarts.init(document.getElementById('machineProductNew')), option = {
+                            tooltip: {
+                                trigger: 'axis',
+                                axisPointer: {            // 坐标轴指示器，坐标轴触发有效
+                                    type: 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+                                }
+                            },
+                            legend: {
+                                data: ['支付订单数', '支付金额', '实收订单数', '实收金额', '退单总数', '退单金额']
+                            },
+                            toolbox: {
+                                show: true,
+                                feature: {
+                                    magicType: { show: true, type: ['line', 'bar'] },
+                                    restore: { show: true },
+                                    saveAsImage: { show: true }
+                                }
+                            },
+                            grid: {
+                                left: '3%',
+                                right: '4%',
+                                bottom: '3%',
+                                containLabel: true
+                            },
+                            xAxis: {
+                                type: 'value'
+                            },
+                            yAxis: {
+                                type: 'category',
+                                data: _productSessionData['productName']
+                            },
+                            series: [
+                                {
+                                    name: '支付订单数',
+                                    type: 'bar',
+                                    stack: '总量',
+                                    label: {
+                                        normal: {
+                                            show: true,
+                                            position: 'insideRight'
+                                        }
+                                    },
+                                    data: _productSessionData['payCount']
+                                },
+                                {
+                                    name: '支付金额',
+                                    type: 'bar',
+                                    stack: '总量',
+                                    label: {
+                                        normal: {
+                                            show: true,
+                                            position: 'insideRight'
+                                        }
+                                    },
+                                    data: _productSessionData['paySum']
+                                },
+                                {
+                                    name: '实收订单数',
+                                    type: 'bar',
+                                    stack: '总量',
+                                    label: {
+                                        normal: {
+                                            show: true,
+                                            position: 'insideRight'
+                                        }
+                                    },
+                                    data: _productSessionData['paymentCount']
+                                },
+                                {
+                                    name: '实收金额',
+                                    type: 'bar',
+                                    stack: '总量',
+                                    label: {
+                                        normal: {
+                                            show: true,
+                                            position: 'insideRight'
+                                        }
+                                    },
+                                    data: _productSessionData['paymentSum']
+                                },
+                                {
+                                    name: '退单总数',
+                                    type: 'bar',
+                                    stack: '总量',
+                                    label: {
+                                        normal: {
+                                            show: true,
+                                            position: 'insideRight'
+                                        }
+                                    },
+                                    data: _productSessionData['refundCount']
+                                },
+                                {
+                                    name: '退单金额',
+                                    type: 'bar',
+                                    stack: '总量',
+                                    label: {
+                                        normal: {
+                                            show: true,
+                                            position: 'insideRight'
+                                        }
+                                    },
+                                    data: _productSessionData['refundSum']
+                                }
+                            ]
+                        };
+                        echartsCanvasMachineProductNew.setOption(option, true);
+                        echartsCanvasMachineProductNew.getDom().style.height = _productSessionData.length * 35 + 200 + "px";
+                        echartsCanvasMachineProductNew.resize();  //重置canvas的高度
+                    }, 1000)
+                    break;
+                case 'admin_statistics_log':  //新版的商户统计日志图表
+                    let _logsData_ = {}, _logsSessionData = {
+                        payCount: [],
+                        paySum: [],
+                        paymentCount: [],
+                        paymentSum: [],
+                        refundCount: [],
+                        refundSum: []
+                    }, _DayTime_ = [];
+                    _params_['startDate'] = ym.init.getDateTime(new Date().setTime(new Date().getTime() - 3600 * 1000 * 24 * 7)).split(' ')[0];  //初始化两个时间
+                    _params_['endDate'] = ym.init.getDateTime(new Date()).split(' ')[0];
+                    _params_['hasTest'] = 1;  //默认不授权测试订单
+                    _params_['timeUnit'] = 3;  //默认天时间单位
+                    if (_params_) {
+                        _params_._name_ && _params_._value_ ? _params_[_params_._name_] = _params_._value_ : null;  //第一搜索key of value
+                        if (_params_._time_) {
+                            _params_['startDate'] = ym.init.getDateTime(_params_._time_[0]).split(' ')[0];
+                            _params_['endDate'] = ym.init.getDateTime(_params_._time_[1]).split(' ')[0];
+                        }
+                    }
+                    _logsData_ = Object.assign({  //初始对象
+                        id: ym.init.COMPILESTR.decrypt(token.id),
+                        token: ym.init.COMPILESTR.decrypt(token.asset),
+                        url: perent
+                    }, _params_);
+                    _logsData_['adminId'] = JSON.parse(decodeURI(parent.document.getElementById('tagHref').getAttribute('src').split('*')[1])).adminId;
+                    ym.init.XML({
+                        method: 'POST',
+                        uri: token._j.URLS.Development_Server_ + 'admin_statistics_log',
+                        async: false,
+                        xmldata: _logsData_,
+                        done: function (res) {
+                            try {
+                                ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
+                                    let _logsTime = ym.init.getAllDate(it.userCharts[0].split(' ')[0], it.userCharts[1].split(' ')[0]);
+                                    var res = JSON.parse`{"data":[{"adminId":1,"adminName":"admin","realName":"超级管理员","dateList":[{"payCount":1,"paySum":"10.00","refundCount":1,"refundSum":"0.00","paymentCount":0,"paymentSum":"0.00","target":"1","orderDate":"2019-11-24"},{"payCount":6,"paySum":"0.00","refundCount":6,"refundSum":"0.00","paymentCount":0,"paymentSum":"0.00","target":"1","orderDate":"2018-12-17"}]}],"statusCode":{"status":6666,"msg":"查询成功"}}`
+                                    for (let i = 0; i < _logsTime.length; i++) {
+                                        _DayTime_.push(_logsTime[i]);  //记录日期
+                                        _logsSessionData['payCount'].push(0); //先赋值 0
+                                        _logsSessionData['paySum'].push(0); //先赋值 0
+                                        _logsSessionData['paymentCount'].push(0); //先赋值 0
+                                        _logsSessionData['paymentSum'].push(0); //先赋值 0
+                                        _logsSessionData['refundCount'].push(0); //先赋值 0
+                                        _logsSessionData['refundSum'].push(0); //先赋值 0
+                                        if (res.data[0].dateList.length == 0) continue
+                                        for (let j of res.data[0].dateList) {
+                                            if (_logsTime[i] == j.orderDate) {
+                                                _logsSessionData.payCount[i] = j.payCount; //对应的数值
+                                                _logsSessionData.paySum[i] = j.paySum; //对应的数值
+                                                _logsSessionData.paymentCount[i] = j.paymentCount; //对应的数值
+                                                _logsSessionData.paymentSum[i] = j.paymentSum; //对应的数值
+                                                _logsSessionData.refundCount[i] = j.refundCount; //对应的数值
+                                                _logsSessionData.refundSum[i] = j.refundSum; //对应的数值
                                             }
                                         }
                                     }
@@ -835,6 +1363,77 @@ new Vue({
                             }
                         }
                     });
+                    setTimeout(() => {
+                        let echartsCanvasLogsNew = echarts.init(document.getElementById('echartsCanvasLogsNew')), option = {
+                            title: {
+                                text: '收入金额曲线图'
+                            },
+                            tooltip: {
+                                trigger: 'axis',
+                                axisPointer: {
+                                    type: 'cross',
+                                    label: {
+                                        backgroundColor: '#6a7985'
+                                    }
+                                }
+                            },
+                            legend: {
+                                data: ['支付订单数', '支付金额', '实收订单数', '实收金额', '退单总数', '退单金额']
+                            },
+                            toolbox: {
+                                show: true,
+                                feature: {
+                                    magicType: { show: true, type: ['line', 'bar'] },
+                                    restore: { show: true },
+                                    saveAsImage: { show: true }
+                                }
+                            },
+                            grid: {
+                                left: '3%',
+                                right: '4%',
+                                bottom: '3%',
+                                containLabel: true
+                            },
+                            xAxis: [
+                                {
+                                    type: 'category',
+                                    boundaryGap: false,
+                                    data: _DayTime_
+                                }
+                            ],
+                            yAxis: [
+                                {
+                                    type: 'value'
+                                }
+                            ],
+                            series: (()=>{
+                                let dataCode = [];
+                                Object.keys(_logsSessionData).forEach(element => {
+                                    console.log(Object.values(element))
+                                    dataCode.push({
+                                        name: '收入金额',
+                                        type: 'line',
+                                        stack: '总量',
+                                        areaStyle: {},
+                                        data: Object.values(element),
+                                        markPoint: {
+                                            data: [
+                                                { type: 'max', name: '最大值' },
+                                                { type: 'min', name: '最小值' }
+                                            ]
+                                        },
+                                        markLine: {
+                                            data: [
+                                                { type: 'average', name: '平均值' }
+                                            ]
+                                        }
+                                    })
+                                })
+                                return 
+                            })()
+                        };
+                        echartsCanvasLogsNew.setOption(option, true);
+                    }, 1000)
                     break;
                 default:
                     break;
