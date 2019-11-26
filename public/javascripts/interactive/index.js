@@ -99,7 +99,7 @@ new Vue({
                 'chartsActive',
                 'chartsFinanceNew',  //新商户统计
                 'chartsMacchineNew', //新设备统计
-                'chartsFinanceLogsNew', //新商户统计日志
+                'chartsMachineProductNew', //新商户统计日志
                 'systemUserList',
                 'systemUserLvList',
                 'feedbackList',
@@ -173,6 +173,7 @@ new Vue({
                 </template>
                 <el-menu-item  v-on:click=Href({'uri':'../RepairPersonnelList.html?hash:iforx','title':'运维人员'}) index="2-1">运维人员</el-menu-item>
                 <el-menu-item  v-on:click=Href({'uri':'../materialLog.html?hash:iforx','title':'物料日志'}) index="2-2">物料日志</el-menu-item></el-menu-item-group>
+                <el-menu-item  v-on:click=Href({'uri':'../maintenanceLogs.html?hash:iforx','title':'运维日志'}) index="2-3">运维日志</el-menu-item></el-menu-item-group>
                 </el-submenu>`;
 
             }

@@ -91,8 +91,12 @@ new Vue({
             currentPage: 1,
             total: 0,
             chartsSearch: {
+                _value_: '',
+                _name_: '',
                 hasTest: 0,  //是否包含测试数据
                 timeUnit: 3, //默认启用天的时间单位
+                _time_: '',
+                _machineNumber: 100033
             },   //新版的统计图表
         }
     },
@@ -800,9 +804,6 @@ new Vue({
                         refundCount: [],
                         refundSum: []
                     };
-                    _params_['startDate'] = ym.init.getDateTime(new Date().setTime(new Date().getTime() - 3600 * 1000 * 24 * 7)).split(' ')[0];  //初始化两个时间
-                    _params_['endDate'] = ym.init.getDateTime(new Date()).split(' ')[0];
-                    _params_['hasTest'] = 0;  //默认不授权测试订单
                     if (_params_) {
                         _params_._name_ && _params_._value_ ? _params_[_params_._name_] = _params_._value_ : null;  //第一搜索key of value
                         if (_params_._time_) {
@@ -810,6 +811,10 @@ new Vue({
                             _params_['endDate'] = ym.init.getDateTime(_params_._time_[1]).split(' ')[0];
                         }
                     }
+                    _params_['startDate'] = _params_['startDate'] || ym.init.getDateTime(new Date().setTime(new Date().getTime() - 3600 * 1000 * 24 * 7)).split(' ')[0];  //初始化两个时间
+                    _params_['endDate'] = _params_['endDate'] || ym.init.getDateTime(new Date()).split(' ')[0];
+                    _params_['hasTest'] = _params_['hasTest'] || it.chartsSearch.hasTest;  //默认不授权测试订单
+                    it.chartsSearch._time_ = [_params_['startDate'], _params_['endDate']];
                     _data_ = Object.assign({  //初始对象
                         id: ym.init.COMPILESTR.decrypt(token.id),
                         token: ym.init.COMPILESTR.decrypt(token.asset),
@@ -978,9 +983,6 @@ new Vue({
                         refundCount: [],
                         refundSum: []
                     };
-                    _params_['startDate'] = ym.init.getDateTime(new Date().setTime(new Date().getTime() - 3600 * 1000 * 24 * 7)).split(' ')[0];  //初始化两个时间
-                    _params_['endDate'] = ym.init.getDateTime(new Date()).split(' ')[0];
-                    _params_['hasTest'] = 0;  //默认不授权测试订单
                     if (_params_) {
                         _params_._name_ && _params_._value_ ? _params_[_params_._name_] = _params_._value_ : null;  //第一搜索key of value
                         if (_params_._time_) {
@@ -988,6 +990,10 @@ new Vue({
                             _params_['endDate'] = ym.init.getDateTime(_params_._time_[1]).split(' ')[0];
                         }
                     }
+                    _params_['startDate'] = _params_['startDate'] || ym.init.getDateTime(new Date().setTime(new Date().getTime() - 3600 * 1000 * 24 * 7)).split(' ')[0];  //初始化两个时间
+                    _params_['endDate'] = _params_['endDate'] || ym.init.getDateTime(new Date()).split(' ')[0];
+                    _params_['hasTest'] = _params_['hasTest'] || it.chartsSearch.hasTest;  //默认不授权测试订单
+                    it.chartsSearch._time_ = [_params_['startDate'], _params_['endDate']];
                     _machineData_ = Object.assign({  //初始对象
                         id: ym.init.COMPILESTR.decrypt(token.id),
                         token: ym.init.COMPILESTR.decrypt(token.asset),
@@ -1132,7 +1138,7 @@ new Vue({
                         echartsCanvasNumberNew.resize();  //重置canvas的高度
                     }, 1000)
                     break;
-                case 'product_statistics_list':  //新版的设备产品统计图表
+                case 'product_statistics_list':  //新版的设备产品统计 列表 + 图表
                     let _machineProductData_ = {}, _productSessionData = {
                         length: 0,
                         productName: [],
@@ -1143,22 +1149,27 @@ new Vue({
                         refundCount: [],
                         refundSum: []
                     };
-                    _params_['startDate'] = ym.init.getDateTime(new Date().setTime(new Date().getTime() - 3600 * 1000 * 24 * 7)).split(' ')[0];  //初始化两个时间
-                    _params_['endDate'] = ym.init.getDateTime(new Date()).split(' ')[0];
-                    _params_['hasTest'] = 1;  //默认不授权测试订单
                     if (_params_) {
-                        _params_._name_ && _params_._value_ ? _params_[_params_._name_] = _params_._value_ : null;  //第一搜索key of value
+                        _params_._name_ && _params_._value_ ? _params_[_params_._name_] = _params_._value_ : null;
                         if (_params_._time_) {
                             _params_['startDate'] = ym.init.getDateTime(_params_._time_[0]).split(' ')[0];
                             _params_['endDate'] = ym.init.getDateTime(_params_._time_[1]).split(' ')[0];
                         }
                     }
+                    _params_['startDate'] = _params_['startDate'] || ym.init.getDateTime(new Date().setTime(new Date().getTime() - 3600 * 1000 * 24 * 7)).split(' ')[0];  //初始化两个时间
+                    _params_['endDate'] = _params_['endDate'] || ym.init.getDateTime(new Date()).split(' ')[0];
+                    _params_['hasTest'] = _params_['hasTest'] || it.chartsSearch.hasTest;  //默认不授权测试订单
+                    it.chartsSearch._time_ = [_params_['startDate'], _params_['endDate']];
                     _machineProductData_ = Object.assign({  //初始对象
                         id: ym.init.COMPILESTR.decrypt(token.id),
                         token: ym.init.COMPILESTR.decrypt(token.asset),
                         url: perent
                     }, _params_);
-                    _machineProductData_['machineNumber'] = JSON.parse(decodeURI(parent.document.getElementById('tagHref').getAttribute('src').split('*')[1])).machineNumber;
+                    _machineProductData_['machineNumber'] = parent.document.getElementById('tagHref').getAttribute('src').split('*').length > 1 ? JSON.parse(decodeURI(parent.document.getElementById('tagHref').getAttribute('src').split('*')[1])).machineNumber : it.chartsSearch._machineNumber;
+                    _machineProductData_['machineNumber'] = _params_._value_ || _machineProductData_['machineNumber'];
+                    it.chartsSearch._value_ = _machineProductData_['machineNumber'];
+                    it.chartsSearch._machineNumber = _machineProductData_['machineNumber'];
+                    it.list();
                     ym.init.XML({
                         method: 'POST',
                         uri: token._j.URLS.Development_Server_ + 'product_statistics_list',
@@ -1298,7 +1309,7 @@ new Vue({
                         echartsCanvasMachineProductNew.resize();  //重置canvas的高度
                     }, 1000)
                     break;
-                case 'admin_statistics_log':  //新版的商户统计日志图表
+                case 'admin_statistics_log':  //新版的商户统计日志 列表 + 图表
                     let _logsData_ = {}, _logsSessionData = {
                         payCount: [],
                         paySum: [],
@@ -1307,10 +1318,6 @@ new Vue({
                         refundCount: [],
                         refundSum: []
                     }, _DayTime_ = [];
-                    _params_['startDate'] = ym.init.getDateTime(new Date().setTime(new Date().getTime() - 3600 * 1000 * 24 * 7)).split(' ')[0];  //初始化两个时间
-                    _params_['endDate'] = ym.init.getDateTime(new Date()).split(' ')[0];
-                    _params_['hasTest'] = 1;  //默认不授权测试订单
-                    _params_['timeUnit'] = 3;  //默认天时间单位
                     if (_params_) {
                         _params_._name_ && _params_._value_ ? _params_[_params_._name_] = _params_._value_ : null;  //第一搜索key of value
                         if (_params_._time_) {
@@ -1318,12 +1325,18 @@ new Vue({
                             _params_['endDate'] = ym.init.getDateTime(_params_._time_[1]).split(' ')[0];
                         }
                     }
+                    _params_['startDate'] = _params_['startDate'] || ym.init.getDateTime(new Date().setTime(new Date().getTime() - 3600 * 1000 * 24 * 7)).split(' ')[0];  //初始化两个时间
+                    _params_['endDate'] = _params_['endDate'] || ym.init.getDateTime(new Date()).split(' ')[0];
+                    _params_['hasTest'] = _params_['hasTest'] || it.chartsSearch.hasTest;  //默认不授权测试订单
+                    _params_['timeUnit'] = _params_['timeUnit'] || it.chartsSearch.timeUnit;  //默认天时间单位
+                    it.chartsSearch._time_ = [_params_['startDate'], _params_['endDate']];
                     _logsData_ = Object.assign({  //初始对象
                         id: ym.init.COMPILESTR.decrypt(token.id),
                         token: ym.init.COMPILESTR.decrypt(token.asset),
                         url: perent
                     }, _params_);
                     _logsData_['adminId'] = JSON.parse(decodeURI(parent.document.getElementById('tagHref').getAttribute('src').split('*')[1])).adminId;
+                    it.list();
                     ym.init.XML({
                         method: 'POST',
                         uri: token._j.URLS.Development_Server_ + 'admin_statistics_log',
@@ -1333,7 +1346,6 @@ new Vue({
                             try {
                                 ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
                                     let _logsTime = ym.init.getAllDate(it.userCharts[0].split(' ')[0], it.userCharts[1].split(' ')[0]);
-                                    var res = JSON.parse`{"data":[{"adminId":1,"adminName":"admin","realName":"超级管理员","dateList":[{"payCount":1,"paySum":"10.00","refundCount":1,"refundSum":"0.00","paymentCount":0,"paymentSum":"0.00","target":"1","orderDate":"2019-11-24"},{"payCount":6,"paySum":"0.00","refundCount":6,"refundSum":"0.00","paymentCount":0,"paymentSum":"0.00","target":"1","orderDate":"2018-12-17"}]}],"statusCode":{"status":6666,"msg":"查询成功"}}`
                                     for (let i = 0; i < _logsTime.length; i++) {
                                         _DayTime_.push(_logsTime[i]);  //记录日期
                                         _logsSessionData['payCount'].push(0); //先赋值 0
@@ -1366,7 +1378,7 @@ new Vue({
                     setTimeout(() => {
                         let echartsCanvasLogsNew = echarts.init(document.getElementById('echartsCanvasLogsNew')), option = {
                             title: {
-                                text: '收入金额曲线图'
+                                text: '商户统计日志'
                             },
                             tooltip: {
                                 trigger: 'axis',
@@ -1406,16 +1418,15 @@ new Vue({
                                     type: 'value'
                                 }
                             ],
-                            series: (()=>{
-                                let dataCode = [];
-                                Object.keys(_logsSessionData).forEach(element => {
-                                    console.log(Object.values(element))
+                            series: (() => {
+                                let dataCode = [], _name = ['支付订单数', '支付金额', '实收订单数', '实收金额', '退单总数', '退单金额'];
+                                Object.keys(_logsSessionData).forEach((element, index) => {
                                     dataCode.push({
-                                        name: '收入金额',
+                                        name: _name[index],
                                         type: 'line',
                                         stack: '总量',
                                         areaStyle: {},
-                                        data: Object.values(element),
+                                        data: Object.values(_logsSessionData)[index],
                                         markPoint: {
                                             data: [
                                                 { type: 'max', name: '最大值' },
@@ -1429,10 +1440,303 @@ new Vue({
                                         }
                                     })
                                 })
-                                return 
+                                return dataCode
                             })()
                         };
                         echartsCanvasLogsNew.setOption(option, true);
+                    }, 1000)
+                    break;
+                case 'machine_statistics_log':  //新版的设备统计日志 列表 + 图表
+                    let _machineLogsData_ = {}, _machineLogsSessionData = {
+                        payCount: [],
+                        paySum: [],
+                        paymentCount: [],
+                        paymentSum: [],
+                        refundCount: [],
+                        refundSum: []
+                    }, _machineDayTime_ = [];
+                    if (_params_) {
+                        _params_._name_ && _params_._value_ ? _params_[_params_._name_] = _params_._value_ : null;  //第一搜索key of value
+                        if (_params_._time_) {
+                            _params_['startDate'] = ym.init.getDateTime(_params_._time_[0]).split(' ')[0];
+                            _params_['endDate'] = ym.init.getDateTime(_params_._time_[1]).split(' ')[0];
+                            if (_params_.timeUnit == 2) {
+                                _params_['startDate'] = _params_['startDate'].substring(0, _params_['startDate'].lastIndexOf('-'));
+                                _params_['endDate'] = _params_['endDate'].substring(0, _params_['endDate'].lastIndexOf('-'));
+                            } else if (_params_.timeUnit == 1) {
+                                _params_['startDate'] = _params_['startDate'].split('-')[0];
+                                _params_['endDate'] = _params_['endDate'].split('-')[0];
+                            }
+                            it.chartsSearch.timeUnit = _params_['timeUnit'];
+                        }
+                    }
+                    _params_['hasTest'] = _params_['hasTest'] || it.chartsSearch.hasTest;  //默认不授权测试订单
+                    _params_['timeUnit'] = _params_['timeUnit'] || it.chartsSearch.timeUnit;  //默认天时间单位
+                    _params_['startDate'] = _params_['startDate'] || ym.init.getDateTime(new Date().setTime(new Date().getTime() - 3600 * 1000 * 24 * 7)).split(' ')[0];  //初始化两个时间
+                    _params_['endDate'] = _params_['endDate'] || ym.init.getDateTime(new Date()).split(' ')[0];
+                    it.chartsSearch._time_ = [_params_['startDate'], _params_['endDate']];
+                    _machineLogsData_ = Object.assign({  //初始对象
+                        id: ym.init.COMPILESTR.decrypt(token.id),
+                        token: ym.init.COMPILESTR.decrypt(token.asset),
+                        url: perent
+                    }, _params_);
+                    _machineLogsData_['machineNumber'] = JSON.parse(decodeURI(parent.document.getElementById('tagHref').getAttribute('src').split('*')[1])).machineNumber;
+                    it.list();
+                    ym.init.XML({
+                        method: 'POST',
+                        uri: token._j.URLS.Development_Server_ + 'machine_statistics_log',
+                        async: false,
+                        xmldata: _machineLogsData_,
+                        done: function (res) {
+                            try {
+                                ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
+                                    let _logsTime = ym.init.getAllDate(it.userCharts[0].split(' ')[0], it.userCharts[1].split(' ')[0]);
+                                    for (let i = 0; i < _logsTime.length; i++) {
+                                        _machineDayTime_.push(_logsTime[i]);  //记录日期
+                                        _machineLogsSessionData['payCount'].push(0); //先赋值 0
+                                        _machineLogsSessionData['paySum'].push(0); //先赋值 0
+                                        _machineLogsSessionData['paymentCount'].push(0); //先赋值 0
+                                        _machineLogsSessionData['paymentSum'].push(0); //先赋值 0
+                                        _machineLogsSessionData['refundCount'].push(0); //先赋值 0
+                                        _machineLogsSessionData['refundSum'].push(0); //先赋值 0
+                                        if (res.data[0].dateList.length == 0) continue
+                                        for (let j of res.data[0].dateList) {
+                                            if (_logsTime[i] == j.orderDate) {
+                                                _machineLogsSessionData.payCount[i] = j.payCount; //对应的数值
+                                                _machineLogsSessionData.paySum[i] = j.paySum; //对应的数值
+                                                _machineLogsSessionData.paymentCount[i] = j.paymentCount; //对应的数值
+                                                _machineLogsSessionData.paymentSum[i] = j.paymentSum; //对应的数值
+                                                _machineLogsSessionData.refundCount[i] = j.refundCount; //对应的数值
+                                                _machineLogsSessionData.refundSum[i] = j.refundSum; //对应的数值
+                                            }
+                                        }
+                                    }
+                                })() :
+                                    (() => {
+                                        throw "收集到错误：\n\n" + res.statusCode.msg;
+                                    })()
+                            } catch (error) {
+                                it.IError(error);
+                            }
+                        }
+                    });
+                    setTimeout(() => {
+                        let echartsCanvasMachineLogsNew = echarts.init(document.getElementById('echartsCanvasMachineLogsNew')), option = {
+                            title: {
+                                text: '商户统计日志'
+                            },
+                            tooltip: {
+                                trigger: 'axis',
+                                axisPointer: {
+                                    type: 'cross',
+                                    label: {
+                                        backgroundColor: '#6a7985'
+                                    }
+                                }
+                            },
+                            legend: {
+                                data: ['支付订单数', '支付金额', '实收订单数', '实收金额', '退单总数', '退单金额']
+                            },
+                            toolbox: {
+                                show: true,
+                                feature: {
+                                    magicType: { show: true, type: ['line', 'bar'] },
+                                    restore: { show: true },
+                                    saveAsImage: { show: true }
+                                }
+                            },
+                            grid: {
+                                left: '3%',
+                                right: '4%',
+                                bottom: '3%',
+                                containLabel: true
+                            },
+                            xAxis: [
+                                {
+                                    type: 'category',
+                                    boundaryGap: false,
+                                    data: _machineDayTime_
+                                }
+                            ],
+                            yAxis: [
+                                {
+                                    type: 'value'
+                                }
+                            ],
+                            series: (() => {
+                                let dataCode = [], _name = ['支付订单数', '支付金额', '实收订单数', '实收金额', '退单总数', '退单金额'];
+                                Object.keys(_machineLogsSessionData).forEach((element, index) => {
+                                    dataCode.push({
+                                        name: _name[index],
+                                        type: 'line',
+                                        stack: '总量',
+                                        areaStyle: {},
+                                        data: Object.values(_machineLogsSessionData)[index],
+                                        markPoint: {
+                                            data: [
+                                                { type: 'max', name: '最大值' },
+                                                { type: 'min', name: '最小值' }
+                                            ]
+                                        },
+                                        markLine: {
+                                            data: [
+                                                { type: 'average', name: '平均值' }
+                                            ]
+                                        }
+                                    })
+                                })
+                                return dataCode
+                            })()
+                        };
+                        echartsCanvasMachineLogsNew.setOption(option, true);
+                    }, 1000)
+                    break;
+                case 'product_statistics_log':  //新版的设备产品统计日志 列表 + 图表
+                    let _machineProductLogsData_ = {}, _machineProductLogsSessionData = {
+                        payCount: [],
+                        paySum: [],
+                        paymentCount: [],
+                        paymentSum: [],
+                        refundCount: [],
+                        refundSum: []
+                    }, _machineProductDayTime_ = [];
+                    if (_params_) {
+                        _params_._name_ && _params_._value_ ? _params_[_params_._name_] = _params_._value_ : null;  //第一搜索key of value
+                        if (_params_._time_) {
+                            _params_['startDate'] = ym.init.getDateTime(_params_._time_[0]).split(' ')[0];
+                            _params_['endDate'] = ym.init.getDateTime(_params_._time_[1]).split(' ')[0];
+                            if (_params_.timeUnit == 2) {
+                                _params_['startDate'] = _params_['startDate'].substring(0, _params_['startDate'].lastIndexOf('-'));
+                                _params_['endDate'] = _params_['endDate'].substring(0, _params_['endDate'].lastIndexOf('-'));
+                            } else if (_params_.timeUnit == 1) {
+                                _params_['startDate'] = _params_['startDate'].split('-')[0];
+                                _params_['endDate'] = _params_['endDate'].split('-')[0];
+                            }
+                            it.chartsSearch.timeUnit = _params_['timeUnit'];
+                        }
+                    }
+                    _params_['hasTest'] = _params_['hasTest'] || it.chartsSearch.hasTest;  //默认不授权测试订单
+                    _params_['timeUnit'] = _params_['timeUnit'] || it.chartsSearch.timeUnit;  //默认天时间单位
+                    _params_['startDate'] = _params_['startDate'] || ym.init.getDateTime(new Date().setTime(new Date().getTime() - 3600 * 1000 * 24 * 7)).split(' ')[0];  //初始化两个时间
+                    _params_['endDate'] = _params_['endDate'] || ym.init.getDateTime(new Date()).split(' ')[0];
+                    it.chartsSearch._time_ = [_params_['startDate'], _params_['endDate']];
+                    _machineProductLogsData_ = Object.assign({  //初始对象
+                        id: ym.init.COMPILESTR.decrypt(token.id),
+                        token: ym.init.COMPILESTR.decrypt(token.asset),
+                        url: perent
+                    }, _params_);
+                    _machineProductLogsData_['machineNumber'] = parent.document.getElementById('tagHref').getAttribute('src').split('*').length > 1 ? JSON.parse(decodeURI(parent.document.getElementById('tagHref').getAttribute('src').split('*')[1])).machineNumber : it.chartsSearch._machineNumber;
+                    _machineProductLogsData_['machineNumber'] = _params_._value_ || _machineProductLogsData_['machineNumber'];
+                    it.chartsSearch._value_ = _machineProductLogsData_['machineNumber'];
+                    it.chartsSearch._machineNumber = _machineProductLogsData_['machineNumber'];
+                    it.list();
+                    ym.init.XML({
+                        method: 'POST',
+                        uri: token._j.URLS.Development_Server_ + 'product_statistics_log',
+                        async: false,
+                        xmldata: _machineProductLogsData_,
+                        done: function (res) {
+                            try {
+                                ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
+                                    let _logsTime = ym.init.getAllDate(it.userCharts[0].split(' ')[0], it.userCharts[1].split(' ')[0]);
+                                    for (let i = 0; i < _logsTime.length; i++) {
+                                        _machineProductDayTime_.push(_logsTime[i]);  //记录日期
+                                        _machineProductLogsSessionData['payCount'].push(0); //先赋值 0
+                                        _machineProductLogsSessionData['paySum'].push(0); //先赋值 0
+                                        _machineProductLogsSessionData['paymentCount'].push(0); //先赋值 0
+                                        _machineProductLogsSessionData['paymentSum'].push(0); //先赋值 0
+                                        _machineProductLogsSessionData['refundCount'].push(0); //先赋值 0
+                                        _machineProductLogsSessionData['refundSum'].push(0); //先赋值 0
+                                        if (res.data[0].dateList.length == 0) continue
+                                        for (let j of res.data[0].dateList) {
+                                            if (_logsTime[i] == j.orderDate) {
+                                                _machineProductLogsSessionData.payCount[i] = j.payCount; //对应的数值
+                                                _machineProductLogsSessionData.paySum[i] = j.paySum; //对应的数值
+                                                _machineProductLogsSessionData.paymentCount[i] = j.paymentCount; //对应的数值
+                                                _machineProductLogsSessionData.paymentSum[i] = j.paymentSum; //对应的数值
+                                                _machineProductLogsSessionData.refundCount[i] = j.refundCount; //对应的数值
+                                                _machineProductLogsSessionData.refundSum[i] = j.refundSum; //对应的数值
+                                            }
+                                        }
+                                    }
+                                })() :
+                                    (() => {
+                                        throw "收集到错误：\n\n" + res.statusCode.msg;
+                                    })()
+                            } catch (error) {
+                                it.IError(error);
+                            }
+                        }
+                    });
+                    setTimeout(() => {
+                        let echartsCanvasMachineLogsNew = echarts.init(document.getElementById('echartsCanvasMachineLogsNew')), option = {
+                            title: {
+                                text: '产品统计日志'
+                            },
+                            tooltip: {
+                                trigger: 'axis',
+                                axisPointer: {
+                                    type: 'cross',
+                                    label: {
+                                        backgroundColor: '#6a7985'
+                                    }
+                                }
+                            },
+                            legend: {
+                                data: ['支付订单数', '支付金额', '实收订单数', '实收金额', '退单总数', '退单金额']
+                            },
+                            toolbox: {
+                                show: true,
+                                feature: {
+                                    magicType: { show: true, type: ['line', 'bar'] },
+                                    restore: { show: true },
+                                    saveAsImage: { show: true }
+                                }
+                            },
+                            grid: {
+                                left: '3%',
+                                right: '4%',
+                                bottom: '3%',
+                                containLabel: true
+                            },
+                            xAxis: [
+                                {
+                                    type: 'category',
+                                    boundaryGap: false,
+                                    data: _machineProductDayTime_
+                                }
+                            ],
+                            yAxis: [
+                                {
+                                    type: 'value'
+                                }
+                            ],
+                            series: (() => {
+                                let dataCode = [], _name = ['支付订单数', '支付金额', '实收订单数', '实收金额', '退单总数', '退单金额'];
+                                Object.keys(_machineProductLogsSessionData).forEach((element, index) => {
+                                    dataCode.push({
+                                        name: _name[index],
+                                        type: 'line',
+                                        stack: '总量',
+                                        areaStyle: {},
+                                        data: Object.values(_machineProductLogsSessionData)[index],
+                                        markPoint: {
+                                            data: [
+                                                { type: 'max', name: '最大值' },
+                                                { type: 'min', name: '最小值' }
+                                            ]
+                                        },
+                                        markLine: {
+                                            data: [
+                                                { type: 'average', name: '平均值' }
+                                            ]
+                                        }
+                                    })
+                                })
+                                return dataCode
+                            })()
+                        };
+                        echartsCanvasMachineLogsNew.setOption(option, true);
                     }, 1000)
                     break;
                 default:
@@ -1442,6 +1746,8 @@ new Vue({
         },
         list() {
             const it = this;
+            let _uri = uri;
+            it.loading = true;
             _data['url'] = '/manage/chartsFinance.html';
             if (uri == 'statistics_machineorder') {
                 _data['checkMachineNum'] = JSON.parse(decodeURI(parent.document.getElementById('tagHref').getAttribute('src').split('*')[1])).machineNumber
@@ -1460,15 +1766,43 @@ new Vue({
                 _data['adminID'] = JSON.parse(decodeURI(parent.document.getElementById('tagHref').getAttribute('src').split('*')[1])).adminID;
                 //暂定
                 JSON.parse(decodeURI(parent.document.getElementById('tagHref').getAttribute('src').split('*')[1])).adminID ? null : parent.document.getElementById('tagHref').setAttribute('src', '../chartsFinance.html?hash:iforx197'); //不存在admin ID情况下
+            } else if (uri == 'machine_statistics_log' || uri == 'admin_statistics_log' || uri == 'product_statistics_list' || uri == 'product_statistics_log') {
+                // 设备统计日志列表
+                _data['timeUnit'] = it.chartsSearch.timeUnit;
+                _data['hasTest'] = it.chartsSearch.hasTest;
+                _uri = 'machine_statistics_log_list'
+                _data['startDate'] = it.userCharts[0].split(' ')[0];
+                _data['endDate'] = it.userCharts[1].split(' ')[0];
+                // _data['machineNumber'] = parent.document.getElementById('tagHref').getAttribute('src').split('*').length > 1 ? JSON.parse(decodeURI(parent.document.getElementById('tagHref').getAttribute('src').split('*')[1])).machineNumber : it.chartsSearch._machineNumber;
+                _data['machineNumber'] = it.chartsSearch._machineNumber;
+                _data['page'] = it.page;
+                if (it.chartsSearch.timeUnit == 2) {
+                    _data['startDate'] = _data['startDate'].substring(0, _data['startDate'].lastIndexOf('-'));
+                    _data['endDate'] = _data['endDate'].substring(0, _data['endDate'].lastIndexOf('-'));
+                } else if (it.chartsSearch.timeUnit == 1) {
+                    _data['startDate'] = _data['startDate'].split('-')[0];
+                    _data['endDate'] = _data['endDate'].split('-')[0];
+                }
+                if (uri == 'admin_statistics_log') {  //新商户统计列表日志
+                    _uri = 'admin_statistics_log_list';
+                    _data['adminId'] = JSON.parse(decodeURI(parent.document.getElementById('tagHref').getAttribute('src').split('*')[1])).adminId;
+                    delete _data['machineNumber'];
+                }
+                if( uri == 'product_statistics_list'){
+                    _uri = 'product_statistics_list';
+                }
+                if( uri == 'product_statistics_log'){
+                    _uri = 'product_statistics_log_list';
+                }
             }
             ym.init.XML({
-                method: 'GET',
-                uri: token._j.URLS.Development_Server_ + uri,
+                method: _uri == 'machine_statistics_log_list' || _uri == 'admin_statistics_log_list' || _uri == 'product_statistics_list' || _uri == 'product_statistics_log_list' ? 'POST' : 'GET',
+                uri: token._j.URLS.Development_Server_ + _uri,
                 async: false,
                 xmldata: _data,
                 done: function (res) {
                     ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? ((xml = []) => {
-                        switch (uri) {
+                        switch (_uri) {
                             case `statistics_machinelist`:
                                 for (let i = 0; i < res.package.MachineCountList.length; i++) {
                                     xml.push({
@@ -1509,6 +1843,12 @@ new Vue({
                                         status: (res.logList[i].status ? '未使用' : '已使用')
                                     })
                                 }
+                                break;
+                            case 'product_statistics_log_list':
+                            case 'admin_statistics_log_list':
+                            case 'machine_statistics_log_list':
+                            case 'product_statistics_list':
+                                xml = res.data;
                                 break;
                             default:
                                 break;

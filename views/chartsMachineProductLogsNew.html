@@ -16,9 +16,10 @@
     <title>广东圆梦实业发展有限公司</title>
 </head>
 
+
 <body class="_scrollbar">
-    <div id="c-container-list" style="height: 100%;" data-uri="product_statistics_list"
-        data-child-uri="/manage/chartsMacchineNew.html" v-loading.fullscreen.lock="loading">
+    <div id="c-container-list" style="height: 100%;" data-uri="product_statistics_log"
+        v-loading.fullscreen.lock="loading" data-child-uri="/manage/chartsMachineProductNew.html">
         <el-container>
             <el-main>
                 <el-form>
@@ -29,19 +30,29 @@
                         </el-select>
                     </el-input>
                     <div class="_search_centent">
-                        <el-button>设备类型</el-button>
-                        <el-select v-model="chartsSearch.machineType" slot="prepend" placeholder="请选择">
-                            <el-option label="大型柜式机" :value="1"></el-option>
-                            <el-option label="小型桌面机" :value="2"></el-option>
-                        </el-select>
-                    </div>
-                    <div class="_search_centent">
                         <el-button>是否含测试</el-button>
                         <el-select v-model="chartsSearch.hasTest" slot="prepend" placeholder="请选择">
                             <el-option label="不包含" :value="0"></el-option>
                             <el-option label="包含" :value="1"></el-option>
                         </el-select>
                     </div>
+                    <div class="_search_centent">
+                        <el-button>时间单位</el-button>
+                        <el-select v-model="chartsSearch.timeUnit" slot="prepend" placeholder="请选择">
+                            <el-option label="年" :value="1"></el-option>
+                            <el-option label="月" :value="2"></el-option>
+                            <el-option label="日" :value="3"></el-option>
+                        </el-select>
+                    </div>
+
+                    <div class="_search_centent">
+                        <el-button>设备类型</el-button>
+                        <el-select v-model="chartsSearch.machineType" slot="prepend" placeholder="请选择">
+                            <el-option label="大型柜式机" :value="1"></el-option>
+                            <el-option label="小型桌面机" :value="2"></el-option>
+                        </el-select>
+                    </div>
+
                     <div style="margin: 10px 0">
                         <el-date-picker v-model="chartsSearch._time_" type="daterange" align="right" unlink-panels
                             range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期"
@@ -51,14 +62,10 @@
 
                     <el-button icon="el-icon-search" class="_search_btn" @click="charts(chartsSearch)">搜索
                     </el-button>
-                    <el-button icon="el-icon-s-data" @click="crud({uri:'chartsMachineProductLogsNew'})"
-                        style="float: right;">
-                        日志统计
-                    </el-button>
                 </el-form>
-
                 <template>
                     <el-table :data="tableData" stripe style="width: 100%;" height="600px" border>
+                        <el-table-column prop="machineNumber" label="设备编号"></el-table-column>
                         <el-table-column prop="productId" label="产品ID"></el-table-column>
                         <el-table-column prop="productName" label="设备类型">
                             <template slot-scope="scope">
@@ -72,6 +79,7 @@
                         </el-table-column>
                         <el-table-column prop="productPrice" label="产品价格"></el-table-column>
                         <el-table-column prop="payCount" label="支付订单数"></el-table-column>
+                        <el-table-column prop="orderDate" label="统计日期"></el-table-column>
                         <el-table-column prop="paySum" label="支付金额"></el-table-column>
                         <el-table-column prop="paymentCount" label="实收订单数"></el-table-column>
                         <el-table-column prop="paymentSum" label="实收金额"></el-table-column>
@@ -86,7 +94,7 @@
                 </el-pagination>
 
                 <el-form>
-                    <div id="machineProductNew" style="height: 600px"></div>
+                    <div id="echartsCanvasMachineLogsNew" style="height: 600px"></div>
                 </el-form>
             </el-main>
         </el-container>

@@ -45,6 +45,7 @@ window.addEventListener('pageshow', function (params) {
                 listSearch: {
                     hasTest: 0,  //默认是排除测试数据
                     timeUnit: 3, //默认查询的是以日为单位的统计日志
+                    _time_: ''
                 },  //新的列表查询对象
                 selectLong: '',
                 machineNumbers: {
@@ -381,7 +382,7 @@ window.addEventListener('pageshow', function (params) {
                     _data_['startDate'] = _data_['startDate'] || ym.init.getDateTime(new Date().setTime(new Date().getTime() - 3600 * 1000 * 24 * 7)).split(' ')[0];
                     _data_['endDate'] = _data_['endDate'] || ym.init.getDateTime(new Date()).split(' ')[0];
                     it.listSearch._time_ = [_data_['startDate'], _data_['endDate']]
-                    _data_['hasTest'] = 0;
+                    _data_['hasTest'] = _data_['hasTest'] || it.listSearch.hasTest;
                     if(uri == 'admin_statistics_log_list'){
                         _data_['timeUnit'] = params ? params['timeUnit'] : it.listSearch.timeUnit;
                     }
@@ -945,7 +946,6 @@ window.addEventListener('pageshow', function (params) {
                                     break;
                                 case `admin_statistics_list`:  //新商户统计 
                                 case `machine_statistics_list`:  //新设备统计 
-                                case `admin_statistics_log_list`:  //新商户统计日志
                                     xml = res.data;
                                     break;
                                 default:

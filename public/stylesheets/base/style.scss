@@ -371,10 +371,8 @@ body{
 	box-sizing: border-box;
   }
   .el-pagination {
-    float: right;
-    margin-right: 30px;
-		margin-bottom: 212px;
-		margin-top: 30px;
+    margin: 30px;
+	text-align: right;
 }
 .el-form{
 	margin: 10px;

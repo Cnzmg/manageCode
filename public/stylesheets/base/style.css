@@ -415,10 +415,8 @@ body ._scrollbars::-webkit-scrollbar-thumb {
 }
 
 .el-pagination {
-  float: right;
-  margin-right: 30px;
-  margin-bottom: 212px;
-  margin-top: 30px;
+  margin: 30px;
+  text-align: right;
 }
 
 .el-form {
