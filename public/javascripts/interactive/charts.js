@@ -1,4 +1,3 @@
-// var echarts = require('echarts');
 // 引入 ECharts 主模块
 var echarts = require('echarts/lib/echarts');
 // 引入柱状图
@@ -16,13 +15,11 @@ require('echarts/lib/component/markLine');
 require("echarts/lib/component/legend");
 
 const [
-    $,
     token,
     u,
     uri,
     perent
 ] = [
-        parent.all.jq,
         parent.all.json,
         parent.document.getElementById('tagHref').getAttribute('src').replace('..', '/manage').split('?')[0],
         document.getElementById('c-container-list').getAttribute('data-uri'),
@@ -1593,13 +1590,14 @@ new Vue({
                     break;
                 case 'product_statistics_log':  //新版的设备产品统计日志 列表 + 图表
                     let _machineProductLogsData_ = {}, _machineProductLogsSessionData = {
+                        productName: [],
                         payCount: [],
                         paySum: [],
                         paymentCount: [],
                         paymentSum: [],
                         refundCount: [],
                         refundSum: []
-                    }, _machineProductDayTime_ = [];
+                    };
                     if (_params_) {
                         _params_._name_ && _params_._value_ ? _params_[_params_._name_] = _params_._value_ : null;  //第一搜索key of value
                         if (_params_._time_) {
@@ -1638,27 +1636,33 @@ new Vue({
                         done: function (res) {
                             try {
                                 ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
-                                    let _logsTime = ym.init.getAllDate(it.userCharts[0].split(' ')[0], it.userCharts[1].split(' ')[0]);
-                                    for (let i = 0; i < _logsTime.length; i++) {
-                                        _machineProductDayTime_.push(_logsTime[i]);  //记录日期
-                                        _machineProductLogsSessionData['payCount'].push(0); //先赋值 0
-                                        _machineProductLogsSessionData['paySum'].push(0); //先赋值 0
-                                        _machineProductLogsSessionData['paymentCount'].push(0); //先赋值 0
-                                        _machineProductLogsSessionData['paymentSum'].push(0); //先赋值 0
-                                        _machineProductLogsSessionData['refundCount'].push(0); //先赋值 0
-                                        _machineProductLogsSessionData['refundSum'].push(0); //先赋值 0
-                                        if (res.data[0].dateList.length == 0) continue
-                                        for (let j of res.data[0].dateList) {
-                                            if (_logsTime[i] == j.orderDate) {
-                                                _machineProductLogsSessionData.payCount[i] = j.payCount; //对应的数值
-                                                _machineProductLogsSessionData.paySum[i] = j.paySum; //对应的数值
-                                                _machineProductLogsSessionData.paymentCount[i] = j.paymentCount; //对应的数值
-                                                _machineProductLogsSessionData.paymentSum[i] = j.paymentSum; //对应的数值
-                                                _machineProductLogsSessionData.refundCount[i] = j.refundCount; //对应的数值
-                                                _machineProductLogsSessionData.refundSum[i] = j.refundSum; //对应的数值
+                                    res = JSON.parse(`{"data":[{"productId":1,"productName":"卡布奇诺,Cappuccino","dateList":[{"payCount":1,"paySum":"0.00","refundCount":0,"refundSum":"0.00","paymentCount":1,"paymentSum":"0.00","target":"1","orderDate":"2019-09-25"},{"payCount":2,"paySum":"2.00","refundCount":2,"refundSum":"-2.00","paymentCount":0,"paymentSum":"0.00","target":"1","orderDate":"2019-10-23"}]},{"productId":3,"productName":"拿铁(热),Hot Latte","dateList":[{"payCount":1,"paySum":"1.00","refundCount":1,"refundSum":"-1.00","paymentCount":0,"paymentSum":"0.00","target":"3","orderDate":"2019-10-23"}]},{"productId":4,"productName":"美式咖啡(热),Americano","dateList":[{"payCount":1,"paySum":"0.00","refundCount":0,"refundSum":"0.00","paymentCount":1,"paymentSum":"0.00","target":"4","orderDate":"2019-08-30"},{"payCount":4,"paySum":"0.00","refundCount":3,"refundSum":"0.00","paymentCount":1,"paymentSum":"0.00","target":"4","orderDate":"2019-09-25"},{"payCount":1,"paySum":"1.00","refundCount":1,"refundSum":"-1.00","paymentCount":0,"paymentSum":"0.00","target":"4","orderDate":"2019-09-26"},{"payCount":1,"paySum":"1.00","refundCount":1,"refundSum":"-1.00","paymentCount":0,"paymentSum":"0.00","target":"4","orderDate":"2019-10-23"},{"payCount":1,"paySum":"1.00","refundCount":0,"refundSum":"0.00","paymentCount":1,"paymentSum":"1.00","target":"4","orderDate":"2019-10-30"},{"payCount":1,"paySum":"0.00","refundCount":0,"refundSum":"0.00","paymentCount":1,"paymentSum":"0.00","target":"4","orderDate":"2019-10-31"}]},{"productId":7,"productName":"美式咖啡(冰),Iced Americano","dateList":[{"payCount":2,"paySum":"2.00","refundCount":2,"refundSum":"-2.00","paymentCount":0,"paymentSum":"0.00","target":"7","orderDate":"2019-10-23"}]},{"productId":117,"productName":"摩卡(热),Hot Mocha","dateList":[]},{"productId":118,"productName":"拿铁(冰),Iced Latter","dateList":[{"payCount":1,"paySum":"0.00","refundCount":0,"refundSum":"0.00","paymentCount":1,"paymentSum":"0.00","target":"118","orderDate":"2019-09-26"}]},{"productId":119,"productName":"港式奶茶,Milk tea HK Style","dateList":[{"payCount":1,"paySum":"8.00","refundCount":1,"refundSum":"-8.00","paymentCount":0,"paymentSum":"0.00","target":"119","orderDate":"2019-09-06"},{"payCount":4,"paySum":"1.00","refundCount":3,"refundSum":"0.00","paymentCount":1,"paymentSum":"1.00","target":"119","orderDate":"2019-09-25"},{"payCount":1,"paySum":"0.00","refundCount":1,"refundSum":"-1.00","paymentCount":0,"paymentSum":"-1.00","target":"119","orderDate":"2019-09-26"},{"payCount":3,"paySum":"3.00","refundCount":3,"refundSum":"-3.00","paymentCount":0,"paymentSum":"0.00","target":"119","orderDate":"2019-10-23"},{"payCount":1,"paySum":"0.00","refundCount":0,"refundSum":"0.00","paymentCount":1,"paymentSum":"0.00","target":"119","orderDate":"2019-10-26"},{"payCount":1,"paySum":"0.00","refundCount":0,"refundSum":"0.00","paymentCount":1,"paymentSum":"0.00","target":"119","orderDate":"2019-11-04"}]},{"productId":354,"productName":"蓝莓拿铁,blueberry latte","dateList":[{"payCount":1,"paySum":"1.00","refundCount":0,"refundSum":"0.00","paymentCount":1,"paymentSum":"1.00","target":"354","orderDate":"2019-09-26"},{"payCount":3,"paySum":"3.00","refundCount":3,"refundSum":"-3.00","paymentCount":0,"paymentSum":"0.00","target":"354","orderDate":"2019-10-23"}]},{"productId":355,"productName":"蓝莓牛奶,blueberry milk","dateList":[{"payCount":3,"paySum":"2.00","refundCount":2,"refundSum":"-2.00","paymentCount":1,"paymentSum":"0.00","target":"355","orderDate":"2019-09-25"},{"payCount":2,"paySum":"0.00","refundCount":2,"refundSum":"0.00","paymentCount":0,"paymentSum":"0.00","target":"355","orderDate":"2019-09-26"},{"payCount":7,"paySum":"7.00","refundCount":6,"refundSum":"-6.00","paymentCount":1,"paymentSum":"1.00","target":"355","orderDate":"2019-10-23"},{"payCount":3,"paySum":"0.00","refundCount":0,"refundSum":"0.00","paymentCount":3,"paymentSum":"0.00","target":"355","orderDate":"2019-10-30"}]},{"productId":356,"productName":"蓝莓可可,blueberry  chocolate","dateList":[{"payCount":1,"paySum":"1.00","refundCount":0,"refundSum":"0.00","paymentCount":1,"paymentSum":"1.00","target":"356","orderDate":"2019-09-26"},{"payCount":1,"paySum":"1.00","refundCount":0,"refundSum":"0.00","paymentCount":1,"paymentSum":"1.00","target":"356","orderDate":"2019-10-23"},{"payCount":1,"paySum":"0.00","refundCount":0,"refundSum":"0.00","paymentCount":1,"paymentSum":"0.00","target":"356","orderDate":"2019-10-25"}]},{"productId":357,"productName":"杨枝甘露（冰）,Yangzhiganlu","dateList":[{"payCount":4,"paySum":"4.00","refundCount":4,"refundSum":"-4.00","paymentCount":0,"paymentSum":"0.00","target":"357","orderDate":"2019-10-23"},{"payCount":2,"paySum":"0.00","refundCount":0,"refundSum":"0.00","paymentCount":2,"paymentSum":"0.00","target":"357","orderDate":"2019-10-30"}]},{"productId":358,"productName":"冰淇淋拿铁（冰）,Ice cream Latte","dateList":[{"payCount":1,"paySum":"1.00","refundCount":0,"refundSum":"0.00","paymentCount":1,"paymentSum":"1.00","target":"358","orderDate":"2019-10-23"}]}],"statusCode":{"status":6666,"msg":"查询成功"}}`)
+                                    res.data.forEach((valueKey, index) => {
+                                        let payCount = 0, paySum = 0, paymentCount = 0, paymentSum = 0, refundCount = 0, refundSum = 0;
+                                        _machineProductLogsSessionData.payCount.push(0);
+                                        _machineProductLogsSessionData.paySum.push(0);
+                                        _machineProductLogsSessionData.paymentCount.push(0);
+                                        _machineProductLogsSessionData.paymentSum.push(0);
+                                        _machineProductLogsSessionData.refundCount.push(0);
+                                        _machineProductLogsSessionData.refundSum.push(0);
+                                        _machineProductLogsSessionData['productName'].push(valueKey.productName);
+                                        if (res.data[index].dateList.length > 0) {
+                                            for (let j of res.data[index].dateList) {
+                                                payCount = payCount + parseInt(j.payCount);
+                                                paySum = paySum + parseInt(j.paySum);
+                                                paymentCount = paymentCount + parseInt(j.paymentCount);
+                                                paymentSum = paymentSum + parseInt(j.paymentSum);
+                                                refundCount = refundCount + parseInt(j.refundCount);
+                                                refundSum = refundSum + parseInt(j.refundSum);
                                             }
+                                            _machineProductLogsSessionData.payCount.push(payCount);
+                                            _machineProductLogsSessionData.paySum.push(paySum);
+                                            _machineProductLogsSessionData.paymentCount.push(paymentCount);
+                                            _machineProductLogsSessionData.paymentSum.push(paymentSum);
+                                            _machineProductLogsSessionData.refundCount.push(refundCount);
+                                            _machineProductLogsSessionData.refundSum.push(refundSum);
                                         }
-                                    }
+                                    })
                                 })() :
                                     (() => {
                                         throw "收集到错误：\n\n" + res.statusCode.msg;
@@ -1669,17 +1673,11 @@ new Vue({
                         }
                     });
                     setTimeout(() => {
-                        let echartsCanvasMachineLogsNew = echarts.init(document.getElementById('echartsCanvasMachineLogsNew')), option = {
-                            title: {
-                                text: '产品统计日志'
-                            },
+                        let echartsCanvasMachineProductLogsNew = echarts.init(document.getElementById('echartsCanvasMachineProductLogsNew')), option = {
                             tooltip: {
                                 trigger: 'axis',
-                                axisPointer: {
-                                    type: 'cross',
-                                    label: {
-                                        backgroundColor: '#6a7985'
-                                    }
+                                axisPointer: {            // 坐标轴指示器，坐标轴触发有效
+                                    type: 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
                                 }
                             },
                             legend: {
@@ -1699,44 +1697,91 @@ new Vue({
                                 bottom: '3%',
                                 containLabel: true
                             },
-                            xAxis: [
+                            xAxis: {
+                                type: 'value'
+                            },
+                            yAxis: {
+                                type: 'category',
+                                data: _machineProductLogsSessionData['productName']
+                            },
+                            series: [
                                 {
-                                    type: 'category',
-                                    boundaryGap: false,
-                                    data: _machineProductDayTime_
-                                }
-                            ],
-                            yAxis: [
-                                {
-                                    type: 'value'
-                                }
-                            ],
-                            series: (() => {
-                                let dataCode = [], _name = ['支付订单数', '支付金额', '实收订单数', '实收金额', '退单总数', '退单金额'];
-                                Object.keys(_machineProductLogsSessionData).forEach((element, index) => {
-                                    dataCode.push({
-                                        name: _name[index],
-                                        type: 'line',
-                                        stack: '总量',
-                                        areaStyle: {},
-                                        data: Object.values(_machineProductLogsSessionData)[index],
-                                        markPoint: {
-                                            data: [
-                                                { type: 'max', name: '最大值' },
-                                                { type: 'min', name: '最小值' }
-                                            ]
-                                        },
-                                        markLine: {
-                                            data: [
-                                                { type: 'average', name: '平均值' }
-                                            ]
+                                    name: '支付订单数',
+                                    type: 'bar',
+                                    stack: '总量',
+                                    label: {
+                                        normal: {
+                                            show: true,
+                                            position: 'insideRight'
                                         }
-                                    })
-                                })
-                                return dataCode
-                            })()
+                                    },
+                                    data: _machineProductLogsSessionData['payCount']
+                                },
+                                {
+                                    name: '支付金额',
+                                    type: 'bar',
+                                    stack: '总量',
+                                    label: {
+                                        normal: {
+                                            show: true,
+                                            position: 'insideRight'
+                                        }
+                                    },
+                                    data: _machineProductLogsSessionData['paySum']
+                                },
+                                {
+                                    name: '实收订单数',
+                                    type: 'bar',
+                                    stack: '总量',
+                                    label: {
+                                        normal: {
+                                            show: true,
+                                            position: 'insideRight'
+                                        }
+                                    },
+                                    data: _machineProductLogsSessionData['paymentCount']
+                                },
+                                {
+                                    name: '实收金额',
+                                    type: 'bar',
+                                    stack: '总量',
+                                    label: {
+                                        normal: {
+                                            show: true,
+                                            position: 'insideRight'
+                                        }
+                                    },
+                                    data: _machineProductLogsSessionData['paymentSum']
+                                },
+                                {
+                                    name: '退单总数',
+                                    type: 'bar',
+                                    stack: '总量',
+                                    label: {
+                                        normal: {
+                                            show: true,
+                                            position: 'insideRight'
+                                        }
+                                    },
+                                    data: _machineProductLogsSessionData['refundCount']
+                                },
+                                {
+                                    name: '退单金额',
+                                    type: 'bar',
+                                    stack: '总量',
+                                    label: {
+                                        normal: {
+                                            show: true,
+                                            position: 'insideRight'
+                                        }
+                                    },
+                                    data: _machineProductLogsSessionData['refundSum']
+                                }
+                            ]
                         };
-                        echartsCanvasMachineLogsNew.setOption(option, true);
+                        echartsCanvasMachineProductLogsNew.setOption(option, true);
+                        echartsCanvasMachineProductLogsNew.getDom().style.height = _machineProductLogsSessionData.length * 35 + 200 + "px";
+                        echartsCanvasMachineProductLogsNew.resize();  //重置canvas的高度
                     }, 1000)
                     break;
                 default:
@@ -1788,10 +1833,10 @@ new Vue({
                     _data['adminId'] = JSON.parse(decodeURI(parent.document.getElementById('tagHref').getAttribute('src').split('*')[1])).adminId;
                     delete _data['machineNumber'];
                 }
-                if( uri == 'product_statistics_list'){
+                if (uri == 'product_statistics_list') {
                     _uri = 'product_statistics_list';
                 }
-                if( uri == 'product_statistics_log'){
+                if (uri == 'product_statistics_log') {
                     _uri = 'product_statistics_log_list';
                 }
             }

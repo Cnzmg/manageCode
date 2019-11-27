@@ -19,7 +19,7 @@ window.addEventListener('pageshow', function (params) {
             parent.all.jq,
             parent.all.json,
             // parent.document.getElementById('tagHref').getAttribute('src').replace('..', '/manage').split('?')[0],
-            '/manage' + params.target.URL.substring(params.target.URL.lastIndexOf('/'), params.target.URL.lastIndexOf('?')),
+            '/manage' + params.target.URL.substring(params.target.URL.lastIndexOf('/'), params.target.URL.lastIndexOf('?') == -1 ? params.target.URL.length : params.target.URL.lastIndexOf('?')),
             document.getElementById('c-container-list').getAttribute('data-uri'),
         ];
     var _data = {

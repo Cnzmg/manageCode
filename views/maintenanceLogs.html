@@ -23,7 +23,8 @@
             <el-main>
                 <el-form>
                     <el-input placeholder="请输入内容" v-model="listSearch._value_" class="_searchVal">
-                        <el-select v-model="listSearch._name_" class="_searchVal_select" slot="prepend" placeholder="请选择">
+                        <el-select v-model="listSearch._name_" class="_searchVal_select" slot="prepend"
+                            placeholder="请选择">
                             <el-option label="机器编号" value="machineNumber"></el-option>
                             <el-option label="运维人员名称" value="maintainerName"></el-option>
                         </el-select>
@@ -58,8 +59,7 @@
                     </div>
                     <div class="more_search el-icon-remove-outline" v-show="more" @click="more = !more"> 收起 </div>
 
-                    <el-button icon="el-icon-search" class="_search_btn"
-                        @click="list(listSearch)">搜索
+                    <el-button icon="el-icon-search" class="_search_btn" @click="list(listSearch)">搜索
                     </el-button>
                 </el-form>
 
@@ -90,8 +90,8 @@
                     layout="total, sizes, prev, pager, next, jumper" :total="total">
                 </el-pagination>
 
-                <el-dialog title="流程详情" :visible.sync="detailTableAndVisible">
-                    <el-table :data="UnFormData" height="300px" border>
+                <el-dialog title="流程详情" :visible.sync="detailTableAndVisible" width="80%">
+                    <el-table :data="UnFormData" height="450px" border>
                         <el-table-column property="question" label="问题">
                             <template slot-scope="scope">
                                 {{ scope.row.question }}
@@ -99,19 +99,23 @@
                         </el-table-column>
                         <el-table-column property="answer" label="答案">
                             <template slot-scope="scope">
-                                {{ scope.row.answer != -1 ? (()=>{
+                                {{ scope.row.answer != -1 ? scope.row.answer == 'undefined' ? '否' : (()=>{
                                     return scope.row.answer
-                                })() : '' }}
+                                })() : ''}}
                             </template>
                         </el-table-column>
                         <el-table-column property="answerPic" label="图片">
                             <template slot-scope="scope">
-                                <div slot="reference" class="name-wrapper"
-                                    v-show="scope.row.answerPic != -1 ? true : false">
-                                    <el-image :src="scope.row.answerPic" lazy></el-image>
-                                </div>
-                                <div slot="reference" class="name-wrapper"
-                                    v-show="scope.row.answerPic == -1 ? true : false">
+                                <el-popover trigger="hover" placement="top" v-show="scope.row.answerPic != -1">
+                                    <el-image v-for="imgages in scope.row.answerPic.split(',')" :src="imgages"
+                                        :preview-src-list="imgages" style="width:30%;text-align: center;"></el-image>
+                                    <div slot="reference" class="name-wrapper"
+                                        v-for="imgage in scope.row.answerPic.split(',')">
+                                        <el-image style="width:50px;height:50px;margin:0 10px;float: left;" :src="imgage"
+                                            :preview-src-list="imgage" lazy></el-image>
+                                    </div>
+                                </el-popover>
+                                <div slot="reference" class="name-wrapper" v-show="scope.row.answerPic == -1">
                                     无
                                 </div>
                             </template>
