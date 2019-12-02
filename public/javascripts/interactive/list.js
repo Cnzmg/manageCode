@@ -10,6 +10,7 @@ if (/(iPhone|iPad|iPod|iOS|Android)/i.test(navigator.userAgent)) {
 }
 
 window.addEventListener('pageshow', function (params) {
+    let par = params.target.URL.split('*').length > 1 ? params.target.URL.split('*')[0] : params.target.URL;
     const [
         $,
         token,
@@ -19,7 +20,7 @@ window.addEventListener('pageshow', function (params) {
             parent.all.jq,
             parent.all.json,
             // parent.document.getElementById('tagHref').getAttribute('src').replace('..', '/manage').split('?')[0],
-            '/manage' + params.target.URL.substring(params.target.URL.lastIndexOf('/'), params.target.URL.lastIndexOf('?') == -1 ? params.target.URL.length : params.target.URL.lastIndexOf('?')),
+            '/manage' + par.substring(par.lastIndexOf('/'), par.lastIndexOf('?') == -1 ? par.length : par.lastIndexOf('?')),
             document.getElementById('c-container-list').getAttribute('data-uri'),
         ];
     var _data = {
@@ -1348,6 +1349,7 @@ window.addEventListener('pageshow', function (params) {
                             return false;
                         }
                         _v._type.forEach(e => {
+                            if(e == 6) e = 4;  //暂时解决产品清单绑定问题
                             _data['type'] = e;
                             _data['adminId'] = _v._id || '';
                             _data['listId'] = _v._listid || '';
