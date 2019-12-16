@@ -23,6 +23,9 @@
         <el-container>
             <el-main>
                 <el-form>
+                    <div style="width: 100%;margin-bottom:10px;">
+                        <el-button @click="UpdateTableAndVisible = true;pathUrlExe = {}" type="primary">导出记录</el-button>
+                    </div>
                     <el-input placeholder="请输入内容" v-model="listSearch._value_" class="_searchVal">
                         <el-select v-model="listSearch._name_" class="_searchVal_select" slot="prepend" placeholder="请选择" :change="listSearch._name_ = 'nickName'">
                             <el-option label="昵称" value="nickName"></el-option>
@@ -78,12 +81,13 @@
                         <el-table-column prop="status" label="状态"></el-table-column>
                         <el-table-column prop="address" label="地址">
                             <template slot-scope="scope">
-                                <el-popover trigger="hover" placement="top" width="300">
-                                    <p>{{ scope.row.address != "未填写" ? "地址："+ scope.row.address.split(",")[0]+ "，姓名："+ scope.row.address.split(",")[1]+"，电话："+ scope.row.address.split(",")[2] : "未填写" }}</p>
+                                <el-popover trigger="hover" placement="top" width="300" v-show="scope.row.itemType == 4 || scope.row.itemType == '5'">
+                                    <p>{{ scope.row.address != '未填写' ? "地址："+ scope.row.address.split(",")[0] + "，姓名："+ scope.row.address.split(",")[1]+"，电话："+ scope.row.address.split(",")[2] : scope.row.address }}</p>
                                     <div slot="reference" class="name-wrapper">
                                         <el-tag size="medium">{{ scope.row.address.substr(0,8) + `...` }}</el-tag>
                                     </div>
                                 </el-popover>
+                                <div v-show="scope.row.itemType != 4 && scope.row.itemType != 5">无</div>
                             </template>
                         </el-table-column>
                     </el-table>
@@ -108,6 +112,42 @@
                     </el-form>
                 </el-dialog>
 
+                <el-dialog title="导出抽奖记录" :visible.sync="UpdateTableAndVisible">
+                    <el-form :model="pathUrlExe" label-width="100px">
+                        <el-form-item label="导出关键字" prop="orderId">
+                            <el-input v-model="pathUrlExe.userId" placeholder="用户ID"></el-input>
+                            <el-input style="margin: 3px 0" v-model="pathUrlExe.nickName" placeholder="用户昵称">
+                            </el-input>
+                            <el-input v-model="pathUrlExe.adminName" placeholder="商户名称"></el-input>
+                            <el-input style="margin: 3px 0" v-model="pathUrlExe.raffleVersion" placeholder="奖品版本">
+                            </el-input>
+                        </el-form-item>
+                        <el-form-item label="奖品类型" prop="payNum">
+                            <el-select v-model="pathUrlExe.itemType" placeholder="请选择">
+                                <el-option
+                                    v-for="item in [{value:1,label:'无奖品'},{value:2,label:'礼券'},{value:3,label:'会员'},{value:4,label:'实体奖品'},{value:5,label:'活动奖品'},{value:6,label:'再来一次'}]"
+                                    :key="item.value" :label="item.label" :value="item.value">
+                                </el-option>
+                            </el-select>
+                        </el-form-item>
+                        <el-form-item label="记录状态" prop="status">
+                            <el-select v-model="pathUrlExe.status" placeholder="请选择">
+                                <el-option
+                                    v-for="item in [{value:1,label:'未申领'},{value:2,label:'已申领'},{value:3,label:'已发放'}]"
+                                    :key="item.value" :label="item.label" :value="item.value">
+                                </el-option>
+                            </el-select>
+                        </el-form-item>
+                        <el-form-item label="时间区间">
+                            <el-date-picker v-model="pathUrlExe.startTime" @change="getTime" type="datetimerange"
+                                range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期">
+                            </el-date-picker>
+                        </el-form-item>
+                        <el-form-item>
+                            <el-button type="primary" @click="miniTurntablePrizeExe(pathUrlExe)">导出Excel</el-button>
+                        </el-form-item>
+                    </el-form>
+                </el-dialog>
 
             </el-main>
         </el-container>

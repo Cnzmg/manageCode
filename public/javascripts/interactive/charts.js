@@ -1320,13 +1320,21 @@ new Vue({
                         if (_params_._time_) {
                             _params_['startDate'] = ym.init.getDateTime(_params_._time_[0]).split(' ')[0];
                             _params_['endDate'] = ym.init.getDateTime(_params_._time_[1]).split(' ')[0];
+                            if (_params_.timeUnit == 2) {
+                                _params_['startDate'] = _params_['startDate'].substring(0, _params_['startDate'].lastIndexOf('-'));
+                                _params_['endDate'] = _params_['endDate'].substring(0, _params_['endDate'].lastIndexOf('-'));
+                            } else if (_params_.timeUnit == 1) {
+                                _params_['startDate'] = _params_['startDate'].split('-')[0];
+                                _params_['endDate'] = _params_['endDate'].split('-')[0];
+                            }
+                            it.chartsSearch.timeUnit = _params_['timeUnit'];
                         }
                     }
                     _params_['startDate'] = _params_['startDate'] || ym.init.getDateTime(new Date().setTime(new Date().getTime() - 3600 * 1000 * 24 * 7)).split(' ')[0];  //初始化两个时间
                     _params_['endDate'] = _params_['endDate'] || ym.init.getDateTime(new Date()).split(' ')[0];
                     _params_['hasTest'] = _params_['hasTest'] || it.chartsSearch.hasTest;  //默认不授权测试订单
                     _params_['timeUnit'] = _params_['timeUnit'] || it.chartsSearch.timeUnit;  //默认天时间单位
-                    it.chartsSearch._time_ = [_params_['startDate'], _params_['endDate']];
+                    it.chartsSearch._time_ = [_params_['startDate'], _params_['endDate']];  //显示选择的时间区间
                     _logsData_ = Object.assign({  //初始对象
                         id: ym.init.COMPILESTR.decrypt(token.id),
                         token: ym.init.COMPILESTR.decrypt(token.asset),
@@ -1343,6 +1351,21 @@ new Vue({
                             try {
                                 ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
                                     let _logsTime = ym.init.getAllDate(it.userCharts[0].split(' ')[0], it.userCharts[1].split(' ')[0]);
+
+                                    if(_params_.timeUnit == 2){   //这里的处理为待定  去年/月/日的的统计图【X】坐标
+                                        let code = [];
+                                        _logsTime.forEach(ele => {
+                                            code.push(ele.substring(0, ele.lastIndexOf('-')))
+                                        })
+                                        _logsTime = Array.from(new Set(code));
+                                    }else if (_params_.timeUnit == 1){
+                                        let code = [];
+                                        _logsTime.forEach(ele => {
+                                            code.push(ele.split('-')[0])
+                                        })
+                                        _logsTime = Array.from(new Set(code));
+                                    }
+
                                     for (let i = 0; i < _logsTime.length; i++) {
                                         _DayTime_.push(_logsTime[i]);  //记录日期
                                         _logsSessionData['payCount'].push(0); //先赋值 0
@@ -1478,6 +1501,7 @@ new Vue({
                         url: perent
                     }, _params_);
                     _machineLogsData_['machineNumber'] = JSON.parse(decodeURI(parent.document.getElementById('tagHref').getAttribute('src').split('*')[1])).machineNumber;
+                    it.chartsSearch._machineNumber = _machineLogsData_['machineNumber'];
                     it.list();
                     ym.init.XML({
                         method: 'POST',
@@ -1488,6 +1512,21 @@ new Vue({
                             try {
                                 ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
                                     let _logsTime = ym.init.getAllDate(it.userCharts[0].split(' ')[0], it.userCharts[1].split(' ')[0]);
+                                    
+                                    if(_params_.timeUnit == 2){   //这里的处理为待定  去年/月/日的的统计图【X】坐标
+                                        let code = [];
+                                        _logsTime.forEach(ele => {
+                                            code.push(ele.substring(0, ele.lastIndexOf('-')))
+                                        })
+                                        _logsTime = Array.from(new Set(code));
+                                    }else if (_params_.timeUnit == 1){
+                                        let code = [];
+                                        _logsTime.forEach(ele => {
+                                            code.push(ele.split('-')[0])
+                                        })
+                                        _logsTime = Array.from(new Set(code));
+                                    }
+                                    
                                     for (let i = 0; i < _logsTime.length; i++) {
                                         _machineDayTime_.push(_logsTime[i]);  //记录日期
                                         _machineLogsSessionData['payCount'].push(0); //先赋值 0
@@ -1520,7 +1559,7 @@ new Vue({
                     setTimeout(() => {
                         let echartsCanvasMachineLogsNew = echarts.init(document.getElementById('echartsCanvasMachineLogsNew')), option = {
                             title: {
-                                text: '商户统计日志'
+                                text: '设备统计日志'
                             },
                             tooltip: {
                                 trigger: 'axis',

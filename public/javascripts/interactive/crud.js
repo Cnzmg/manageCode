@@ -605,8 +605,8 @@ new Vue({
                                 it.imageList.machineUrl.push({ name: 'machineUrl', url: res.machineInfo.machineUrl }); //大楼外景图
 
                                 TextToCode[res.machineInfo.province] ? it.ruleForm.province.push(TextToCode[res.machineInfo.province].code) : null;
-                                TextToCode[res.machineInfo.province][res.machineInfo.city] ? it.ruleForm.province.push(TextToCode[res.machineInfo.province][res.machineInfo.city].code) : null;
-                                TextToCode[res.machineInfo.province][res.machineInfo.city][res.machineInfo.district] ? it.ruleForm.province.push(TextToCode[res.machineInfo.province][res.machineInfo.city][res.machineInfo.district].code) : null;
+                                TextToCode[res.machineInfo.province] ? it.ruleForm.province.push(TextToCode[res.machineInfo.province][res.machineInfo.city].code) : null;
+                                TextToCode[res.machineInfo.province] ? it.ruleForm.province.push(TextToCode[res.machineInfo.province][res.machineInfo.city][res.machineInfo.district].code) : null;
 
 
                                 var map = new AMap.Map('cityg', {

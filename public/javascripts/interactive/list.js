@@ -857,6 +857,7 @@ window.addEventListener('pageshow', function (params) {
                                         }
                                     })
                                     xml.push(_obj);
+                                    res.pageCount = 1;
                                     break;
                                 case `sys_draw_item_info_list`:  //add_or_update_sys_draw_item_info 
                                     for (let i = 0; i < res.data.length; i++) {
@@ -941,6 +942,7 @@ window.addEventListener('pageshow', function (params) {
                                             createTime: res.data[i].createTime,
                                             nickName: res.data[i].nickName,
                                             address: res.data[i].address,
+                                            itemType:  res.data[i].itemType,
                                             status: res.data[i].status
                                         })
                                     }
@@ -952,7 +954,7 @@ window.addEventListener('pageshow', function (params) {
                                 default:
                                     break;
                             }
-                            it.total = parseInt(res.pageCount * 20);//数据总条数
+                            it.total = parseInt(res.totalCount ? res.totalCount : res.pageCount * 20);//数据总条数
                             // it.currentPage = parseInt(res.pageCount); 
                             it.tableData = xml;
                             setTimeout(() => {
@@ -2404,7 +2406,8 @@ window.addEventListener('pageshow', function (params) {
                                                     if (Object.keys(JSON.parse(_code)).length <= 2) {
                                                         _code_ = `料仓：${Object.values(JSON.parse(_code))[0]},坏料：${Object.values(JSON.parse(_code))[1]}`;
                                                     } else {
-                                                        _code_ += ` 【 料仓：${index + 1}, 数值：${Object.values(JSON.parse(_code))[index]} 】 `;
+                                                        // _code_ += ` 【 料仓：${index + 1}, 数值：${Object.values(JSON.parse(_code))[index]} 】 `;
+                                                        _code_ += `【 ${ index + 1 }、${Object.keys(JSON.parse(_code))[index].split('g')[0]}：${Object.values(JSON.parse(_code))[index]} g 】 `
                                                     }
                                                 });
                                                 _code = _code_;
@@ -2556,7 +2559,7 @@ window.addEventListener('pageshow', function (params) {
                 })
             },
 
-            miniTurntableUApush(params) {   //小程序大转盘新建 /跟新提交
+            miniTurntableUApush(params) {   //小程序大转盘新建 /更新提交
                 const it = this;
                 _data['raffleName'] = params.raffleName;
                 _data['allowConsumeChance'] = params.allowConsumeChance;
@@ -2580,6 +2583,72 @@ window.addEventListener('pageshow', function (params) {
                                 throw "收集到错误：\n\n" + res.statusCode.msg;
                             })();
                         } catch (error) {
+                            it.IError(error);
+                        }
+                    }
+                })
+            },
+
+            miniTurntablePrizeExe(params){  //导出抽奖记录
+                const it = this;
+                this.loading = true;
+                _data['userId'] = params.userId || '';
+                _data['nickName'] = params.nickName || '';
+                _data['adminName'] = params.adminName || '';
+                _data['raffleVersion'] = params.raffleVersion || '';
+                _data['itemType'] = params.itemType || '';
+                _data['status'] = params.status || '';
+                _data['startDate'] = params.startTime ? ym.init.getDateTime(params.startTime[0]).split(' ')[0] : '';
+                _data['endDate'] = params.startTime ? ym.init.getDateTime(params.startTime[1]).split(' ')[0] : '';
+                ym.init.XML({
+                    method: 'POST',
+                    uri: token._j.URLS.Development_Server_ + 'export_sys_user_draw_log_list',
+                    async: false,
+                    xmldata: _data,
+                    done: function (res) {
+                        try {
+                            ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
+                                it.UpdateTableAndVisible = false;
+                                it.ISuccessfull(res.statusCode.msg);
+                                location.href = token._j.URLS.Development_Server_ + res.path;
+                                it.loading = false;
+                            })() : (() => {
+                                throw "收集到错误：\n\n" + res.statusCode.msg;
+                            })();
+                        } catch (error) {
+                            it.loading = false;
+                            it.IError(error);
+                        }
+                    }
+                })
+            },
+
+            maintenanceLogsOutPut(params){  //导出运维日志
+                const it = this;
+                this.loading = true;
+                _data['maintainerId'] = params.maintainerId || '';
+                _data['maintainerName'] = params.maintainerName || '';
+                _data['machineNumber'] = params.machineNumber || '';
+                _data['status'] = params.status || '';
+                _data['startDate'] = params.startTime ? ym.init.getDateTime(params.startTime[0]).split(' ')[0] : '';
+                _data['endDate'] = params.startTime ? ym.init.getDateTime(params.startTime[1]).split(' ')[0] : '';
+                ym.init.XML({
+                    method: 'POST',
+                    uri: token._j.URLS.Development_Server_ + 'export_maintain_material_answer_log_list',
+                    async: false,
+                    xmldata: _data,
+                    done: function (res) {
+                        try {
+                            ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
+                                it.UpdateTableAndVisible = false;
+                                it.ISuccessfull(res.statusCode.msg);
+                                location.href = token._j.URLS.Development_Server_ + res.path;
+                                it.loading = false;
+                            })() : (() => {
+                                throw "收集到错误：\n\n" + res.statusCode.msg;
+                            })();
+                        } catch (error) {
+                            it.loading = false;
                             it.IError(error);
                         }
                     }

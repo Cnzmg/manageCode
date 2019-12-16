@@ -213,7 +213,7 @@ Date.prototype.format = function() {  //原型
 	return (s); // 返回日期。
 };
 
-window.addEventListener('pageshow', function(e) {
+window.addEventListener('pageshow', function(e) {  
     if (e.persisted) {
         location.reload();
     }

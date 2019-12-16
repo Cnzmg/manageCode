@@ -23,11 +23,9 @@
             <el-main>
                 <el-form>
                     <el-input placeholder="请输入内容" v-model="chartsSearch._value_" class="_searchVal">
-                        <el-select v-model="chartsSearch._name_" class="_searchVal_select" slot="prepend"
+                        <el-select v-model="chartsSearch._name_" class="_searchVal_select" slot="prepend" :change="chartsSearch._name_ = 'machineNumber'"
                             placeholder="请选择">
-                            <el-option label="商户ID" value="adminId"></el-option>
-                            <el-option label="商户账号" value="adminName"></el-option>
-                            <el-option label="商户真名" value="realName"></el-option>
+                            <el-option label="机器编号" value="machineNumber"></el-option>
                         </el-select>
                     </el-input>
                     <div class="_search_centent">
