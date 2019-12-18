@@ -8,14 +8,12 @@ if (/(iPhone|iPad|iPod|iOS|Android)/i.test(navigator.userAgent)) {
     }
 }
 var [
-    $,
     token,
     uri,
     assetUri,
     callBackHtml,
     dataHref
 ] = [
-        parent.all.jq,
         parent.all.json,
         document.getElementById('c-container-list').getAttribute('data-uri'),
         document.getElementById('c-container-list').getAttribute('data-asset'),
@@ -213,8 +211,9 @@ new Vue({
                 couponDesc: '', //优惠券说明
                 couponMoney: '', //优惠券金额
                 couponRange: '', //优惠券产品
+                all_product: false, //优惠券的全选
                 shareNum: '', //优惠券分享次数
-                timeUnit: -1, //营销活动-时间单位
+                timeUnit: 3, //营销活动-时间单位
                 itemName: '',  //营销活动-奖品名称
                 itemType: 1,   //营销活动-奖品类型
                 objectId: '',  //营销活动-类型为2、3的对象ID
@@ -336,12 +335,15 @@ new Vue({
     },
     created: function () {
         const it = this;
-        if (dataHref.split('*').length > 1) {
+        if (dataHref.split('*').length > 1) {  //编辑的基础操作
             this.Ienit(decodeURI(dataHref.split('*')[1]));
             this.tagshow = true;
         };
+        if(uri == 'manage_coupon' && dataHref.split('*').length == 1){  //优惠券添加 
+            this.manageCoupon();
+        }
         switch (document.getElementById('c-container-list').getAttribute('data-search')) {
-            case 'manage_product':  //回显所有的配方选项
+            case 'manage_product':  //  回显所有的配方选项
                 _data['type'] = 2;
                 ym.init.XML({
                     method: 'POST',
@@ -991,7 +993,7 @@ new Vue({
                         _data['shareNum'] = formName.shareNum; //优惠券分享次数
                     }
                     _data['couponDesc'] = formName.couponDesc || '';  //优惠券说明
-                    _data['couponRange'] = it.ruleForm.productId || -1;  //选择的产品ID
+                    _data['couponRange'] = it.ruleForm.all_product ? -1 : it.ruleForm.productId;  //选择的产品ID
                     _data['timeUnit'] = it.ruleForm.timeUnit;  //时间单位
                     ym.init.XML({
                         method: 'POST',
@@ -1208,6 +1210,7 @@ new Vue({
                                         productName: key.productName
                                     })
                                     if (e) {
+                                        if(e.coupon.couponRange == -1){  it.ruleForm.all_product = true; return false;}
                                         e.coupon.couponRange.split(',').forEach(e => {
                                             if (e == key.productId) {
                                                 it.$nextTick(function () {

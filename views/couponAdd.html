@@ -28,6 +28,8 @@
                             <el-radio-button :label="1">金额优惠</el-radio-button>
                             <el-radio-button :label="2">换购券</el-radio-button>
                             <el-radio-button :label="3">咖啡券</el-radio-button>
+                            <el-radio-button :label="4">会员优惠券</el-radio-button>
+                            <el-radio-button :label="5">饮品折扣券</el-radio-button>
                         </el-radio-group>
                     </el-form-item>
                     <el-form-item label="优惠券名称" prop="couponName">
@@ -49,7 +51,7 @@
                     </el-form-item>
 
                     <el-form-item label="优惠产品" prop="couponRange">
-                        <el-button type="primary" @click.stop="manageCoupon()" v-show="SearchProduct">查询产品</el-button>
+                        <el-switch v-model="ruleForm.all_product" active-text="全部产品" inactive-text=""></el-switch>
                         <el-table :data="tableData" stripe style="width: 50%" height="300px" tooltip-effect="dark"
                             @selection-change="handleSelectionChange" ref="multipleTable">
                             <el-table-column type="selection"></el-table-column>
@@ -60,11 +62,25 @@
                             </el-table-column>
                         </el-table>
                     </el-form-item>
+
+                    <el-form-item label="固定机器" prop="machineRange">
+                        <el-switch v-model="ruleForm.all_machine" active-text="不限定机器" inactive-text=""></el-switch>
+                        <el-table :data="tableDataMachine" stripe style="width: 50%" height="300px" tooltip-effect="dark"
+                            @selection-change="handleSelectionChange" ref="multipleTable">
+                            <el-table-column type="selection"></el-table-column>
+                            <el-table-column type="index" fixed></el-table-column>
+                            <el-table-column prop="machineNumber" label="机器编号">
+                            </el-table-column>
+                            <el-table-column prop="machineType" label="机器类型">
+                            </el-table-column>
+                        </el-table>
+                    </el-form-item>
+
                     <el-form-item label="有效期" prop="couponTime">
                         <el-input v-model="ruleForm.couponTime" class="w400"></el-input>
                         <template>
-                            <el-select v-model="ruleForm.timeUnit" placeholder="请选择时间单位"  >
-                                <el-option v-for="item in [{ value: 1, label: '年'},{ value: 2, label: '月'},{ value: 3, label: '日'},{ value: 4, label: '周'}]" :value="item.value" :label="item.label"></el-option>
+                            <el-select v-model="ruleForm.timeUnit" placeholder="请选择时间单位">
+                                <el-option v-for="item in [{ value: 1, label: '年'},{ value: 2, label: '月'},{ value: 3, label: '日'},{ value: 4, label: '周'}]" :value="item.value" :label="item.label" v-bind:key="item.value"></el-option>
                             </el-select>
                         </template>
                     </el-form-item>

@@ -857,7 +857,7 @@ window.addEventListener('pageshow', function (params) {
                                         }
                                     })
                                     xml.push(_obj);
-                                    res.pageCount = 1;
+                                    res.totalCount = 1;
                                     break;
                                 case `sys_draw_item_info_list`:  //add_or_update_sys_draw_item_info 
                                     for (let i = 0; i < res.data.length; i++) {
