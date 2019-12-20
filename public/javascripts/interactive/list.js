@@ -34,8 +34,9 @@ window.addEventListener('pageshow', function (params) {
             return {
                 fileUpdata: (process.env.NODE_ENV == "development" ? parent.all.json._j.URLS.Development_Files_ : parent.all.json._j.URLS.ForMal_Files_) + 'upload_file',
                 loading: false,
+                testAdmin: ym.init.COMPILESTR.decrypt(JSON.parse(sessionStorage.getItem('_a'))._i) == "yuanmenghhx" || ym.init.COMPILESTR.decrypt(JSON.parse(sessionStorage.getItem('_a'))._i) == "yuanmengKSX" ? false : true,  //指定的账号不能显示订单查看
                 more: false,
-                tableData: [],
+                tableData: [],  
                 currentPage: 1,
                 pageSize: 20,
                 total: 0,
@@ -43,6 +44,7 @@ window.addEventListener('pageshow', function (params) {
                 select: '',
                 searchVal: '',
                 searchName: 'name',
+                search: '',  //优惠券 table 搜索
                 listSearch: {
                     hasTest: 0,  //默认是排除测试数据
                     timeUnit: 3, //默认查询的是以日为单位的统计日志

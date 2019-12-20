@@ -30,7 +30,7 @@ new Vue({
     data() {
         const querySearchAsyncMachineNumber = _ => {
             const data = []
-            _data['machineType'] = 2;
+            _data['machineType'] = 2;   //小机器map
             ym.init.XML({
                 method: 'POST',
                 uri: token._j.URLS.Development_Server_ + 'get_machine_number_arr',
@@ -270,6 +270,8 @@ new Vue({
             numLength: 1,
             cTypeShow: true,
             tableData: [],
+            tableDataMachine: [],  //机器编号 tableData 数组
+            search_product: '',   //优惠券 table 产品的搜索
             SearchProduct: dataHref.split('*').length > 1 ? false : true,
             bigAndsmall: true,
             pickerOptions: {  //时间节点
@@ -340,7 +342,7 @@ new Vue({
             this.tagshow = true;
         };
         if(uri == 'manage_coupon' && dataHref.split('*').length == 1){  //优惠券添加 
-            this.manageCoupon();
+            this.manageCoupon();  //查看 可选择的产品
         }
         switch (document.getElementById('c-container-list').getAttribute('data-search')) {
             case 'manage_product':  //  回显所有的配方选项
@@ -1193,8 +1195,9 @@ new Vue({
         },
         manageCoupon(e) {
             const it = this;
+            it.searchMachines(e || '');
             _data['type'] = 1;
-            ym.init.XML({
+            ym.init.XML({  //查询产品
                 method: 'POST',
                 uri: token._j.URLS.Development_Server_ + uri,
                 async: false,
@@ -1213,6 +1216,43 @@ new Vue({
                                         if(e.coupon.couponRange == -1){  it.ruleForm.all_product = true; return false;}
                                         e.coupon.couponRange.split(',').forEach(e => {
                                             if (e == key.productId) {
+                                                it.$nextTick(function () {
+                                                    it.tableChecked(index);  //每次更新了数据，触发这个函数即可。
+                                                });
+                                            }
+                                        })
+                                    }
+                                })
+                            }, 500);
+                        })() : (() => {
+                            throw "收集到错误：\n\n" + res.statusCode.msg;
+                        })();
+                    } catch (error) {
+                        it.IError(error);
+                    }
+                }
+            })
+        },
+        searchMachines(params) {  //查看 机器
+            let it = this;
+            ym.init.XML({
+                method: 'POST',
+                uri: token._j.URLS.Development_Server_ + 'get_machine_number_arr',
+                async: false,
+                xmldata: _data,
+                done: function (res) {
+                    try {
+                        ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
+                            setTimeout(() => {
+                                it.tableDataMachine = [];
+                                res.list.forEach((key, index) => {
+                                    it.tableDataMachine.push({
+                                        machineNumber: key
+                                    })
+                                    if (params) {
+                                        if(params.coupon.machineRange == -1){  it.ruleForm.all_machine = true; return false;}
+                                        params.coupon.machineRange.split(',').forEach(e => {
+                                            if (params == key.productId) {
                                                 it.$nextTick(function () {
                                                     it.tableChecked(index);  //每次更新了数据，触发这个函数即可。
                                                 });

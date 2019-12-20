@@ -50,28 +50,32 @@
                         </template>
                     </el-form-item>
 
-                    <el-form-item label="优惠产品" prop="couponRange">
-                        <el-switch v-model="ruleForm.all_product" active-text="全部产品" inactive-text=""></el-switch>
-                        <el-table :data="tableData" stripe style="width: 50%" height="300px" tooltip-effect="dark"
-                            @selection-change="handleSelectionChange" ref="multipleTable">
+                    <el-form-item label="选择优惠产品" prop="couponRange">
+                        <el-switch v-model="ruleForm.all_product" active-text="全部优惠产品" inactive-text=""></el-switch>
+                        <el-table :data="tableData.filter(data => !search_product || data.productName.toLowerCase().includes(search_product.toLowerCase()))" stripe style="width: 50%" height="300px" tooltip-effect="dark"
+                            @selection-change="handleSelectionChange" ref="multipleTable"   >
                             <el-table-column type="selection"></el-table-column>
                             <el-table-column type="index" fixed></el-table-column>
                             <el-table-column prop="productId" label="产品ID">
                             </el-table-column>
                             <el-table-column prop="productName" label="产品名称">
+                                <template slot="header" slot-scope="scope">
+                                    <el-input
+                                      v-model="search_product"
+                                      size="mini"
+                                      placeholder="输入关键字搜索"/>
+                                  </template>
                             </el-table-column>
                         </el-table>
                     </el-form-item>
 
-                    <el-form-item label="固定机器" prop="machineRange">
+                    <el-form-item label="选择固定机器" prop="machineRange">
                         <el-switch v-model="ruleForm.all_machine" active-text="不限定机器" inactive-text=""></el-switch>
                         <el-table :data="tableDataMachine" stripe style="width: 50%" height="300px" tooltip-effect="dark"
                             @selection-change="handleSelectionChange" ref="multipleTable">
                             <el-table-column type="selection"></el-table-column>
                             <el-table-column type="index" fixed></el-table-column>
                             <el-table-column prop="machineNumber" label="机器编号">
-                            </el-table-column>
-                            <el-table-column prop="machineType" label="机器类型">
                             </el-table-column>
                         </el-table>
                     </el-form-item>
@@ -87,11 +91,15 @@
                     <el-form-item label="优惠金额" prop="couponMoney" v-show="cTypeShow">
                         <el-input v-model="ruleForm.couponMoney" class="w400"></el-input>
                     </el-form-item>
-                    <el-form-item label="可分享次数" prop="shareNum" v-show="cTypeShow">
-                        <el-input v-model="ruleForm.shareNum" class="w400"></el-input>
+                    <el-form-item label="可分享次数" prop="shareNum" v-show="false">
+                        <el-input v-model="ruleForm.shareNum" class="w400" :change="ruleForm.shareNum = 0"></el-input>
                     </el-form-item>
-                    <el-form-item label="说明" prop="couponDesc">
-                        <el-input v-model="ruleForm.couponDesc" type="textarea" class="w400"></el-input>
+                    <el-form-item label="描述" prop="couponDesc">
+                        <el-input v-model="ruleForm.couponDesc" class="w400"></el-input>
+                    </el-form-item>
+
+                    <el-form-item label="详细说明" prop="couponDesc">
+                        <el-input v-model="ruleForm.couponContent" class="w400"></el-input>
                     </el-form-item>
 
                     <el-form-item>

@@ -183,7 +183,6 @@ new Vue({
         if (!/(iPhone|iPad|iPod|iOS|Android)/i.test(navigator.userAgent)) {
             this.maxWidth = true;
         }
-
     },
     methods: {
         IError(err) {
