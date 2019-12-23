@@ -210,13 +210,13 @@ body{
 }
 
 .menu{
-	width: 200px;
+	width: $w100;
 	height: $w100;
 	float: left;
 	overflow: auto;
 }
 ._container{
-	width: 89.2%;
+	width: 100%;
 	height: $w100;
 	float: right;
 	position: relative;

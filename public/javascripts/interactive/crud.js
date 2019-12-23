@@ -212,6 +212,8 @@ new Vue({
                 couponMoney: '', //优惠券金额
                 couponRange: '', //优惠券产品
                 all_product: false, //优惠券的全选
+                all_machine: false, //优惠券 机器选择全选
+                all_product_id: [], //优惠券搜索 暂存数组
                 shareNum: '', //优惠券分享次数
                 timeUnit: 3, //营销活动-时间单位
                 itemName: '',  //营销活动-奖品名称
@@ -1195,6 +1197,7 @@ new Vue({
         },
         manageCoupon(e) {
             const it = this;
+            it.loading = true;
             it.searchMachines(e || '');
             _data['type'] = 1;
             ym.init.XML({  //查询产品
@@ -1210,7 +1213,8 @@ new Vue({
                                 res.productList.forEach((key, index) => {
                                     it.tableData.push({
                                         productId: key.productId,
-                                        productName: key.productName
+                                        productName: key.productName,
+                                        _name_: 1
                                     })
                                     if (e) {
                                         if(e.coupon.couponRange == -1){  it.ruleForm.all_product = true; return false;}
@@ -1223,8 +1227,10 @@ new Vue({
                                         })
                                     }
                                 })
+                                it.loading = false;
                             }, 500);
                         })() : (() => {
+                            it.loading = false;
                             throw "收集到错误：\n\n" + res.statusCode.msg;
                         })();
                     } catch (error) {
@@ -1247,7 +1253,8 @@ new Vue({
                                 it.tableDataMachine = [];
                                 res.list.forEach((key, index) => {
                                     it.tableDataMachine.push({
-                                        machineNumber: key
+                                        machineNumber: key,
+                                        _name_: 2
                                     })
                                     if (params) {
                                         if(params.coupon.machineRange == -1){  it.ruleForm.all_machine = true; return false;}
@@ -1272,14 +1279,21 @@ new Vue({
         },
         handleSelectionChange(val) {  //下拉选项
             this.ruleForm.productId = [];  //优惠券产品相关
+            this.ruleForm.all_product_id = []; // 优惠产品已选择的项目
             this.formDataObject.objectId = '';  //营销活动会员ID
-            console.log(val);
             if (val.length < 1) return false;
             if (val[0].memberRuleId) {
                 this.formDataObject.objectId = val[0].memberRuleId;  //会员
             }
             if (val[0].couponId) {
                 this.formDataObject.objectId = val[0].couponId;  //礼券
+            }
+            if(val[0]._name_){  //使用搜索的时候暂存 id
+                if(val[0]._name_ == +true){
+                    this.ruleForm.all_product_id.push(e);  //debug 
+                }else{
+                    this.ruleForm.all_product_id.push(e);   //debug
+                }
             }
             val.forEach(e => {
                 this.ruleForm.productId.push(e.productId);  //批量操作优惠券产品

@@ -37,8 +37,8 @@
                     </el-form-item>
                     <el-form-item label="优惠券图片">
                         <template v-model="ruleForm.couponUrl">
-                            <el-upload prop="couponUrl" :action="fileUpdata"
-                                list-type="picture-card" :file-list="imageList.couponUrl" :limit="num" :data="fileData"
+                            <el-upload prop="couponUrl" :action="fileUpdata" list-type="picture-card"
+                                :file-list="imageList.couponUrl" :limit="num" :data="fileData"
                                 :on-change="filecouponUrlChange" :on-success="filecouponUrlSuccess"
                                 :on-exceed="fileExceed" :on-preview="handlePictureCardPreview"
                                 :on-remove="handleRemove">
@@ -50,31 +50,34 @@
                         </template>
                     </el-form-item>
 
+                    <el-badge v-model="ruleForm.all_product_id.length" :value="12" class="item">
+                        <el-button size="small">已选择产品 {{ ruleForm.all_product_id.length }}</el-button>
+                    </el-badge>
+
                     <el-form-item label="选择优惠产品" prop="couponRange">
                         <el-switch v-model="ruleForm.all_product" active-text="全部优惠产品" inactive-text=""></el-switch>
-                        <el-table :data="tableData.filter(data => !search_product || data.productName.toLowerCase().includes(search_product.toLowerCase()))" stripe style="width: 50%" height="300px" tooltip-effect="dark"
-                            @selection-change="handleSelectionChange" ref="multipleTable"   >
+                        <el-table
+                            :data="tableData.filter(data => !search_product || data.productName.toLowerCase().includes(search_product.toLowerCase()))"
+                            stripe style="width: 50%" height="300px" tooltip-effect="dark"
+                            @selection-change="handleSelectionChange" ref="multipleTable">
                             <el-table-column type="selection"></el-table-column>
-                            <el-table-column type="index" fixed></el-table-column>
+                            <el-table-column type="index" label="#" fixed></el-table-column>
                             <el-table-column prop="productId" label="产品ID">
                             </el-table-column>
                             <el-table-column prop="productName" label="产品名称">
                                 <template slot="header" slot-scope="scope">
-                                    <el-input
-                                      v-model="search_product"
-                                      size="mini"
-                                      placeholder="输入关键字搜索"/>
-                                  </template>
+                                    <el-input v-model="search_product" size="mini" placeholder="输入关键字搜索" />
+                                </template>
                             </el-table-column>
                         </el-table>
                     </el-form-item>
 
                     <el-form-item label="选择固定机器" prop="machineRange">
                         <el-switch v-model="ruleForm.all_machine" active-text="不限定机器" inactive-text=""></el-switch>
-                        <el-table :data="tableDataMachine" stripe style="width: 50%" height="300px" tooltip-effect="dark"
-                            @selection-change="handleSelectionChange" ref="multipleTable">
+                        <el-table :data="tableDataMachine" stripe style="width: 50%" height="300px"
+                            tooltip-effect="dark" @selection-change="handleSelectionChange" ref="multipleTable">
                             <el-table-column type="selection"></el-table-column>
-                            <el-table-column type="index" fixed></el-table-column>
+                            <el-table-column type="index" label="#" fixed></el-table-column>
                             <el-table-column prop="machineNumber" label="机器编号">
                             </el-table-column>
                         </el-table>
@@ -84,7 +87,9 @@
                         <el-input v-model="ruleForm.couponTime" class="w400"></el-input>
                         <template>
                             <el-select v-model="ruleForm.timeUnit" placeholder="请选择时间单位">
-                                <el-option v-for="item in [{ value: 1, label: '年'},{ value: 2, label: '月'},{ value: 3, label: '日'},{ value: 4, label: '周'}]" :value="item.value" :label="item.label" v-bind:key="item.value"></el-option>
+                                <el-option
+                                    v-for="item in [{ value: 1, label: '年'},{ value: 2, label: '月'},{ value: 3, label: '日'},{ value: 4, label: '周'}]"
+                                    :value="item.value" :label="item.label" v-bind:key="item.value"></el-option>
                             </el-select>
                         </template>
                     </el-form-item>

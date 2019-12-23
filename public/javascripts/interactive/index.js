@@ -38,7 +38,8 @@ new Vue({
                 adminMobile: '',
                 state: ''
             },
-            adminName: ym.init.COMPILESTR.decrypt(JSON.parse(sessionStorage.getItem('_a'))._i)
+            adminName: ym.init.COMPILESTR.decrypt(JSON.parse(sessionStorage.getItem('_a'))._i),
+            drawer: false
         }
     },
     created: function () {
@@ -91,8 +92,8 @@ new Vue({
                 'machineLog',
                 'advertisementRootList',
                 'adRootDetailedList',
-                'turntableConf',  
-                'turntableConfUserLogs', 
+                'turntableConf',
+                'turntableConfUserLogs',
                 'appointmentPay', //预售记录
                 'chartsUser',
                 'chartsFinance',
@@ -194,7 +195,10 @@ new Vue({
                 type: 'success'
             });
         },
-        Href: function (e) {
+        Href(e) {
+            this.$nextTick(function () {  //dom 树节点已经更新
+                this.drawer =false;
+            });
             document.getElementById('tagHref').setAttribute('src', e.uri);
             document.getElementById('ym-menu-left').click();  //点击菜单
             let c = [], local = JSON.parse('[' + localStorage.getItem('uri') + ']');
@@ -217,7 +221,6 @@ new Vue({
                 <use xlink:href="#ym-icon-guanbi"></use>
             </svg></i></li>`
             );
-
             tag();
         },
         querySearchAsync(queryString, cb) {  //动态查询用户
@@ -425,8 +428,8 @@ document.getElementById('ym-menu-left').addEventListener('click', function (para
             this.childNodes[0].style.transform = "rotate(" + time-- + "deg)";
             // document.getElementById('menui').style.width = parseInt(w * time) +'px';
         }, 0);
-        document.getElementById('content').style.width = '100%';
-        document.getElementById('menui').style.width = '0px';
+        // document.getElementById('content').style.width = '100%';
+        // document.getElementById('menui').style.width = '0px';
     } else {
         bools = true;
         clearInterval(_);
@@ -435,8 +438,8 @@ document.getElementById('ym-menu-left').addEventListener('click', function (para
             this.childNodes[0].style.transform = "rotate(" + time++ + "deg)";
             // document.getElementById('menui').style.width = parseInt(w * time) + 'px';
         }, 0);
-        document.getElementById('menui').style.width = '200px';
-        document.getElementById('content').style.width = '89.2%';
+        // document.getElementById('menui').style.width = '200px';
+        // document.getElementById('content').style.width = '89.2%';
     }
 })
 
