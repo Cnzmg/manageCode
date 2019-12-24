@@ -273,6 +273,7 @@ new Vue({
             cTypeShow: true,
             tableData: [],
             tableDataMachine: [],  //机器编号 tableData 数组
+            UnFormData: [],  //已选择的产品 临时列表数组
             search_product: '',   //优惠券 table 产品的搜索
             SearchProduct: dataHref.split('*').length > 1 ? false : true,
             bigAndsmall: true,
@@ -334,7 +335,7 @@ new Vue({
             dialogVisibleTable: false,  //会员views
             dialogVisibleTables: false,  //礼券views
             objectIdShow: false,  //是否显示ID
-            tableDataVip: []
+            tableDataVip: [],
         }
     },
     created: function () {
@@ -343,7 +344,7 @@ new Vue({
             this.Ienit(decodeURI(dataHref.split('*')[1]));
             this.tagshow = true;
         };
-        if(uri == 'manage_coupon' && dataHref.split('*').length == 1){  //优惠券添加 
+        if (uri == 'manage_coupon' && dataHref.split('*').length == 1) {  //优惠券添加 
             this.manageCoupon();  //查看 可选择的产品
         }
         switch (document.getElementById('c-container-list').getAttribute('data-search')) {
@@ -782,7 +783,7 @@ new Vue({
                                 it.formDataObject.isMember = res.data.isMember;
                                 it.formDataObject.probability = res.data.probability;
                                 it.formDataObject.itemPicUrl = res.data.itemPicUrl;
-                                it.imageList.turntablePrize.push({ name: 'turntablePrize', url: res.data.itemPicUrl})
+                                it.imageList.turntablePrize.push({ name: 'turntablePrize', url: res.data.itemPicUrl })
                                 it.formDataObject.itemContent = res.data.itemContent;
                                 uri = 'add_or_update_sys_draw_item_info'  //完成后重新把uri 复原
                                 break;
@@ -1217,7 +1218,7 @@ new Vue({
                                         _name_: 1
                                     })
                                     if (e) {
-                                        if(e.coupon.couponRange == -1){  it.ruleForm.all_product = true; return false;}
+                                        if (e.coupon.couponRange == -1) { it.ruleForm.all_product = true; return false; }
                                         e.coupon.couponRange.split(',').forEach(e => {
                                             if (e == key.productId) {
                                                 it.$nextTick(function () {
@@ -1257,11 +1258,11 @@ new Vue({
                                         _name_: 2
                                     })
                                     if (params) {
-                                        if(params.coupon.machineRange == -1){  it.ruleForm.all_machine = true; return false;}
+                                        if (params.coupon.machineRange == -1) { it.ruleForm.all_machine = true; return false; }
                                         params.coupon.machineRange.split(',').forEach(e => {
                                             if (params == key.productId) {
                                                 it.$nextTick(function () {
-                                                    it.tableChecked(index);  //每次更新了数据，触发这个函数即可。
+                                                    it.tableChecked(index, 'machineMultipleTable');  //每次更新了数据，触发这个函数即可。
                                                 });
                                             }
                                         })
@@ -1277,9 +1278,9 @@ new Vue({
                 }
             })
         },
-        handleSelectionChange(val) {  //下拉选项
+        handleSelectionChange(val) { //下拉选项
             this.ruleForm.productId = [];  //优惠券产品相关
-            this.ruleForm.all_product_id = []; // 优惠产品已选择的项目
+            //this.ruleForm.all_product_id = []; // 优惠产品已选择的项目
             this.formDataObject.objectId = '';  //营销活动会员ID
             if (val.length < 1) return false;
             if (val[0].memberRuleId) {
@@ -1288,18 +1289,43 @@ new Vue({
             if (val[0].couponId) {
                 this.formDataObject.objectId = val[0].couponId;  //礼券
             }
-            if(val[0]._name_){  //使用搜索的时候暂存 id
-                if(val[0]._name_ == +true){
-                    this.ruleForm.all_product_id.push(e);  //debug 
-                }else{
-                    this.ruleForm.all_product_id.push(e);   //debug
-                }
-            }
             val.forEach(e => {
                 this.ruleForm.productId.push(e.productId);  //批量操作优惠券产品
             });
         },
-        tableChecked(e) { //表格初显
+        handleSelectionChangeClick(params) {
+            this.tableData.forEach((element, index) => {  //处理 清除选中项目
+                if (element.productId == params.index) {
+                    this.tableData.splice(index, 1);
+                }
+            })
+            if (this.ruleForm.all_product_id.length > 0) {  //选中的优惠券产品
+                let _arr_ = [], bool = true;
+                _arr_ = this.ruleForm.all_product_id;
+                for (let i = 0; i < _arr_.length; i++) {
+                    if (_arr_[i].productId == params.productId) {
+                        bool = false
+                    };
+                }
+                bool ? _arr_.push(params) : null;
+                this.ruleForm.all_product_id = _arr_;  //批量操作优惠券产品
+                return;
+            }
+            this.ruleForm.all_product_id.push(params);  //批量操作优惠券产品
+        },
+        MachineHandleSelectionChange(params) {  //选中的机器操作
+            console.log(params)
+        },
+
+        tableRowClassName({ row, rowIndex }) {  //赋值行号 是当前选中的产品信息
+            row.index = row.productId;
+        },
+
+        tableChecked(e, name) { //表格回显
+            if (name == 'machineMultipleTable') {
+                this.$refs.machineMultipleTable.toggleRowSelection(this.tableData[e], true);
+                return false;
+            }
             this.$refs.multipleTable.toggleRowSelection(this.tableData[e], true);
         },
         // setCurrent(tableData){ //添加活动列 奖品
@@ -1479,7 +1505,7 @@ new Vue({
 
         submitFormMiniTurntable(params) {  //小程序大转盘提交
             const it = this;
-            if(params.probability > 1){
+            if (params.probability > 1) {
                 it.IError('【概率】溢出了');
                 return false;
             }
