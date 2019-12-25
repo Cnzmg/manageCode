@@ -53,6 +53,7 @@ new Vue({
             fileUpdata: (process.env.NODE_ENV == "development" ? parent.all.json._j.URLS.Development_Files_ : parent.all.json._j.URLS.ForMal_Files_) + 'upload_file',
             loading: false,
             boxshow: false,
+            boxmachineshow: false,
             tagshow: false,
             select: '',
             formData: {
@@ -213,7 +214,8 @@ new Vue({
                 couponRange: '', //优惠券产品
                 all_product: false, //优惠券的全选
                 all_machine: false, //优惠券 机器选择全选
-                all_product_id: [], //优惠券搜索 暂存数组
+                all_product_id: [], //优惠券搜索 暂存产品数组
+                all_machine_id: [], //优惠券搜索 暂时机器编号数组
                 shareNum: '', //优惠券分享次数
                 timeUnit: 3, //营销活动-时间单位
                 itemName: '',  //营销活动-奖品名称
@@ -224,6 +226,7 @@ new Vue({
                 status: 1, // 营销活动-活动状态
                 raffleType: 1, // 营销活动-活动状态
                 startTime: [], //活动时间
+                inputArray: '', //输入的详细说明
             },
             rules: {
                 productName: [
@@ -275,6 +278,7 @@ new Vue({
             tableDataMachine: [],  //机器编号 tableData 数组
             UnFormData: [],  //已选择的产品 临时列表数组
             search_product: '',   //优惠券 table 产品的搜索
+            search_machine: '', //优惠券 tbale 机器的搜索
             SearchProduct: dataHref.split('*').length > 1 ? false : true,
             bigAndsmall: true,
             pickerOptions: {  //时间节点
@@ -336,6 +340,11 @@ new Vue({
             dialogVisibleTables: false,  //礼券views
             objectIdShow: false,  //是否显示ID
             tableDataVip: [],
+            inputArray: [{
+                value: '',
+                name: ''
+            }], //优惠券的输入说明 数组
+            changeInputValues: [], //详细说明的数组
         }
     },
     created: function () {
@@ -762,6 +771,29 @@ new Vue({
                                 it.imageList.couponUrl.push({ name: 'couponUrl', url: res.coupon.couponUrl }); //优惠券图片
                                 it.manageCoupon(res);
 
+                                res.coupon.couponRangeName.split(';').forEach((element, index) => {  //产品名称
+                                    it.ruleForm.all_product_id.push({
+                                        productId: res.coupon.couponRange.split(',')[index],
+                                        productName: element,
+                                        index: res.coupon.couponRange.split(',')[index]
+                                    });
+                                    it.tableData.forEach((el, i) => { //操作删除 回显列表重复的数据
+                                        
+                                        console.log(res.coupon.couponRange.split(',')[index] == el.productId)
+                                        console.log(res.coupon.couponRange.split(',')[index])
+                                        console.log(el.productId)
+
+                                        if(res.coupon.couponRange.split(',')[index] == el.productId){
+                                            it.tableData.splice(i, 1);
+                                        }
+                                    })
+                                })
+
+                                res.coupon.machineRange.split(',').forEach(element => {  //机器编号
+                                    it.ruleForm.all_machine_id.push(element);
+                                })
+
+
                                 break;
                             case 'get_draw_raffle_info':  //抽奖配置 
                                 it.ruleForm.title = res.data.title;
@@ -998,8 +1030,27 @@ new Vue({
                         _data['shareNum'] = formName.shareNum; //优惠券分享次数
                     }
                     _data['couponDesc'] = formName.couponDesc || '';  //优惠券说明
-                    _data['couponRange'] = it.ruleForm.all_product ? -1 : it.ruleForm.productId;  //选择的产品ID
+                    _data['couponRange'] = it.ruleForm.all_product ? -1 : ( () => {
+                        let code = [];
+                        this.ruleForm.all_product_id.forEach(element => {
+                            code.push(element.productId);
+                        })
+                        return code
+                    })();  //选择的产品ID
+                    _data['machineRange'] = it.ruleForm.all_machine ? -1 : ( () => {
+                        let code = [];
+                        this.ruleForm.all_machine_id.forEach(element => {
+                            code.push(element.machineNumber);
+                        })
+                        return code
+                    })();  //选择的机器编号
                     _data['timeUnit'] = it.ruleForm.timeUnit;  //时间单位
+                    let couponContent = [];
+                    this.changeInputValues.forEach(element => {
+                        couponContent.push(element)
+                    })
+                    _data['couponContent'] = JSON.stringify(couponContent);  //优惠券的详细说明
+
                     ym.init.XML({
                         method: 'POST',
                         uri: token._j.URLS.Development_Server_ + uri,
@@ -1280,7 +1331,6 @@ new Vue({
         },
         handleSelectionChange(val) { //下拉选项
             this.ruleForm.productId = [];  //优惠券产品相关
-            //this.ruleForm.all_product_id = []; // 优惠产品已选择的项目
             this.formDataObject.objectId = '';  //营销活动会员ID
             if (val.length < 1) return false;
             if (val[0].memberRuleId) {
@@ -1293,7 +1343,7 @@ new Vue({
                 this.ruleForm.productId.push(e.productId);  //批量操作优惠券产品
             });
         },
-        handleSelectionChangeClick(params) {
+        handleSelectionChangeClick(params) {  //产品的选中
             this.tableData.forEach((element, index) => {  //处理 清除选中项目
                 if (element.productId == params.index) {
                     this.tableData.splice(index, 1);
@@ -1314,14 +1364,82 @@ new Vue({
             this.ruleForm.all_product_id.push(params);  //批量操作优惠券产品
         },
         MachineHandleSelectionChange(params) {  //选中的机器操作
-            console.log(params)
+            this.tableDataMachine.forEach((element, index) => {  //处理 清除选中项目
+                if (element.machineNumber == params.index) {
+                    this.tableDataMachine.splice(index, 1);
+                }
+            })
+            if (this.ruleForm.all_machine_id.length > 0) {  //选中的优惠券产品
+                let _arr_ = [], bool = true;
+                _arr_ = this.ruleForm.all_machine_id;
+                for (let i = 0; i < _arr_.length; i++) {
+                    if (_arr_[i].machineNumber == params.machineNumber) {
+                        bool = false
+                    };
+                }
+                bool ? _arr_.push(params) : null;
+                this.ruleForm.all_machine_id = _arr_;  //批量操作优惠券产品
+                return;
+            }
+            this.ruleForm.all_machine_id.push(params);  //批量操作优惠券产品
         },
 
         tableRowClassName({ row, rowIndex }) {  //赋值行号 是当前选中的产品信息
             row.index = row.productId;
         },
+        
+        tableRowMachineClassName({ row, rowIndex }) {  //赋值行号 是当前选中的机器编号信息
+            row.index = row.machineNumber;
+        },
 
-        tableChecked(e, name) { //表格回显
+        deleteAllPlue(params, name) {   //删除选中的产品列表
+            if(name == 'product'){  //删除产品
+                this.ruleForm.all_product_id.forEach((element, index) => {
+                    if(params.index == element.index){
+                        this.ruleForm.all_product_id.splice(index, 1);
+                        this.tableData.push(element);
+                        this.tableData.sort((a, b) =>{
+                            return a.index - b.index;
+                        })
+                    }
+                })
+            }else{  //删除机器编号
+                this.ruleForm.all_machine_id.forEach((element, index) => {  
+                    if(params.index == element.index){
+                        this.ruleForm.all_machine_id.splice(index, 1);
+                        this.tableDataMachine.push(element);
+                        this.tableDataMachine.sort((a, b) =>{
+                            return a.index - b.index;
+                        })
+                    }
+                })
+            }
+        },
+
+        inputArrayChange(params){  //优惠券 添加行
+            let _array_ = this.inputArray;
+                _array_.push({
+                    value: '',
+                    name: ''
+                })
+            this.$nextTick(function(){
+                this.inputArray = _array_;
+            })
+        },
+
+        inputArrayChangeDelete(params){  //删除列表以及内容
+            this.inputArray.splice(params, 1);  //删除列表
+            this.changeInputValues.splice(params, 1); //删除已经填写的内容
+        },
+
+        changeInputValue(params, index){   //添加的表单 value
+            this.changeInputValues.push({
+                value: params,
+                index: index
+            })
+        },
+
+        tableChecked(e, name) {  //表格打勾已选择回显  
             if (name == 'machineMultipleTable') {
                 this.$refs.machineMultipleTable.toggleRowSelection(this.tableData[e], true);
                 return false;
