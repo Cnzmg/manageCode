@@ -44,8 +44,18 @@
                     <el-input v-model="ruleForm.machineAddrDesc" class="w400"></el-input>
                 </el-form-item>
                 <el-form-item label="订单生效日期" prop="machineAddrDesc">
-                    <el-date-picker v-model="ruleForm.orderEffectTime" type="datetime" placeholder="选择日期时间"></el-date-picker>
+                    <el-date-picker v-model="ruleForm.orderEffectTime" type="datetime" placeholder="选择日期时间">
+                    </el-date-picker>
                 </el-form-item>
+                <el-form-item label="选择配置" prop="poiId" v-show="ruleForm.machineType == 2 ? true: false">
+                    <el-select v-model="ruleForm.poiId" placeholder="选择地址配置">
+                        <el-option v-for="item in poiIds" :key="item.poiId" :label="item.addr" :value="item.poiId">
+                        </el-option>
+                    </el-select>
+                    <div>
+                        <el-input v-model="ruleForm.floor" class="w400" placeholder="请输入楼层"></el-input> 层
+                    </div>
+                </el-form-item v-show="ruleForm.machineType != 2 ? true: false">
                 <el-form-item label="图片">
                     <div style="float: left;margin-right:20px;">
                         <template v-model="ruleForm.machineScenePicUrl">
@@ -60,20 +70,6 @@
                                 <img width="100%" :src="dialogImageUrl" alt="">
                             </el-dialog>
                         </template>
-                        <template v-model="ruleForm.mapMarkerIcon">
-                            <small>地图图标</small>
-                            <el-upload :action="fileUpdata" list-type="picture-card" :limit="num" :data="fileData"
-                                :file-list="imageList.mapMarkerIcon" :on-change="filePicChange"
-                                :on-success="mapMarkerSuccess" :on-exceed="fileExceed"
-                                :on-preview="handlePictureCardPreview" :on-remove="handleRemove">
-                                <i class="el-icon-plus"></i>
-                            </el-upload>
-                            <el-dialog :visible.sync="dialogVisible">
-                                <img width="100%" :src="dialogImageUrl" alt="">
-                            </el-dialog>
-                        </template>
-                    </div>
-                    <div v-show="samllfileUpdata = true">
                         <template v-model="ruleForm.planePicUrl">
                             <small>楼层平面图</small>
                             <el-upload :action="fileUpdata" list-type="picture-card" :limit="num" :data="fileData"
@@ -83,6 +79,20 @@
                                 <i class="el-icon-plus"></i>
                             </el-upload>
                             <el-dialog :visible.sync="dialogVisibleData">
+                                <img width="100%" :src="dialogImageUrl" alt="">
+                            </el-dialog>
+                        </template>
+                    </div>
+                    <div v-show="ruleForm.machineType != 2 ? true: false">
+                        <template v-model="ruleForm.mapMarkerIcon">
+                            <small>地图图标</small>
+                            <el-upload :action="fileUpdata" list-type="picture-card" :limit="num" :data="fileData"
+                                :file-list="imageList.mapMarkerIcon" :on-change="filePicChange"
+                                :on-success="mapMarkerSuccess" :on-exceed="fileExceed"
+                                :on-preview="handlePictureCardPreview" :on-remove="handleRemove">
+                                <i class="el-icon-plus"></i>
+                            </el-upload>
+                            <el-dialog :visible.sync="dialogVisible">
                                 <img width="100%" :src="dialogImageUrl" alt="">
                             </el-dialog>
                         </template>

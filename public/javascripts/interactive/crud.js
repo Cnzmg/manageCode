@@ -345,6 +345,7 @@ new Vue({
                 name: ''
             }], //优惠券的输入说明 数组
             changeInputValues: [], //详细说明的数组
+            poiIds: [], //小机器地址配置数组
         }
     },
     created: function () {
@@ -615,15 +616,25 @@ new Vue({
                                 it.ruleForm.planePicUrl = res.machineInfo.planePicUrl;  //楼层平面图
                                 it.ruleForm.machineUrl = res.machineInfo.machineUrl;  //大楼外景图
 
+                                it.ruleForm.machineType = res.machineInfo.machineType; //设备类型
+                                if (it.ruleForm.machineType == 2) {
+                                    it.poiIds = res.poiList; //配置地址ID 数组
+                                    it.ruleForm.poiId = res.machineInfo.poiId;
+                                    it.ruleForm.floor = res.machineInfo.floor;
+                                }
+
                                 it.imageList.machineScenePicUrl.push({ name: 'machineScenePicUrl', url: res.machineInfo.machineScenePicUrl }); //场景图片
                                 it.imageList.mapMarkerIcon.push({ name: 'mapMarkerIcon', url: res.machineInfo.mapMarkerIcon }); //地图图标
                                 it.imageList.planePicUrl.push({ name: 'planePicUrl', url: res.machineInfo.planePicUrl }); //楼层平面图
                                 it.imageList.machineUrl.push({ name: 'machineUrl', url: res.machineInfo.machineUrl }); //大楼外景图
 
-                                TextToCode[res.machineInfo.province] ? it.ruleForm.province.push(TextToCode[res.machineInfo.province].code) : null;
-                                TextToCode[res.machineInfo.province] ? it.ruleForm.province.push(TextToCode[res.machineInfo.province][res.machineInfo.city].code) : null;
-                                TextToCode[res.machineInfo.province] ? it.ruleForm.province.push(TextToCode[res.machineInfo.province][res.machineInfo.city][res.machineInfo.district].code) : null;
-
+                                it.$nextTick(function () {
+                                    let _arr_ = [];
+                                    TextToCode[res.machineInfo.province] ? _arr_.push(TextToCode[res.machineInfo.province].code) : null;
+                                    TextToCode[res.machineInfo.province] ? _arr_.push(TextToCode[res.machineInfo.province][res.machineInfo.city].code) : null;
+                                    TextToCode[res.machineInfo.province] ? _arr_.push(TextToCode[res.machineInfo.province][res.machineInfo.city][res.machineInfo.district].code) : null;
+                                    it.ruleForm.province = _arr_
+                                })
 
                                 var map = new AMap.Map('cityg', {
                                     resizeEnable: true, //是否监控地图容器尺寸变化
@@ -761,7 +772,7 @@ new Vue({
                                 it.ruleForm.couponName = res.coupon.couponName; //优惠券名称
                                 it.ruleForm.couponUrl = res.coupon.couponUrl; //优惠券图片
                                 it.ruleForm.couponTime = res.coupon.couponTime; //优惠券时间
-                                it.ruleForm.couponMoney = parseFloat(res.coupon.couponMoney / 100).toFixed(2); //优惠券类型
+                                it.ruleForm.couponMoney = res.coupon.couponType != 5 ? parseFloat(res.coupon.couponMoney / 100).toFixed(2) : res.coupon.couponMoney; //优惠券类型
                                 it.ruleForm.shareNum = res.coupon.shareNum; //优惠券类型
                                 it.ruleForm.couponType = res.coupon.couponType; //优惠券类型
                                 it.ruleForm.couponDesc = res.coupon.couponDesc; //优惠券类型
@@ -771,27 +782,44 @@ new Vue({
                                 it.imageList.couponUrl.push({ name: 'couponUrl', url: res.coupon.couponUrl }); //优惠券图片
                                 it.manageCoupon(res);
 
-                                res.coupon.couponRangeName.split(';').forEach((element, index) => {  //产品名称
+                                res.coupon.couponRangeName.split(';').forEach((element, index) => {  //回显产品
                                     it.ruleForm.all_product_id.push({
                                         productId: res.coupon.couponRange.split(',')[index],
                                         productName: element,
                                         index: res.coupon.couponRange.split(',')[index]
                                     });
-                                    it.tableData.forEach((el, i) => { //操作删除 回显列表重复的数据
-                                        
-                                        console.log(res.coupon.couponRange.split(',')[index] == el.productId)
-                                        console.log(res.coupon.couponRange.split(',')[index])
-                                        console.log(el.productId)
+                                    setTimeout(function () {
+                                        it.tableData.forEach((el, i) => {  //操作删除 回显列表重复的数据
+                                            if (res.coupon.couponRange.split(',')[index] == el.productId) {
+                                                it.tableData.splice(i, 1);
+                                            }
+                                        })
+                                    }, 500)
+                                })
+                                res.coupon.machineRange.split(',').forEach((element, index) => {  //机器编号
+                                    it.ruleForm.all_machine_id.push({
+                                        machineNumber: element,
+                                        index: element
+                                    });
+                                    setTimeout(function () {
+                                        it.tableDataMachine.forEach((el, i) => {  //操作删除 回显列表重复的数据
+                                            if (res.coupon.machineRange.split(',')[index] == el.machineNumber) {
+                                                it.tableDataMachine.splice(i, 1);
+                                            }
+                                        })
+                                    }, 500)
+                                })
 
-                                        if(res.coupon.couponRange.split(',')[index] == el.productId){
-                                            it.tableData.splice(i, 1);
-                                        }
+                                if (res.coupon.couponContent) {
+                                    let _arr_ = [], _arrs_ = [];
+                                    JSON.parse(res.coupon.couponContent).forEach((element, index) => {
+                                        _arrs_.push(element);
+                                        element['name'] = element.value;
+                                        _arr_.push(element)
                                     })
-                                })
-
-                                res.coupon.machineRange.split(',').forEach(element => {  //机器编号
-                                    it.ruleForm.all_machine_id.push(element);
-                                })
+                                    it.inputArray = _arrs_;
+                                    it.changeInputValues = _arr_;
+                                }
 
 
                                 break;
@@ -914,6 +942,10 @@ new Vue({
                     _data['mapMarkerIcon'] = formName.mapMarkerIcon || '';
                     _data['planePicUrl'] = formName.planePicUrl || '';
                     _data['machineUrl'] = formName.machineUrl || '';
+                    if (formName.machineType == 2) {
+                        _data['poiId'] = formName.poiId || '';
+                        _data['floor'] = formName.floor || 0;
+                    }
                     ym.init.XML({
                         method: 'POST',
                         uri: token._j.URLS.Development_Server_ + uri,
@@ -1029,15 +1061,22 @@ new Vue({
                         _data['couponMoney'] = parseFloat(formName.couponMoney * 100).toFixed(0) || '';  //优惠券金额
                         _data['shareNum'] = formName.shareNum; //优惠券分享次数
                     }
+                    if(formName.couponType == 5){  //饮品折扣券
+                        if(formName.couponMoney > 100){
+                            it.IError('数值不符合规定【1-100】');
+                            return false;
+                        }
+                        _data['couponMoney'] = formName.couponMoney || '';  //优惠券金额
+                    }
                     _data['couponDesc'] = formName.couponDesc || '';  //优惠券说明
-                    _data['couponRange'] = it.ruleForm.all_product ? -1 : ( () => {
+                    _data['couponRange'] = it.ruleForm.all_product ? -1 : (() => {
                         let code = [];
                         this.ruleForm.all_product_id.forEach(element => {
                             code.push(element.productId);
                         })
                         return code
                     })();  //选择的产品ID
-                    _data['machineRange'] = it.ruleForm.all_machine ? -1 : ( () => {
+                    _data['machineRange'] = it.ruleForm.all_machine ? -1 : (() => {
                         let code = [];
                         this.ruleForm.all_machine_id.forEach(element => {
                             code.push(element.machineNumber);
@@ -1116,7 +1155,7 @@ new Vue({
             }
 
         },
-        tagChange(e) {  //处理select 的机器类型
+        tagChange(e) {  //操作产品的时候 处理select 的机器类型
             try {
                 const it = this;
                 e.ID != "" ? (() => {
@@ -1260,27 +1299,25 @@ new Vue({
                 done: function (res) {
                     try {
                         ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
-                            setTimeout(() => {
-                                it.tableData = [];
-                                res.productList.forEach((key, index) => {
-                                    it.tableData.push({
-                                        productId: key.productId,
-                                        productName: key.productName,
-                                        _name_: 1
-                                    })
-                                    if (e) {
-                                        if (e.coupon.couponRange == -1) { it.ruleForm.all_product = true; return false; }
-                                        e.coupon.couponRange.split(',').forEach(e => {
-                                            if (e == key.productId) {
-                                                it.$nextTick(function () {
-                                                    it.tableChecked(index);  //每次更新了数据，触发这个函数即可。
-                                                });
-                                            }
-                                        })
-                                    }
+                            it.tableData = [];
+                            res.productList.forEach((key, index) => {
+                                it.tableData.push({
+                                    productId: key.productId,
+                                    productName: key.productName,
+                                    _name_: 1
                                 })
-                                it.loading = false;
-                            }, 500);
+                                if (e) {
+                                    if (e.coupon.couponRange == -1) { it.ruleForm.all_product = true; return false; }
+                                    e.coupon.couponRange.split(',').forEach(e => {
+                                        if (e == key.productId) {
+                                            it.$nextTick(function () {
+                                                it.tableChecked(index);  //每次更新了数据，触发这个函数即可。
+                                            });
+                                        }
+                                    })
+                                }
+                            })
+                            it.loading = false;
                         })() : (() => {
                             it.loading = false;
                             throw "收集到错误：\n\n" + res.statusCode.msg;
@@ -1301,25 +1338,23 @@ new Vue({
                 done: function (res) {
                     try {
                         ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
-                            setTimeout(() => {
-                                it.tableDataMachine = [];
-                                res.list.forEach((key, index) => {
-                                    it.tableDataMachine.push({
-                                        machineNumber: key,
-                                        _name_: 2
-                                    })
-                                    if (params) {
-                                        if (params.coupon.machineRange == -1) { it.ruleForm.all_machine = true; return false; }
-                                        params.coupon.machineRange.split(',').forEach(e => {
-                                            if (params == key.productId) {
-                                                it.$nextTick(function () {
-                                                    it.tableChecked(index, 'machineMultipleTable');  //每次更新了数据，触发这个函数即可。
-                                                });
-                                            }
-                                        })
-                                    }
+                            it.tableDataMachine = [];
+                            res.list.forEach((key, index) => {
+                                it.tableDataMachine.push({
+                                    machineNumber: key,
+                                    _name_: 2
                                 })
-                            }, 500);
+                                if (params) {
+                                    if (params.coupon.machineRange == -1) { it.ruleForm.all_machine = true; return false; }
+                                    params.coupon.machineRange.split(',').forEach(e => {
+                                        if (params == key.productId) {
+                                            it.$nextTick(function () {
+                                                it.tableChecked(index, 'machineMultipleTable');  //每次更新了数据，触发这个函数即可。
+                                            });
+                                        }
+                                    })
+                                }
+                            })
                         })() : (() => {
                             throw "收集到错误：\n\n" + res.statusCode.msg;
                         })();
@@ -1387,28 +1422,28 @@ new Vue({
         tableRowClassName({ row, rowIndex }) {  //赋值行号 是当前选中的产品信息
             row.index = row.productId;
         },
-        
+
         tableRowMachineClassName({ row, rowIndex }) {  //赋值行号 是当前选中的机器编号信息
             row.index = row.machineNumber;
         },
 
         deleteAllPlue(params, name) {   //删除选中的产品列表
-            if(name == 'product'){  //删除产品
+            if (name == 'product') {  //删除产品
                 this.ruleForm.all_product_id.forEach((element, index) => {
-                    if(params.index == element.index){
+                    if (params.index == element.index) {
                         this.ruleForm.all_product_id.splice(index, 1);
                         this.tableData.push(element);
-                        this.tableData.sort((a, b) =>{
+                        this.tableData.sort((a, b) => {
                             return a.index - b.index;
                         })
                     }
                 })
-            }else{  //删除机器编号
-                this.ruleForm.all_machine_id.forEach((element, index) => {  
-                    if(params.index == element.index){
+            } else {  //删除机器编号
+                this.ruleForm.all_machine_id.forEach((element, index) => {
+                    if (params.index == element.index) {
                         this.ruleForm.all_machine_id.splice(index, 1);
                         this.tableDataMachine.push(element);
-                        this.tableDataMachine.sort((a, b) =>{
+                        this.tableDataMachine.sort((a, b) => {
                             return a.index - b.index;
                         })
                     }
@@ -1416,27 +1451,46 @@ new Vue({
             }
         },
 
-        inputArrayChange(params){  //优惠券 添加行
+        inputArrayChange(params) {  //优惠券 添加行
             let _array_ = this.inputArray;
-                _array_.push({
-                    value: '',
-                    name: ''
-                })
-            this.$nextTick(function(){
+            _array_.push({
+                value: '',
+                name: ''
+            })
+            this.$nextTick(function () {
                 this.inputArray = _array_;
             })
         },
-
-        inputArrayChangeDelete(params){  //删除列表以及内容
+        inputArrayChangeDelete(params) {  //删除列表以及内容
             this.inputArray.splice(params, 1);  //删除列表
             this.changeInputValues.splice(params, 1); //删除已经填写的内容
         },
-
-        changeInputValue(params, index){   //添加的表单 value
+        changeInputValue(params, index) {   //添加的表单 value
+            let _arr_ = [];
+            if (this.changeInputValues.length > 0) {
+                this.changeInputValues.forEach((element, i) => {
+                    _arr_.push(element);
+                    if (element.index == index) {
+                        _arr_.splice(i, 1,{
+                            value: params,
+                            index: index
+                        });
+                    };  //先清除掉之前的内容稍后执行添加 
+                })
+                if(this.changeInputValues.length == index){
+                    _arr_.push({
+                        value: params,
+                        index: index
+                    })
+                }
+                this.changeInputValues = _arr_;
+                return false;
+            }
             this.changeInputValues.push({
                 value: params,
                 index: index
             })
+
         },
 
         tableChecked(e, name) {  //表格打勾已选择回显  

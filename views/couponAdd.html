@@ -50,7 +50,7 @@
                         </template>
                     </el-form-item>
 
-                    <el-form-item label="选择优惠产品" prop="couponRange">
+                    <el-form-item label="选择优惠产品" prop="couponRange" v-show="ruleForm.couponType != 4 ? true: false">
                         <el-switch v-model="ruleForm.all_product" active-text="全部优惠产品" inactive-text=""></el-switch>
                         <el-badge v-model="ruleForm.all_product == true ? '全部' :ruleForm.all_product_id.length"
                             style="margin-left: 60px;">
@@ -71,7 +71,7 @@
                         </el-table>
                     </el-form-item>
 
-                    <el-form-item label="选择固定机器" prop="machineRange">
+                    <el-form-item label="选择固定机器" prop="machineRange" v-show="ruleForm.couponType != 4 ? true: false">
                         <el-switch v-model="ruleForm.all_machine" active-text="不限定机器" inactive-text=""></el-switch>
                         <el-badge v-model="ruleForm.all_machine == true ? '全部' :ruleForm.all_machine_id.length"
                             style="margin-left: 60px;">
@@ -89,6 +89,30 @@
                             </el-table-column>
                         </el-table>
                     </el-form-item>
+
+
+
+                    
+                    <el-form-item label="选择会员" prop="machineRange" v-show="ruleForm.couponType == 4 ? true: false">
+                        <el-switch v-model="ruleForm.all_machine" active-text="不限会员" inactive-text=""></el-switch>
+                        <el-badge v-model="ruleForm.all_machine == true ? '全部' :ruleForm.all_machine_id.length"
+                            style="margin-left: 60px;">
+                            <el-button size="small" @click="boxmachineshow = true">已选择机器</el-button>
+                        </el-badge>
+                        <el-table
+                            :data="tableDataMachine.filter(data => !search_machine || data.machineNumber.toLowerCase().includes(search_machine.toLowerCase()))"
+                            stripe style="width: 50%" height="300px" tooltip-effect="dark"
+                            @row-click="MachineHandleSelectionChange" ref="multipleTable"
+                            :row-class-name="tableRowMachineClassName">
+                            <el-table-column prop="machineNumber" label="机器编号">
+                                <template slot="header" slot-scope="scope">
+                                    <el-input v-model="search_machine" size="mini" placeholder="输入关键字搜索" />
+                                </template>
+                            </el-table-column>
+                        </el-table>
+                    </el-form-item>
+
+
 
                     <el-form-item label="有效期" prop="couponTime">
                         <el-input v-model="ruleForm.couponTime" class="w400"></el-input>
@@ -121,10 +145,9 @@
                     </el-form-item>
 
                     <el-form-item>
-                        <el-button type="primary" @click="submitForm(ruleForm)">立即创建</el-button>
+                        <el-button type="primary" @click="submitForm(ruleForm)">提交</el-button>
                     </el-form-item>
                 </el-form>
-
 
             </el-main>
         </el-container>
