@@ -54,6 +54,7 @@ new Vue({
             loading: false,
             boxshow: false,
             boxmachineshow: false,
+            boxvipshow: false,
             tagshow: false,
             select: '',
             formData: {
@@ -214,8 +215,10 @@ new Vue({
                 couponRange: '', //优惠券产品
                 all_product: false, //优惠券的全选
                 all_machine: false, //优惠券 机器选择全选
+                all_vip: false, //优惠券 机器选择全选
                 all_product_id: [], //优惠券搜索 暂存产品数组
                 all_machine_id: [], //优惠券搜索 暂时机器编号数组
+                all_vip_id: [], // 优惠券搜索 暂时的会员数组
                 shareNum: '', //优惠券分享次数
                 timeUnit: 3, //营销活动-时间单位
                 itemName: '',  //营销活动-奖品名称
@@ -227,6 +230,7 @@ new Vue({
                 raffleType: 1, // 营销活动-活动状态
                 startTime: [], //活动时间
                 inputArray: '', //输入的详细说明
+                isSecret: false, //会员 -- 是否是营销会员
             },
             rules: {
                 productName: [
@@ -279,6 +283,7 @@ new Vue({
             UnFormData: [],  //已选择的产品 临时列表数组
             search_product: '',   //优惠券 table 产品的搜索
             search_machine: '', //优惠券 tbale 机器的搜索
+            search_vip: '', //优惠券 table 会员的搜索
             SearchProduct: dataHref.split('*').length > 1 ? false : true,
             bigAndsmall: true,
             pickerOptions: {  //时间节点
@@ -764,6 +769,21 @@ new Vue({
                                 it.ruleForm.timeLim = new Date(2019, 7, 11, res.member.timeLimit.split('-')[0].split(':')[0], res.member.timeLimit.split('-')[0].split(':')[1], res.member.timeLimit.split('-')[0].split(':')[2]);
                                 it.ruleForm.timeLim1 = new Date(2019, 7, 11, res.member.timeLimit.split('-')[1].split(':')[0], res.member.timeLimit.split('-')[1].split(':')[1], res.member.timeLimit.split('-')[1].split(':')[2]);;
                                 it.ruleForm.discountsEndTime = [ym.init.getDateTime(res.member.discountsStartTime), ym.init.getDateTime(res.member.discountsEndTime)];
+                                
+                                if (res.member.detailContent != -1) {  //回显 所有的文本信息
+                                    let _arr_ = [], _arrs_ = [];
+                                    JSON.parse(res.member.detailContent).forEach((element, index) => {
+                                        _arrs_.push(element);
+                                        element['name'] = element.value;
+                                        _arr_.push(element)
+                                    })
+                                    it.inputArray = _arrs_;
+                                    it.changeInputValues = _arr_;
+                                }
+                                it.ruleForm.isSecret = res.member.isSecret != 0 ? true : false;  //是否是营销会员
+                                it.ruleForm.timeUnit = res.member.timeUnit;  //时间单位 
+
+
                                 uri = 'add_or_update_member'  //完成后重新把uri 复原
                                 break;
                             case 'manage_coupon':
@@ -810,7 +830,7 @@ new Vue({
                                     }, 500)
                                 })
 
-                                if (res.coupon.couponContent) {
+                                if (res.coupon.couponContent != -1) {  //回显 所有的文本信息
                                     let _arr_ = [], _arrs_ = [];
                                     JSON.parse(res.coupon.couponContent).forEach((element, index) => {
                                         _arrs_.push(element);
@@ -819,6 +839,31 @@ new Vue({
                                     })
                                     it.inputArray = _arrs_;
                                     it.changeInputValues = _arr_;
+                                }
+
+                                if (res.coupon.couponType == 4) {  //会员优惠券 选择
+                                    it.getobjectId(3);  //查看 会员
+                                    it.$nextTick(function () {
+                                        setTimeout(function () {
+                                            let _data_ = it.tableDataVip;
+                                            _data_.forEach((element) => {
+                                                element.index = element.memberRuleId
+                                            })
+                                            it.tableDataVip = _data_;  //添加一个 index 的数据
+                                            res.coupon.couponRangeName.split(';').forEach((element, index) => {  //机器编号
+                                                it.ruleForm.all_vip_id.push({
+                                                    memberRuleId: res.coupon.couponRange.split(',')[index],
+                                                    memberRuleName: element,
+                                                    index: res.coupon.couponRange.split(',')[index]
+                                                });
+                                                it.tableDataVip.forEach((el, i) => {  //操作删除 回显列表重复的数据
+                                                    if (res.coupon.couponRange.split(',')[index] == el.memberRuleId) {
+                                                        it.tableDataVip.splice(i, 1);
+                                                    }
+                                                })
+                                            })
+                                        }, 1000)
+                                    })
                                 }
 
 
@@ -878,7 +923,7 @@ new Vue({
         filememberPicUrlChange() {
             this.fileData['type'] = 3;  //动态配置
         },
-        filememberHeadPicChange() {
+        filememberHeadPicChange() {  //上传会员地图
             this.fileData['type'] = 16;  //动态配置
         },
         filecouponUrlChange() {
@@ -1022,11 +1067,22 @@ new Vue({
                     _data['discountsStartTime'] = ym.init.getDateTime(formName.discountsEndTime[0]);
                     _data['discountsEndTime'] = ym.init.getDateTime(formName.discountsEndTime[1]);
 
-                    if (formName.memberType) {
-                        _data['timeLimit'] = ym.init.getDateTime(formName.timeLim).split(' ')[1] + "-" + ym.init.getDateTime(formName.timeLim1).split(' ')[1];  //待定
-                    }
-                    _data['memberType'] = (+formName.memberType) + 1;
-                    _data['milliliter'] = formName.milliliter || '';
+                    //新字段
+                    let detailContent = [];
+                    this.changeInputValues.forEach(element => {
+                        detailContent.push(element)
+                    })
+                    _data['detailContent'] = JSON.stringify(detailContent);  //详细说明
+                    _data['isActivity'] = 0;  //是否开启活动
+                    _data['timeUnit'] = formName.timeUnit;  //时间单位
+                    _data['isSecret'] = formName.isSecret ? 1 : 0;  //是否营销会员
+                    
+                    //是否限时会员
+                    _data['timeLimit'] =  !formName.memberType ? -1 : ym.init.getDateTime(formName.timeLim).split(' ')[1] + "-" + ym.init.getDateTime(formName.timeLim1).split(' ')[1];  //待定
+                    
+                    _data['memberType'] = (+formName.memberType) + 1;  //会员类型
+                    _data['milliliter'] = formName.milliliter || '';  //毫升数
+
                     ym.init.XML({
                         method: 'POST',
                         uri: token._j.URLS.Development_Server_ + uri,
@@ -1061,8 +1117,8 @@ new Vue({
                         _data['couponMoney'] = parseFloat(formName.couponMoney * 100).toFixed(0) || '';  //优惠券金额
                         _data['shareNum'] = formName.shareNum; //优惠券分享次数
                     }
-                    if(formName.couponType == 5){  //饮品折扣券
-                        if(formName.couponMoney > 100){
+                    if (formName.couponType == 5) {  //饮品折扣券
+                        if (formName.couponMoney > 100) {
                             it.IError('数值不符合规定【1-100】');
                             return false;
                         }
@@ -1076,6 +1132,17 @@ new Vue({
                         })
                         return code
                     })();  //选择的产品ID
+
+                    if(formName.couponType == 4){ //选择的是优惠券 会员
+                        _data['couponRange'] = it.ruleForm.all_vip ? -1 : (() => {
+                            let code = [];
+                            this.ruleForm.all_vip_id.forEach(element => {
+                                code.push(element.memberRuleId);
+                            })
+                            return code
+                        })();  //选择的 会员 ID
+                    }
+
                     _data['machineRange'] = it.ruleForm.all_machine ? -1 : (() => {
                         let code = [];
                         this.ruleForm.all_machine_id.forEach(element => {
@@ -1379,6 +1446,7 @@ new Vue({
             });
         },
         handleSelectionChangeClick(params) {  //产品的选中
+            this.ruleForm.all_product = false;  //强制当前的全选变成 自主选择
             this.tableData.forEach((element, index) => {  //处理 清除选中项目
                 if (element.productId == params.index) {
                     this.tableData.splice(index, 1);
@@ -1399,6 +1467,8 @@ new Vue({
             this.ruleForm.all_product_id.push(params);  //批量操作优惠券产品
         },
         MachineHandleSelectionChange(params) {  //选中的机器操作
+            this.ruleForm.all_machine = false;  //强制当前的全选变成 自主选择
+
             this.tableDataMachine.forEach((element, index) => {  //处理 清除选中项目
                 if (element.machineNumber == params.index) {
                     this.tableDataMachine.splice(index, 1);
@@ -1418,6 +1488,28 @@ new Vue({
             }
             this.ruleForm.all_machine_id.push(params);  //批量操作优惠券产品
         },
+        vipHandleSelectionChange(params,row) {  //选中的会员操作
+            this.ruleForm.all_vip = false;  //强制当前的全选变成 自主选择
+
+            this.tableDataVip.forEach((element, index) => {  //处理 清除选中项目
+                if (element.memberRuleId == params.index) {
+                    this.tableDataVip.splice(index, 1);
+                }
+            })
+            if (this.ruleForm.all_vip_id.length > 0) {  //选中的优惠券产品
+                let _arr_ = [], bool = true;
+                _arr_ = this.ruleForm.all_vip_id;
+                for (let i = 0; i < _arr_.length; i++) {
+                    if (_arr_[i].memberRuleId == params.memberRuleId) {
+                        bool = false
+                    };
+                }
+                bool ? _arr_.push(params) : null;
+                this.ruleForm.all_vip_id = _arr_;  //批量操作优惠券产品
+                return;
+            }
+            this.ruleForm.all_vip_id.push(params);  //批量操作优惠券产品
+        },
 
         tableRowClassName({ row, rowIndex }) {  //赋值行号 是当前选中的产品信息
             row.index = row.productId;
@@ -1425,6 +1517,10 @@ new Vue({
 
         tableRowMachineClassName({ row, rowIndex }) {  //赋值行号 是当前选中的机器编号信息
             row.index = row.machineNumber;
+        },
+
+        tableRowVipClassName({ row, rowIndex }) {  //赋值行号 是当前选中的会员信息
+            row.index = row.memberRuleId;
         },
 
         deleteAllPlue(params, name) {   //删除选中的产品列表
@@ -1471,13 +1567,13 @@ new Vue({
                 this.changeInputValues.forEach((element, i) => {
                     _arr_.push(element);
                     if (element.index == index) {
-                        _arr_.splice(i, 1,{
+                        _arr_.splice(i, 1, {
                             value: params,
                             index: index
                         });
                     };  //先清除掉之前的内容稍后执行添加 
                 })
-                if(this.changeInputValues.length == index){
+                if (this.changeInputValues.length == index) {
                     _arr_.push({
                         value: params,
                         index: index
@@ -1707,7 +1803,7 @@ new Vue({
                     }
                 }
             })
-        }
+        },
 
     }
 })

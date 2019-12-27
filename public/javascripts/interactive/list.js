@@ -36,7 +36,7 @@ window.addEventListener('pageshow', function (params) {
                 loading: false,
                 testAdmin: ym.init.COMPILESTR.decrypt(JSON.parse(sessionStorage.getItem('_a'))._i) == "yuanmenghhx" || ym.init.COMPILESTR.decrypt(JSON.parse(sessionStorage.getItem('_a'))._i) == "yuanmengKSX" ? false : true,  //指定的账号不能显示订单查看
                 more: false,
-                tableData: [],  
+                tableData: [],
                 currentPage: 1,
                 pageSize: 20,
                 total: 0,
@@ -149,7 +149,16 @@ window.addEventListener('pageshow', function (params) {
                     allowShareChance: 0,
                     convertMilliliter: 0,
                     maxLuckyValue: 500,
-                    status: 1
+                    status: 1,
+                    allowGrant: 0, //营销商户配置
+                    grantMilliliter: 0, //营销商户配置
+                    allowShare: 0, //营销商户配置
+                    shareMilliliter: 0, //营销商户配置
+                    allowSignIn: 0, //营销商户配置
+                    signInMilliliter: 0, //营销商户配置
+                    allowChangeCup: 0, //营销商户配置
+                    changeMilliliter: 0, //营销商户配置
+                    convertMilliliter: 0, //营销商户配置
                 },
                 imageList: {
                     mUpdateUrl: [], //图片li
@@ -291,7 +300,8 @@ window.addEventListener('pageshow', function (params) {
                             [1, '年'],
                             [2, '月'],
                             [3, '日'],
-                            [4, '周']
+                            [4, '周'],
+                            [5, '小时']
                         ])
                     }]
                 ]),
@@ -347,11 +357,11 @@ window.addEventListener('pageshow', function (params) {
                             delete params['startDate']
                             delete params['endDate']
                         }
-                        if(uri == 'admin_statistics_log_list'){
-                            if(params.timeUnit == 2){
+                        if (uri == 'admin_statistics_log_list') {
+                            if (params.timeUnit == 2) {
                                 params['startDate'] = params['startDate'].substring(0, params['startDate'].lastIndexOf('-'));
                                 params['endDate'] = params['endDate'].substring(0, params['endDate'].lastIndexOf('-'));
-                            }else if(params.timeUnit == 1){
+                            } else if (params.timeUnit == 1) {
                                 params['startDate'] = params['startDate'].split('-')[0];
                                 params['endDate'] = params['endDate'].split('-')[0];
                             }
@@ -371,7 +381,7 @@ window.addEventListener('pageshow', function (params) {
                 if (uri == 'manage_advertisement_list_list') _data_['type'] = 1;
                 if (uri == 'client_user_list') _data_['type'] = 1;
                 if (uri == 'manage_dividend_list') _data_['type'] = 1;
-                if(uri == 'find_order_list'){   //处理订单的操作
+                if (uri == 'find_order_list') {   //处理订单的操作
                     let _machin_ = parent.document.getElementById('tagHref').getAttribute('src').split('*'); // 处理从设备列表过来的订单查看
                     _data_['name'] = JSON.stringify(
                         {
@@ -379,14 +389,14 @@ window.addEventListener('pageshow', function (params) {
                             orderId: params ? params['name'] : ''
                         }
                     )
-                    _data_['url'] = '/manage/orderList.html'; 
+                    _data_['url'] = '/manage/orderList.html';
                 }
                 if (uri == 'admin_statistics_list' || uri == 'machine_statistics_list' || uri == 'admin_statistics_log_list') {  //新商户统计
                     _data_['startDate'] = _data_['startDate'] || ym.init.getDateTime(new Date().setTime(new Date().getTime() - 3600 * 1000 * 24 * 7)).split(' ')[0];
                     _data_['endDate'] = _data_['endDate'] || ym.init.getDateTime(new Date()).split(' ')[0];
                     it.listSearch._time_ = [_data_['startDate'], _data_['endDate']]
                     _data_['hasTest'] = _data_['hasTest'] || it.listSearch.hasTest;
-                    if(uri == 'admin_statistics_log_list'){
+                    if (uri == 'admin_statistics_log_list') {
                         _data_['timeUnit'] = params ? params['timeUnit'] : it.listSearch.timeUnit;
                     }
                 };
@@ -648,7 +658,7 @@ window.addEventListener('pageshow', function (params) {
                                         xml.push({
                                             couponId: res.couponInfoList[i].couponId,
                                             couponName: res.couponInfoList[i].couponName,
-                                            couponType: res.couponInfoList[i].couponType,
+                                            couponType: res.couponInfoList[i].couponType == 1 ? '优惠券' : res.couponInfoList[i].couponType == 2 ? '换购券' : res.couponInfoList[i].couponType == 3 ? '咖啡券' : res.couponInfoList[i].couponType == 4 ? '会员优惠券' : '折扣券',
                                             couponRangeName: res.couponInfoList[i].couponRangeName,
                                             couponMoney: parseFloat(res.couponInfoList[i].couponMoney / 100).toFixed(2),
                                             couponTime: res.couponInfoList[i].couponTime + `( ` + it.StatusName.get('time').couponTime.get(res.couponInfoList[i].timeUnit) + ` )`
@@ -944,7 +954,7 @@ window.addEventListener('pageshow', function (params) {
                                             createTime: res.data[i].createTime,
                                             nickName: res.data[i].nickName,
                                             address: res.data[i].address,
-                                            itemType:  res.data[i].itemType,
+                                            itemType: res.data[i].itemType,
                                             status: res.data[i].status
                                         })
                                     }
@@ -952,6 +962,14 @@ window.addEventListener('pageshow', function (params) {
                                 case `admin_statistics_list`:  //新商户统计 
                                 case `machine_statistics_list`:  //新设备统计 
                                     xml = res.data;
+                                    break;
+                                case `admin_marketing_config_list`:  //营销配置
+                                    let _arr_ = [];
+                                    res.dataList.forEach(element => {
+                                        element.createTime = ym.init.getDateTime(element.createTime);
+                                        _arr_.push(element)
+                                    })
+                                    xml = _arr_;
                                     break;
                                 default:
                                     break;
@@ -1353,7 +1371,7 @@ window.addEventListener('pageshow', function (params) {
                             return false;
                         }
                         _v._type.forEach(e => {
-                            if(e == 6) e = 4;  //暂时解决产品清单绑定问题
+                            if (e == 6) e = 4;  //暂时解决产品清单绑定问题
                             _data['type'] = e;
                             _data['adminId'] = _v._id || '';
                             _data['listId'] = _v._listid || '';
@@ -2409,7 +2427,7 @@ window.addEventListener('pageshow', function (params) {
                                                         _code_ = `料仓：${Object.values(JSON.parse(_code))[0]},坏料：${Object.values(JSON.parse(_code))[1]}`;
                                                     } else {
                                                         // _code_ += ` 【 料仓：${index + 1}, 数值：${Object.values(JSON.parse(_code))[index]} 】 `;
-                                                        _code_ += `【 ${ index + 1 }、${Object.keys(JSON.parse(_code))[index].split('g')[0]}：${Object.values(JSON.parse(_code))[index]} g 】 `
+                                                        _code_ += `【 ${index + 1}、${Object.keys(JSON.parse(_code))[index].split('g')[0]}：${Object.values(JSON.parse(_code))[index]} g 】 `
                                                     }
                                                 });
                                                 _code = _code_;
@@ -2591,7 +2609,7 @@ window.addEventListener('pageshow', function (params) {
                 })
             },
 
-            miniTurntablePrizeExe(params){  //导出抽奖记录
+            miniTurntablePrizeExe(params) {  //导出抽奖记录
                 const it = this;
                 this.loading = true;
                 _data['userId'] = params.userId || '';
@@ -2625,7 +2643,7 @@ window.addEventListener('pageshow', function (params) {
                 })
             },
 
-            maintenanceLogsOutPut(params){  //导出运维日志
+            maintenanceLogsOutPut(params) {  //导出运维日志
                 const it = this;
                 this.loading = true;
                 _data['maintainerId'] = params.maintainerId || '';
@@ -2865,6 +2883,66 @@ window.addEventListener('pageshow', function (params) {
                     }
                 })
             },
+
+            marketingConfig(params, name) {  //营销配置编辑
+                let it = this;
+                if (name) {
+                    _data['adminId'] = params.adminId;
+                    _data['adminMarketingConfigId'] = params.adminMarketingConfigId;
+                    _data['allowGrant'] = params.allowGrant;
+                    params.allowGrant != 1 ? null : _data['grantMilliliter'] = 0 < params.grantMilliliter && params.grantMilliliter < params.changeMilliliter ? params.grantMilliliter: it.IError('数值异常！');
+                    _data['allowShare'] = params.allowShare;
+                    params.allowShare != 1 ? null : _data['shareMilliliter'] = 0 < params.shareMilliliter && params.shareMilliliter < params.changeMilliliter ? params.shareMilliliter: it.IError('数值异常！');
+                    _data['allowSignIn'] = params.allowSignIn;
+                    params.allowSignIn != 1 ? null : _data['signInMilliliter'] = 0 < params.signInMilliliter && params.signInMilliliter < params.changeMilliliter ? params.signInMilliliter: it.IError('数值异常！');
+                    _data['allowChangeCup'] = params.allowChangeCup; 
+                    params.allowChangeCup != 1 ? null : _data['changeMilliliter'] = 0 < params.changeMilliliter && params.changeMilliliter < params.changeMilliliter ? params.changeMilliliter: it.IError('数值异常！');
+                    _data['convertMilliliter'] = 0 < params.convertMilliliter ? params.convertMilliliter: it.IError('数值异常！');
+                    ym.init.XML({
+                        method: 'POST',
+                        uri: token._j.URLS.Development_Server_ + 'update_admin_marketing_config',
+                        async: false,
+                        xmldata: _data,
+                        done: function (res) {
+                            try {
+                                ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
+                                    it.ISuccessfull(res.statusCode.msg);
+                                    setTimeout(() => {
+                                        parent.document.getElementById('tagHref').setAttribute('src', callBackHtml);
+                                    }, 500);
+                                })() : (() => {
+                                    throw "收集到错误：\n\n" + res.statusCode.msg;
+                                })();
+                            } catch (error) {
+                                it.IError(error);
+                            }
+                        }
+                    })
+                } else {
+                    _data['adminMarketingConfigId'] = params;
+                    ym.init.XML({
+                        method: 'GET',
+                        uri: token._j.URLS.Development_Server_ + 'admin_marketing_config_detail',
+                        async: false,
+                        xmldata: _data,
+                        done: function (res) {
+                            try {
+                                ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
+                                    Object.keys(res.data).forEach((element, index) => {
+                                        it.formData[element] = Object.values(res.data)[index];
+                                    })
+                                    it.$forceUpdate(); //input 输入问题
+                                })() : (() => {
+                                    throw "收集到错误：\n\n" + res.statusCode.msg;
+                                })();
+                            } catch (error) {
+                                it.IError(error);
+                            }
+                        }
+                    })
+                }
+            },
+
         }
     });
 }, false)

@@ -33,6 +33,32 @@
                         </el-select>
                     </el-input>
 
+                    <div class="_search_centent" v-show="more">
+                        <el-button>会员类型</el-button>
+                        <el-select v-model="listSearch.memberType" slot="prepend" placeholder="请选择">
+                            <el-option label="不限" value=""></el-option>
+                            <el-option label="无限制会员" value="1"></el-option>
+                            <el-option label="限时会员" value="2"></el-option>
+                        </el-select>
+                    </div>
+                    <div class="_search_centent" v-show="more">
+                        <el-button>状态</el-button>
+                        <el-select v-model="listSearch.status" slot="prepend" placeholder="请选择">
+                            <el-option label="上架" value="1"></el-option>
+                            <el-option label="下架" value="0"></el-option>
+                        </el-select>
+                    </div>
+                    <div class="_search_centent" v-show="more">
+                        <el-button>营销会员</el-button>
+                        <el-select v-model="listSearch.isSecret" slot="prepend" placeholder="请选择">
+                            <el-option label="是" value="1"></el-option>
+                            <el-option label="否" value="0"></el-option>
+                        </el-select>
+                    </div>
+
+                    <div class="more_search el-icon-circle-plus-outline" v-show="!more" @click="more = !more"> 更多搜索条件
+                    </div>
+
                     <el-button icon="el-icon-search" class="_search_btn" @click="list(listSearch)">搜索
                     </el-button>
                 </el-form>
@@ -40,22 +66,33 @@
                     <el-table :data="tableData" stripe style="width: 100%" border>
                         <el-table-column prop="memberRuleId" label="ID"></el-table-column>
                         <el-table-column prop="memberRuleName" label="会员名称"></el-table-column>
-                        <el-table-column prop="memberLevel" label="会员等级"></el-table-column>
+                        <el-table-column prop="memberLevel" label="会员等级">
+                            <template slot-scope="scope">
+                                {{ scope.row.memberLevel == -1 ? '无' : scope.row.memberLevel }}
+                            </template>
+                        </el-table-column>
                         <el-table-column prop="duration" label="会员持续时间"></el-table-column>
                         <el-table-column prop="payMoney" label="开通金额"></el-table-column>
                         <el-table-column prop="discount" label="折扣"></el-table-column>
                         <el-table-column prop="discountsStartTime" label="折扣开始时间"></el-table-column>
                         <el-table-column prop="discountsEndTime" label="折扣结束时间"></el-table-column>
                         <el-table-column prop="milliliter" label="发放流量"></el-table-column>
+                        <el-table-column prop="isSecret" label="营销会员">
+                            <template slot-scope="scope">
+                                <el-tag>
+                                    {{ scope.row.isSecret != 1 ? '否' : '是' }}
+                                </el-tag>
+                            </template>
+                        </el-table-column>
                         <el-table-column prop="status" label="状态">
                             <template slot-scope="scope">
                                 <el-tag>
-                                    {{ scope.row.status == 0 ? '下架' : '上架' }}
+                                    {{ scope.row.status != 1 ? '下架' : '上架' }}
                                 </el-tag>
                             </template>
                         </el-table-column>
 
-                        <el-table-column prop="memberPicUrl" label="会员底图">
+                        <!-- <el-table-column prop="memberPicUrl" label="会员底图">
                             <template slot-scope="scope">
                                 <el-popover trigger="hover" placement="top">
                                     <el-image :src="scope.row.memberPicUrl" :preview-src-list="scope.row.memberPicUrl"
@@ -66,7 +103,7 @@
                                     </div>
                                 </el-popover>
                             </template>
-                        </el-table-column>
+                        </el-table-column> -->
 
                         <el-table-column fixed="right" label="操作">
                             <template slot-scope="scope">

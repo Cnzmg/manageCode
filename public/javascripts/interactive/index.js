@@ -95,6 +95,7 @@ new Vue({
                 'turntableConf',
                 'turntableConfUserLogs',
                 'appointmentPay', //预售记录
+                'marketingconf',  //营销配置(商户区域配置)
                 'chartsUser',
                 'chartsFinance',
                 'chartsActive',

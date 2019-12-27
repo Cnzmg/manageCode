@@ -24,7 +24,7 @@
                 <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
                     <el-form-item label="优惠券类型" prop="couponName">
                         <el-radio-group v-model="ruleForm.couponType" size="medium"
-                            @change="ruleForm.couponType == 3 ? cTypeShow = false : cTypeShow = true;">
+                            @change="ruleForm.couponType == 3 ? cTypeShow = false : cTypeShow = true;ruleForm.couponType == 4 ? getobjectId(3) : '';">
                             <el-radio-button :label="1">金额优惠</el-radio-button>
                             <el-radio-button :label="2">换购券</el-radio-button>
                             <el-radio-button :label="3">咖啡券</el-radio-button>
@@ -89,37 +89,33 @@
                             </el-table-column>
                         </el-table>
                     </el-form-item>
-
-
-
                     
-                    <el-form-item label="选择会员" prop="machineRange" v-show="ruleForm.couponType == 4 ? true: false">
-                        <el-switch v-model="ruleForm.all_machine" active-text="不限会员" inactive-text=""></el-switch>
-                        <el-badge v-model="ruleForm.all_machine == true ? '全部' :ruleForm.all_machine_id.length"
+                    <el-form-item label="选择会员" v-show="ruleForm.couponType == 4 ? true: false">
+                        <el-switch v-model="ruleForm.all_vip" active-text="不限会员" inactive-text=""></el-switch>
+                        <el-badge v-model="ruleForm.all_vip == true ? '全部' :ruleForm.all_vip_id.length"
                             style="margin-left: 60px;">
-                            <el-button size="small" @click="boxmachineshow = true">已选择机器</el-button>
+                            <el-button size="small" @click="boxvipshow = true">已选择会员</el-button>
                         </el-badge>
                         <el-table
-                            :data="tableDataMachine.filter(data => !search_machine || data.machineNumber.toLowerCase().includes(search_machine.toLowerCase()))"
+                            :data="tableDataVip.filter(data => !search_vip || data.memberRuleName.toLowerCase().includes(search_vip.toLowerCase()))"
                             stripe style="width: 50%" height="300px" tooltip-effect="dark"
-                            @row-click="MachineHandleSelectionChange" ref="multipleTable"
-                            :row-class-name="tableRowMachineClassName">
-                            <el-table-column prop="machineNumber" label="机器编号">
+                            @row-click="vipHandleSelectionChange" ref="multipleTable"
+                            :row-class-name="tableRowVipClassName">
+                            <el-table-column property="memberRuleId" label="会员ID"></el-table-column>
+                            <el-table-column property="memberRuleName" show-overflow-tooltip="true" label="会员名称"></el-table-column>
                                 <template slot="header" slot-scope="scope">
-                                    <el-input v-model="search_machine" size="mini" placeholder="输入关键字搜索" />
+                                    <el-input v-model="search_vip" size="mini" placeholder="输入关键字搜索" />
                                 </template>
                             </el-table-column>
                         </el-table>
                     </el-form-item>
-
-
 
                     <el-form-item label="有效期" prop="couponTime">
                         <el-input v-model="ruleForm.couponTime" class="w400"></el-input>
                         <template>
                             <el-select v-model="ruleForm.timeUnit" placeholder="请选择时间单位">
                                 <el-option
-                                    v-for="item in [{ value: 1, label: '年'},{ value: 2, label: '月'},{ value: 3, label: '日'},{ value: 4, label: '周'}]"
+                                    v-for="item in [{ value: 1, label: '年'},{ value: 2, label: '月'},{ value: 3, label: '日'},{ value: 4, label: '周'},{ value: 5, label: '小时'}]"
                                     :value="item.value" :label="item.label" v-bind:key="item.value"></el-option>
                             </el-select>
                         </template>
@@ -172,6 +168,20 @@
                 <el-table-column fixed="right" label="操作">
                     <template slot-scope="scope">
                         <el-button type="text" size="small" @click="deleteAllPlue(scope.row, 'machine')">
+                            删除
+                        </el-button>
+                    </template>
+                </el-table-column>
+            </el-table>
+        </el-dialog>
+
+        <el-dialog title="已选会员" :visible.sync="boxvipshow">
+            <el-table :data="ruleForm.all_vip_id" height="300px" style="margin: 10px 0" tooltip-effect="dark">
+                <el-table-column property="productId" label="会员ID"></el-table-column>
+                <el-table-column property="productName" show-overflow-tooltip="true" label="会员名称"></el-table-column>
+                <el-table-column fixed="right" label="操作">
+                    <template slot-scope="scope">
+                        <el-button type="text" size="small" @click="deleteAllPlue(scope.row, 'product')">
                             删除
                         </el-button>
                     </template>
