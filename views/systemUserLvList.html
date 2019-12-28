@@ -79,9 +79,7 @@
                         <el-table-column prop="milliliter" label="发放流量"></el-table-column>
                         <el-table-column prop="isSecret" label="营销会员">
                             <template slot-scope="scope">
-                                <el-tag>
-                                    {{ scope.row.isSecret != 1 ? '否' : '是' }}
-                                </el-tag>
+                                {{ scope.row.isSecret != 1 ? "否" : "是" }}
                             </template>
                         </el-table-column>
                         <el-table-column prop="status" label="状态">

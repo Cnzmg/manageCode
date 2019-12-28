@@ -166,6 +166,7 @@ window.addEventListener('pageshow', function (params) {
                 },
                 TableAndVisible: false,
                 TableFormData: [],
+                couponUnFormData: [],  //礼券明细 de 窗口
                 UpdateTableAndVisible: false,
                 UpdateTableFormData: [],
                 listId: '',
@@ -310,6 +311,7 @@ window.addEventListener('pageshow', function (params) {
                 objectId: '', //开通会员的查询 会员id
                 objectIds: [], //开通会员的查询 会员id
                 pageparams: {},  // 预存的页面搜索参数
+                countPages: 1, // 无限滚动的 page
             }
         },
         created: function () {
@@ -636,7 +638,8 @@ window.addEventListener('pageshow', function (params) {
                                             discountsEndTime: ym.init.getDateTime(res.memberRuleList[i].discountsEndTime).split(' ')[0],
                                             milliliter: res.memberRuleList[i].milliliter,
                                             memberPicUrl: res.memberRuleList[i].memberPicUrl,
-                                            status: res.memberRuleList[i].status
+                                            status: res.memberRuleList[i].status,
+                                            isSecret: res.memberRuleList[i].isSecret
                                         })
                                     }
                                     break;
@@ -1526,6 +1529,7 @@ window.addEventListener('pageshow', function (params) {
                             async: false,
                             xmldata: _data,
                             done: function (res) {
+                                if(res.statusCode.status != 6666) return false;
                                 res.logList.forEach(e => {
                                     it.TableFormData.push({
                                         logId: e.logId,
@@ -2890,14 +2894,14 @@ window.addEventListener('pageshow', function (params) {
                     _data['adminId'] = params.adminId;
                     _data['adminMarketingConfigId'] = params.adminMarketingConfigId;
                     _data['allowGrant'] = params.allowGrant;
-                    params.allowGrant != 1 ? null : _data['grantMilliliter'] = 0 < params.grantMilliliter && params.grantMilliliter < params.changeMilliliter ? params.grantMilliliter: it.IError('数值异常！');
+                    params.allowGrant != 1 ? null : _data['grantMilliliter'] = params.grantMilliliter > 0 && params.grantMilliliter < params.convertMilliliter ? params.grantMilliliter: it.IError('数值异常！');
                     _data['allowShare'] = params.allowShare;
-                    params.allowShare != 1 ? null : _data['shareMilliliter'] = 0 < params.shareMilliliter && params.shareMilliliter < params.changeMilliliter ? params.shareMilliliter: it.IError('数值异常！');
+                    params.allowShare != 1 ? null : _data['shareMilliliter'] = params.shareMilliliter > 0 && params.shareMilliliter < params.convertMilliliter ? params.shareMilliliter: it.IError('数值异常！');
                     _data['allowSignIn'] = params.allowSignIn;
-                    params.allowSignIn != 1 ? null : _data['signInMilliliter'] = 0 < params.signInMilliliter && params.signInMilliliter < params.changeMilliliter ? params.signInMilliliter: it.IError('数值异常！');
+                    params.allowSignIn != 1 ? null : _data['signInMilliliter'] = params.signInMilliliter > 0 && params.signInMilliliter < params.convertMilliliter ? params.signInMilliliter: it.IError('数值异常！');
                     _data['allowChangeCup'] = params.allowChangeCup; 
-                    params.allowChangeCup != 1 ? null : _data['changeMilliliter'] = 0 < params.changeMilliliter && params.changeMilliliter < params.changeMilliliter ? params.changeMilliliter: it.IError('数值异常！');
-                    _data['convertMilliliter'] = 0 < params.convertMilliliter ? params.convertMilliliter: it.IError('数值异常！');
+                    params.allowChangeCup != 1 ? null : _data['changeMilliliter'] = params.changeMilliliter > 0 && params.changeMilliliter < params.convertMilliliter ? params.changeMilliliter: it.IError('数值异常！');
+                    _data['convertMilliliter'] = params.convertMilliliter > 0 ? params.convertMilliliter: it.IError('数值异常！');
                     ym.init.XML({
                         method: 'POST',
                         uri: token._j.URLS.Development_Server_ + 'update_admin_marketing_config',
@@ -2907,9 +2911,8 @@ window.addEventListener('pageshow', function (params) {
                             try {
                                 ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
                                     it.ISuccessfull(res.statusCode.msg);
-                                    setTimeout(() => {
-                                        parent.document.getElementById('tagHref').setAttribute('src', callBackHtml);
-                                    }, 500);
+                                    it.InputAndVisible = false;
+                                    it.list();
                                 })() : (() => {
                                     throw "收集到错误：\n\n" + res.statusCode.msg;
                                 })();
@@ -2942,6 +2945,33 @@ window.addEventListener('pageshow', function (params) {
                     })
                 }
             },
+
+            couponList(params){ //用户礼券 窗口 列表
+                let it = this;
+                // params ? pasessionStorage.setItem('params', params.userId) : params.userId = sessionStorage.getItem('params');
+                _data['userId'] = params.userId;
+                _data['page'] = it.countPages;
+                ym.init.XML({
+                    method: 'POST',
+                    uri: token._j.URLS.Development_Server_ + 'find_user_couponList',
+                    async: false,
+                    xmldata: _data,
+                    done: function (res) {
+                        try {
+                            ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
+                                res.userCouponList.forEach((element, index) => {
+                                    res.userCouponList[index].createTime = ym.init.getDateTime(element.createTime);
+                                })
+                                it.couponUnFormData = res.userCouponList;
+                            })() : (() => {
+                                throw "收集到错误：\n\n" + res.statusCode.msg;
+                            })();
+                        } catch (error) {
+                            it.IError(error);
+                        }
+                    }
+                })
+            }
 
         }
     });

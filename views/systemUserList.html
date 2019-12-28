@@ -84,17 +84,17 @@
                         <el-table-column prop="source" label="用户来源"></el-table-column>
                         <el-table-column prop="userStatus" label="状态"></el-table-column>
                         <el-table-column prop="registerTime" label="注册时间"></el-table-column>
-                        <el-table-column prop="compensateMilliliter" label="会员流量"></el-table-column>
-                        <el-table-column prop="memberMilliliter" label="补偿流量"></el-table-column>
+                        <el-table-column prop="memberMilliliter" label="会员流量"></el-table-column>
+                        <el-table-column prop="compensateMilliliter" label="补偿流量"></el-table-column>
 
                         <el-table-column fixed="right" label="操作">
                             <template slot-scope="scope">
                                 <el-button type="text" size="small"
                                     @click="TableAndVisible = true; searchAPIs({ _uri:  'find_user_milliliter_log', _id: scope.row.userId}); TableFormData = [];">
-                                    毫升日志
+                                    日志
                                 </el-button>
-                                <el-button type="text" size="small" @click="UpdateTableAndVisible = true;">
-                                    礼券明细
+                                <el-button type="text" size="small" @click="UpdateTableAndVisible = true; couponList(scope.row);couponUnFormData = []">
+                                    礼券
                                 </el-button>
                                 <el-button type="text" size="small"
                                     @click="addressTable = true;addressTables = []; addressTableList({userId:scope.row.userId});">
@@ -189,24 +189,24 @@
                     </el-form>
                 </el-dialog>
 
-                <el-dialog title="毫升数日志" :visible.sync="TableAndVisible">
-                    <el-table :data="TableFormData" height="600px">
+                <el-dialog title="毫升数日志" :visible.sync="TableAndVisible" width="70%">
+                    <el-table :data="TableFormData" height="600px" border>
                         <el-table-column property="logId" label="ID"></el-table-column>
-                        <el-table-column property="userId" label="用户ID"></el-table-column>
-                        <el-table-column property="userName" label="用户昵称"></el-table-column>
                         <el-table-column property="createTime" label="创建时间"></el-table-column>
                         <el-table-column property="milliliterChange" label="流量增减值"></el-table-column>
                         <el-table-column property="stateComment" label="说明"></el-table-column>
                     </el-table>
                 </el-dialog>
 
-                <el-dialog title="礼券明细" :visible.sync="UpdateTableAndVisible">
-                    <el-form :model="unbinadmin">
-                        <el-table :data="UnFormData" height="300px" style="margin: 10px 0">
-                            <el-table-column property="userId" label="类型码"></el-table-column>
-                            <el-table-column property="userId" label="类型名称"></el-table-column>
-                        </el-table>
-                    </el-form>
+                <el-dialog title="礼券明细" :visible.sync="UpdateTableAndVisible" width="70%">
+                    <!-- v-infinite-scroll="couponList" infinite-scroll-immediate="true" -->
+                    <el-table :data="couponUnFormData" height="400px" style="margin: 10px 0" border>
+                        <el-table-column property="rCouponId" label="ID"></el-table-column>
+                        <el-table-column property="couponName" label="名称"></el-table-column>
+                        <el-table-column property="couponRangeName" label="产品" show-overflow-tooltip="true"></el-table-column>
+                        <el-table-column property="machineRange" label="设备" show-overflow-tooltip="true"></el-table-column>
+                        <el-table-column property="createTime" label="时间"></el-table-column>
+                    </el-table>
                 </el-dialog>
 
                 <el-dialog title="地址信息" :visible.sync="addressTable">

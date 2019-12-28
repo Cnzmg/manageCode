@@ -14,6 +14,11 @@
     <script src="../../public/javascripts/plugin/element.min.js"></script>
 
     <title>广东圆梦实业发展有限公司</title>
+    <style>
+        .el-form-item{
+            margin-bottom: 0;
+        }
+    </style>
 </head>
 
 
@@ -127,7 +132,7 @@
                             <el-input v-model="formData.convertMilliliter"></el-input>
                         </el-form-item>
 
-                        <div class="btn-center">
+                        <div class="btn-center" style="text-align: center; margin: 20px;">
                             <el-button type="primary" v-model="formData.adminMarketingConfigId" @click="marketingConfig(formData, true)">提交
                             </el-button>
                         </div>

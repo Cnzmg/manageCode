@@ -168,6 +168,7 @@ new Vue({
                 formulaId: '',
                 productName: '',
                 productPrice: '',
+                originPrice: 0,
                 productMachinePicurl: '',
                 productPicurl: '',
                 productMachineDetailPicurl: '',
@@ -371,14 +372,16 @@ new Vue({
                     async: false,
                     xmldata: _data,
                     done: function (res) {
+                        let _arr_ = [];
                         res.formulaInfoList.forEach(e => {
-                            it.formulaIds.push({
+                            _arr_.push({
                                 value: e.formulaId,
                                 label: e.formulaName,
                                 machineType: e.machineType,
                                 formulaTemperature: e.formulaTemperature
                             })
                         });
+                        it.formulaIds = _arr_;
                     }
                 })
                 break;
@@ -565,13 +568,16 @@ new Vue({
                                 break;
                             case 'manage_product':
                                 try {
-                                    it.formulaIds.forEach(ex => {
-                                        if (ex.value == res.productInfo.formulaId) {
-                                            it.ruleForm.formulaId = ex.value;  //配方
-                                        }
-                                    });
+                                    setTimeout(function () {
+                                        it.formulaIds.forEach(ex => {
+                                            if (ex.value == res.productInfo.formulaId) {
+                                                it.ruleForm.formulaId = ex.value;  //配方 id
+                                            }
+                                        });
+                                    },1000)
                                     it.ruleForm.productName = res.productInfo.productName;  //产品名称
-                                    it.ruleForm.productPrice = res.productInfo.productPrice;  //产品价格
+                                    it.ruleForm.productPrice = parseFloat(res.productInfo.productPrice / 100).toFixed(2);  //产品价格
+                                    it.ruleForm.originPrice = parseFloat(res.productInfo.originPrice / 100).toFixed(2);  //产品原价
                                     it.imageList.machine.push({ name: 'machinePic', url: res.productInfo.productMachinePicurl }); //机器产品图片
                                     it.imageList.product.push({ name: 'product', url: res.productInfo.productPicurl }); //手机产品图片
                                     it.imageList.detail.push({ name: 'detail', url: res.productInfo.productMachineDetailPicurl }); //小机器详情图片
@@ -769,7 +775,7 @@ new Vue({
                                 it.ruleForm.timeLim = new Date(2019, 7, 11, res.member.timeLimit.split('-')[0].split(':')[0], res.member.timeLimit.split('-')[0].split(':')[1], res.member.timeLimit.split('-')[0].split(':')[2]);
                                 it.ruleForm.timeLim1 = new Date(2019, 7, 11, res.member.timeLimit.split('-')[1].split(':')[0], res.member.timeLimit.split('-')[1].split(':')[1], res.member.timeLimit.split('-')[1].split(':')[2]);;
                                 it.ruleForm.discountsEndTime = [ym.init.getDateTime(res.member.discountsStartTime), ym.init.getDateTime(res.member.discountsEndTime)];
-                                
+
                                 if (res.member.detailContent != -1) {  //回显 所有的文本信息
                                     let _arr_ = [], _arrs_ = [];
                                     JSON.parse(res.member.detailContent).forEach((element, index) => {
@@ -1076,10 +1082,10 @@ new Vue({
                     _data['isActivity'] = 0;  //是否开启活动
                     _data['timeUnit'] = formName.timeUnit;  //时间单位
                     _data['isSecret'] = formName.isSecret ? 1 : 0;  //是否营销会员
-                    
+
                     //是否限时会员
-                    _data['timeLimit'] =  !formName.memberType ? -1 : ym.init.getDateTime(formName.timeLim).split(' ')[1] + "-" + ym.init.getDateTime(formName.timeLim1).split(' ')[1];  //待定
-                    
+                    _data['timeLimit'] = !formName.memberType ? -1 : ym.init.getDateTime(formName.timeLim).split(' ')[1] + "-" + ym.init.getDateTime(formName.timeLim1).split(' ')[1];  //待定
+
                     _data['memberType'] = (+formName.memberType) + 1;  //会员类型
                     _data['milliliter'] = formName.milliliter || '';  //毫升数
 
@@ -1133,7 +1139,7 @@ new Vue({
                         return code
                     })();  //选择的产品ID
 
-                    if(formName.couponType == 4){ //选择的是优惠券 会员
+                    if (formName.couponType == 4) { //选择的是优惠券 会员
                         _data['couponRange'] = it.ruleForm.all_vip ? -1 : (() => {
                             let code = [];
                             this.ruleForm.all_vip_id.forEach(element => {
@@ -1179,7 +1185,7 @@ new Vue({
                         }
                     })
                     break;
-                default:
+                default:   //添加/修改产品
                     _data['type'] = 3;
                     if (dataHref.split('*').length > 1) {
                         _data['type'] = 4;
@@ -1187,7 +1193,8 @@ new Vue({
                     }
                     _data['formulaId'] = formName.formulaId || '';
                     _data['productName'] = formName.productName || '';
-                    _data['productPrice'] = formName.productPrice || '';
+                    _data['productPrice'] = parseInt(formName.productPrice * 100) || 0;
+                    _data['originPrice'] = parseInt(formName.originPrice * 100) || 0;
                     _data['productMachinePicurl'] = formName.productMachinePicurl || '';
                     _data['productPicurl'] = formName.productPicurl || '';
                     _data['productMachineDetailPicurl'] = formName.productMachineDetailPicurl || '';
@@ -1488,7 +1495,7 @@ new Vue({
             }
             this.ruleForm.all_machine_id.push(params);  //批量操作优惠券产品
         },
-        vipHandleSelectionChange(params,row) {  //选中的会员操作
+        vipHandleSelectionChange(params, row) {  //选中的会员操作
             this.ruleForm.all_vip = false;  //强制当前的全选变成 自主选择
 
             this.tableDataVip.forEach((element, index) => {  //处理 清除选中项目
