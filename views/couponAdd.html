@@ -21,7 +21,7 @@
         v-loading.fullscreen.lock="loading" data-goback="../couponList.html">
         <el-container>
             <el-main>
-                <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
+                <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="250px" class="demo-ruleForm">
                     <el-form-item label="优惠券类型" prop="couponName">
                         <el-radio-group v-model="ruleForm.couponType" size="medium"
                             @change="ruleForm.couponType == 3 ? cTypeShow = false : cTypeShow = true;ruleForm.couponType == 4 ? getobjectId(3) : '';">
@@ -120,7 +120,7 @@
                             </el-select>
                         </template>
                     </el-form-item>
-                    <el-form-item label="优惠金额" prop="couponMoney" v-show="cTypeShow">
+                    <el-form-item label="优惠金额（元）/折扣比例（1-100）" prop="couponMoney" v-show="cTypeShow">
                         <el-input v-model="ruleForm.couponMoney" class="w400"></el-input>
                     </el-form-item>
                     <el-form-item label="可分享次数" prop="shareNum" v-show="false">

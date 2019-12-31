@@ -72,11 +72,11 @@
                             </template>
                         </el-table-column>
                         <el-table-column prop="duration" label="会员持续时间"></el-table-column>
-                        <el-table-column prop="payMoney" label="开通金额"></el-table-column>
-                        <el-table-column prop="discount" label="折扣"></el-table-column>
+                        <el-table-column prop="payMoney" label="开通金额(元)"></el-table-column>
+                        <el-table-column prop="discount" label="折后金额(元)"></el-table-column>
                         <el-table-column prop="discountsStartTime" label="折扣开始时间"></el-table-column>
                         <el-table-column prop="discountsEndTime" label="折扣结束时间"></el-table-column>
-                        <el-table-column prop="milliliter" label="发放流量"></el-table-column>
+                        <el-table-column prop="milliliter" label="发放流量(ML)"></el-table-column>
                         <el-table-column prop="isSecret" label="营销会员">
                             <template slot-scope="scope">
                                 {{ scope.row.isSecret != 1 ? "否" : "是" }}

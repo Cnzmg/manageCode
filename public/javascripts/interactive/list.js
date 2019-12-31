@@ -631,9 +631,9 @@ window.addEventListener('pageshow', function (params) {
                                             memberRuleId: res.memberRuleList[i].memberRuleId,
                                             memberRuleName: res.memberRuleList[i].memberRuleName,
                                             memberLevel: res.memberRuleList[i].memberLevel,
-                                            duration: res.memberRuleList[i].duration,
-                                            payMoney: res.memberRuleList[i].payMoney,
-                                            discount: res.memberRuleList[i].discount,
+                                            duration: res.memberRuleList[i].timeUnit == 1 ? res.memberRuleList[i].duration+'(年)' : res.memberRuleList[i].timeUnit == 2 ? res.memberRuleList[i].duration+'(月)' : res.memberRuleList[i].timeUnit == 3 ? res.memberRuleList[i].duration+'(日)' : res.memberRuleList[i].timeUnit == 4 ? res.memberRuleList[i].duration+'(周)' : res.memberRuleList[i].duration+'(小时)',
+                                            payMoney: parseFloat(res.memberRuleList[i].payMoney / 100).toFixed(2),
+                                            discount: parseFloat(res.memberRuleList[i].discount / 100).toFixed(2),
                                             discountsStartTime: ym.init.getDateTime(res.memberRuleList[i].discountsStartTime).split(' ')[0],
                                             discountsEndTime: ym.init.getDateTime(res.memberRuleList[i].discountsEndTime).split(' ')[0],
                                             milliliter: res.memberRuleList[i].milliliter,
@@ -663,7 +663,7 @@ window.addEventListener('pageshow', function (params) {
                                             couponName: res.couponInfoList[i].couponName,
                                             couponType: res.couponInfoList[i].couponType == 1 ? '优惠券' : res.couponInfoList[i].couponType == 2 ? '换购券' : res.couponInfoList[i].couponType == 3 ? '咖啡券' : res.couponInfoList[i].couponType == 4 ? '会员优惠券' : '折扣券',
                                             couponRangeName: res.couponInfoList[i].couponRangeName,
-                                            couponMoney: parseFloat(res.couponInfoList[i].couponMoney / 100).toFixed(2),
+                                            couponMoney: res.couponInfoList[i].couponType == 5 ? res.couponInfoList[i].couponMoney+'(%)' :parseFloat(res.couponInfoList[i].couponMoney / 100).toFixed(2),
                                             couponTime: res.couponInfoList[i].couponTime + `( ` + it.StatusName.get('time').couponTime.get(res.couponInfoList[i].timeUnit) + ` )`
                                         })
                                     }

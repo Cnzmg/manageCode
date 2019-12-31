@@ -765,8 +765,8 @@ new Vue({
                                 it.imageList.memberPicUrl.push({ name: 'memberPicUrl', url: res.member.memberPicUrl }); //会员列表
                                 it.imageList.memberHeadPic.push({ name: 'memberHeadPic', url: res.member.memberHeadPic }); //TAG 图片
 
-                                it.ruleForm.payMoney = res.member.payMoney;
-                                it.ruleForm.discount = res.member.discount;
+                                it.ruleForm.payMoney = parseFloat(res.member.payMoney / 100).toFixed(2);
+                                it.ruleForm.discount = parseFloat(res.member.discount / 100).toFixed(2);
                                 it.ruleForm.milliliter = res.member.milliliter;
                                 if (res.member.memberType == 2) {
                                     it.ruleForm.memberType = true;
@@ -1067,8 +1067,8 @@ new Vue({
                     _data['memberPicUrl'] = it.ruleForm.memberPicUrl || '';
                     _data['memberHeadPic'] = it.ruleForm.memberHeadPic || '';
 
-                    _data['payMoney'] = formName.payMoney || '';
-                    _data['discount'] = it.ruleForm.discount || '';
+                    _data['payMoney'] = parseInt(formName.payMoney * 100);
+                    _data['discount'] = parseInt(formName.discount * 100);
                     _data['milliliter'] = formName.milliliter || '';
                     _data['discountsStartTime'] = ym.init.getDateTime(formName.discountsEndTime[0]);
                     _data['discountsEndTime'] = ym.init.getDateTime(formName.discountsEndTime[1]);
@@ -1124,11 +1124,11 @@ new Vue({
                         _data['shareNum'] = formName.shareNum; //优惠券分享次数
                     }
                     if (formName.couponType == 5) {  //饮品折扣券
-                        if (formName.couponMoney > 100) {
+                        if (formName.couponMoney > 100 || formName.couponMoney < 0) {
                             it.IError('数值不符合规定【1-100】');
                             return false;
                         }
-                        _data['couponMoney'] = formName.couponMoney || '';  //优惠券金额
+                        _data['couponMoney'] = Math.ceil(formName.couponMoney);  //优惠券折扣比例
                     }
                     _data['couponDesc'] = formName.couponDesc || '';  //优惠券说明
                     _data['couponRange'] = it.ruleForm.all_product ? -1 : (() => {

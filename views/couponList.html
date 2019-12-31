@@ -40,17 +40,8 @@
                         <el-table-column prop="couponId" label="ID"></el-table-column>
                         <el-table-column prop="couponName" label="优惠券名称"></el-table-column>
                         <el-table-column prop="couponType" label="优惠券类型"></el-table-column>
-                        <el-table-column prop="couponRangeName" label="优惠产品">
-                            <template slot-scope="scope">
-                                <el-popover trigger="hover" placement="top">
-                                    <p>{{ scope.row.couponRangeName }}</p>
-                                    <div slot="reference" class="name-wrapper">
-                                        <el-tag size="medium">详细信息</el-tag>
-                                    </div>
-                                </el-popover>
-                            </template>
-                        </el-table-column>
-                        <el-table-column prop="couponMoney" label="优惠金额"></el-table-column>
+                        <el-table-column prop="couponRangeName" label="优惠产品" show-overflow-tooltip="true"></el-table-column>
+                        <el-table-column prop="couponMoney" label="优惠金额(元)/折扣比例(%)"></el-table-column>
                         <el-table-column prop="couponTime" label="可用时间"></el-table-column>
 
                         <el-table-column fixed="right" label="操作">
