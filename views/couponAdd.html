@@ -54,7 +54,7 @@
                         <el-switch v-model="ruleForm.all_product" active-text="全部优惠产品" inactive-text=""></el-switch>
                         <el-badge v-model="ruleForm.all_product == true ? '全部' :ruleForm.all_product_id.length"
                             style="margin-left: 60px;">
-                            <el-button size="small" @click="boxshow = true">已选择产品</el-button>
+                            <el-button size="small" @click="!ruleForm.all_product ? boxshow = true : null">已选择产品</el-button>
                         </el-badge>
                         <el-table
                             :data="tableData.filter(data => !search_product || data.productName.toLowerCase().includes(search_product.toLowerCase()))"
@@ -75,7 +75,7 @@
                         <el-switch v-model="ruleForm.all_machine" active-text="不限定机器" inactive-text=""></el-switch>
                         <el-badge v-model="ruleForm.all_machine == true ? '全部' :ruleForm.all_machine_id.length"
                             style="margin-left: 60px;">
-                            <el-button size="small" @click="boxmachineshow = true">已选择机器</el-button>
+                            <el-button size="small" @click="!ruleForm.all_machine ? boxmachineshow = true : null">已选择机器</el-button>
                         </el-badge>
                         <el-table
                             :data="tableDataMachine.filter(data => !search_machine || data.machineNumber.toLowerCase().includes(search_machine.toLowerCase()))"
@@ -94,7 +94,7 @@
                         <el-switch v-model="ruleForm.all_vip" active-text="不限会员" inactive-text=""></el-switch>
                         <el-badge v-model="ruleForm.all_vip == true ? '全部' :ruleForm.all_vip_id.length"
                             style="margin-left: 60px;">
-                            <el-button size="small" @click="boxvipshow = true">已选择会员</el-button>
+                            <el-button size="small" @click="!ruleForm.all_vip ? boxvipshow = true : null">已选择会员</el-button>
                         </el-badge>
                         <el-table
                             :data="tableDataVip.filter(data => !search_vip || data.memberRuleName.toLowerCase().includes(search_vip.toLowerCase()))"
@@ -177,11 +177,11 @@
 
         <el-dialog title="已选会员" :visible.sync="boxvipshow">
             <el-table :data="ruleForm.all_vip_id" height="300px" style="margin: 10px 0" tooltip-effect="dark">
-                <el-table-column property="productId" label="会员ID"></el-table-column>
-                <el-table-column property="productName" show-overflow-tooltip="true" label="会员名称"></el-table-column>
+                <el-table-column property="memberRuleId" label="会员ID"></el-table-column>
+                <el-table-column property="memberRuleName" show-overflow-tooltip="true" label="会员名称"></el-table-column>
                 <el-table-column fixed="right" label="操作">
                     <template slot-scope="scope">
-                        <el-button type="text" size="small" @click="deleteAllPlue(scope.row, 'product')">
+                        <el-button type="text" size="small" @click="deleteAllPlue(scope.row, 'vip')">
                             删除
                         </el-button>
                     </template>

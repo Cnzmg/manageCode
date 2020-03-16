@@ -168,7 +168,7 @@ new Vue({
                 formulaId: '',
                 productName: '',
                 productPrice: '',
-                originPrice: 0,
+                originPrice: '',
                 productMachinePicurl: '',
                 productPicurl: '',
                 productMachineDetailPicurl: '',
@@ -592,7 +592,7 @@ new Vue({
                                     it.ruleForm.productTemperature = res.productInfo.productTemperature;  //冷热状态
                                     it.ruleForm.machineType = res.productInfo.machineType;  //设备类型
                                     if (res.productInfo.productTemperature == 1) { //冷热锁定
-                                        it.radioclod = true;
+                                        it.radioclod = true;  //1 的时候只能热
                                     }
                                     if (res.productInfo.machineType == 1) {  //大机器才有
                                         res.productFlavorList.forEach(e => { //口味信息
@@ -776,6 +776,8 @@ new Vue({
                                 it.ruleForm.timeLim1 = new Date(2019, 7, 11, res.member.timeLimit.split('-')[1].split(':')[0], res.member.timeLimit.split('-')[1].split(':')[1], res.member.timeLimit.split('-')[1].split(':')[2]);;
                                 it.ruleForm.discountsEndTime = [ym.init.getDateTime(res.member.discountsStartTime), ym.init.getDateTime(res.member.discountsEndTime)];
 
+                                res.member.secretKey != -1 ? it.ruleForm.secretKey = res.member.secretKey : null;
+
                                 if (res.member.detailContent != -1) {  //回显 所有的文本信息
                                     let _arr_ = [], _arrs_ = [];
                                     JSON.parse(res.member.detailContent).forEach((element, index) => {
@@ -822,7 +824,7 @@ new Vue({
                                         })
                                     }, 500)
                                 })
-                                res.coupon.machineRange.split(',').forEach((element, index) => {  //机器编号
+                                res.coupon.machineRange != '全机器可用' ? res.coupon.machineRange.split(',').forEach((element, index) => {  //机器编号
                                     it.ruleForm.all_machine_id.push({
                                         machineNumber: element,
                                         index: element
@@ -834,7 +836,7 @@ new Vue({
                                             }
                                         })
                                     }, 500)
-                                })
+                                }) : it.ruleForm.all_machine = true;
 
                                 if (res.coupon.couponContent != -1) {  //回显 所有的文本信息
                                     let _arr_ = [], _arrs_ = [];
@@ -856,7 +858,7 @@ new Vue({
                                                 element.index = element.memberRuleId
                                             })
                                             it.tableDataVip = _data_;  //添加一个 index 的数据
-                                            res.coupon.couponRangeName.split(';').forEach((element, index) => {  //机器编号
+                                            res.coupon.couponRangeName != '全会员卡通用' ? res.coupon.couponRangeName.split(';').forEach((element, index) => {  //会员Id
                                                 it.ruleForm.all_vip_id.push({
                                                     memberRuleId: res.coupon.couponRange.split(',')[index],
                                                     memberRuleName: element,
@@ -867,8 +869,8 @@ new Vue({
                                                         it.tableDataVip.splice(i, 1);
                                                     }
                                                 })
-                                            })
-                                        }, 1000)
+                                            }): it.ruleForm.all_vip = true;
+                                        }, 1000);
                                     })
                                 }
 
@@ -1070,8 +1072,8 @@ new Vue({
                     _data['payMoney'] = parseInt(formName.payMoney * 100);
                     _data['discount'] = parseInt(formName.discount * 100);
                     _data['milliliter'] = formName.milliliter || '';
-                    _data['discountsStartTime'] = ym.init.getDateTime(formName.discountsEndTime[0]);
-                    _data['discountsEndTime'] = ym.init.getDateTime(formName.discountsEndTime[1]);
+                    _data['discountsStartTime'] = formName.discountsEndTime ? ym.init.getDateTime(formName.discountsEndTime[0]) : [];
+                    _data['discountsEndTime'] = formName.discountsEndTime ? ym.init.getDateTime(formName.discountsEndTime[1]) : [];
 
                     //新字段
                     let detailContent = [];
@@ -1082,6 +1084,8 @@ new Vue({
                     _data['isActivity'] = 0;  //是否开启活动
                     _data['timeUnit'] = formName.timeUnit;  //时间单位
                     _data['isSecret'] = formName.isSecret ? 1 : 0;  //是否营销会员
+
+                    _data['isSecret'] == 1 ? _data['secretKey'] = formName.secretKey || '' : null;  //营销会员key
 
                     //是否限时会员
                     _data['timeLimit'] = !formName.memberType ? -1 : ym.init.getDateTime(formName.timeLim).split(' ')[1] + "-" + ym.init.getDateTime(formName.timeLim1).split(' ')[1];  //待定
@@ -1191,6 +1195,10 @@ new Vue({
                         _data['type'] = 4;
                         _data['productCreateTime'] = ym.init.getDateTime(JSON.parse(decodeURI(dataHref.split('*')[1])).createTime)
                     }
+                    if(formName.bunkerNumberArr.length > 3){  // 选中的口味不能超过 【3】 个
+                        it.IError('口味信息选中项目不能超过3个！');
+                        return false;
+                    }
                     _data['formulaId'] = formName.formulaId || '';
                     _data['productName'] = formName.productName || '';
                     _data['productPrice'] = parseInt(formName.productPrice * 100) || 0;
@@ -1201,9 +1209,9 @@ new Vue({
                     _data['productRank'] = formName.productRank || '';
                     _data['operateType'] = formName.operateType || 0;
                     _data['productStatus'] = formName.productStatus || '';
-                    _data['productTemperature'] = formName.productTemperature || '';
+                    _data['productTemperature'] = formName.productTemperature;
                     _data['productComment'] = formName.productComment || '';
-                    _data['bunkerNumberArr'] = formName.bunkerNumberArr || '';
+                    _data['bunkerNumberArr'] = formName.bunkerNumberArr;
                     _data['machineType'] = this.ruleForm.machineType;
                     ym.init.XML({
                         method: 'POST',
@@ -1236,7 +1244,9 @@ new Vue({
                     e._arr.forEach((element) => {
                         if (e.ID == element.value) {
                             this.ruleForm.machineType = element.machineType;
-                            this.productFlavorList = [];
+                            this.productFlavorList = [];  //清空 口味列表
+                            this.ruleForm.bunkerNumberArr = [];  //清空原来的 bunker 编号数组
+
                             element.machineType != 1 ? this.samllfileUpdata = true : (() => {
                                 _data['formulaId'] = e.ID;
                                 ym.init.XML({
@@ -1245,18 +1255,21 @@ new Vue({
                                     async: false,
                                     xmldata: _data,
                                     done: function (res) {
+                                        let __arr__ = [];
                                         res.productFlavorList.forEach(e => {
-                                            it.productFlavorList.push({
+                                            __arr__.push({
                                                 value: e.bunkerNumber,
                                                 label: e.flavorName,
                                                 hide: e.hide
                                             });
                                         });
+                                        it.productFlavorList = __arr__;
                                     }
                                 });
                                 this.samllfileUpdata = false;
                                 //this.dialogVisibleData = true;   //第三张图片显示模态背景问题i
                             })(); //判断是否显示小设备的详情图片
+                            // 1 的时候可冷热，0 的时候只能热
                             element.formulaTemperature != 1 ? this.radioclod = true : this.radioclod = false; //判断是否可以冷热切换
                         }
                     });
@@ -1541,13 +1554,23 @@ new Vue({
                         })
                     }
                 })
-            } else {  //删除机器编号
+            } else if(name == 'machine') {  //删除机器编号
                 this.ruleForm.all_machine_id.forEach((element, index) => {
                     if (params.index == element.index) {
                         this.ruleForm.all_machine_id.splice(index, 1);
                         this.tableDataMachine.push(element);
                         this.tableDataMachine.sort((a, b) => {
                             return a.index - b.index;
+                        })
+                    }
+                })
+            }else{  //删除vip id
+                this.ruleForm.all_vip_id.forEach(( element, index ) => {
+                    if(params.index == element.index){
+                        this.ruleForm.all_vip_id.splice(index, 1);
+                        this.tableDataVip.push(element);
+                        this.tableDataVip.sort((a, b) => {
+                            return a.index - b.index;  //重新排序
                         })
                     }
                 })

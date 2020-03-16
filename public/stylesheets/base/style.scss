@@ -164,6 +164,7 @@ body{
 
 /**  index  **/
 ._scrollbars{
+	// background: url(../../images/icons/cloth.png) repeat center center;
 	.c-container-body{
 		.header{
 			.ym-menu-left{
@@ -352,8 +353,6 @@ body{
 	._menu_right{
 		right:0;
 	}
-  
-
   ._scrollbar::-webkit-scrollbar{
 	width: 10px;
 	height: 1px;
@@ -367,8 +366,10 @@ body{
 	overflow-y: auto;
 	margin-top: 40.5px;
 	background: #fff;
+	// background: url(../../images/icons/cloth.png) repeat center center;
 	padding: 10px;
 	box-sizing: border-box;
+	// color: white;
   }
   .el-pagination {
     margin: 30px;
@@ -433,6 +434,9 @@ body{
 	// .el-table__row td:nth-last-child(1) .cell{
 	// 	text-align: right;
 	// } 
+	.el-table{
+		font-size: 12px !important;
+	}
 	.has-gutter tr th, .el-table th {
 		background-color: #d4d6da !important;
 		color:#fff;
@@ -443,3 +447,4 @@ body{
 	.el-badge__content.is-fixed{
 		top:8px;
 	}
+	

@@ -490,6 +490,10 @@ body ._scrollbars::-webkit-scrollbar-thumb {
   width: 400px;
 }
 
+.el-table {
+  font-size: 12px !important;
+}
+
 .has-gutter tr th, .el-table th {
   background-color: #d4d6da !important;
   color: #fff;

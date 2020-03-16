@@ -2947,6 +2947,7 @@ window.addEventListener('pageshow', function (params) {
             },
 
             couponList(params){ //用户礼券 窗口 列表
+                console.log(params);
                 let it = this;
                 // params ? pasessionStorage.setItem('params', params.userId) : params.userId = sessionStorage.getItem('params');
                 _data['userId'] = params.userId;
@@ -2963,6 +2964,37 @@ window.addEventListener('pageshow', function (params) {
                                     res.userCouponList[index].createTime = ym.init.getDateTime(element.createTime);
                                 })
                                 it.couponUnFormData = res.userCouponList;
+                            })() : (() => {
+                                throw "收集到错误：\n\n" + res.statusCode.msg;
+                            })();
+                        } catch (error) {
+                            it.IError(error);
+                        }
+                    }
+                })
+            },
+
+            exportMachineLog(_event, typeUrl){
+                const it = this;
+                it.loading = true
+                _event.machineNumber ? _data['machineNumber'] =  _event.machineNumber : null;
+                _event.startTime ? _data['startTime'] = _event.startTime[0] : null;
+                _event.startTime ? _data['endTime'] = _event.startTime[1] : null;
+                _event.machineType ? _data['machineType'] = _event.machineType : null;
+                _event.status ? _data['status'] =  _event.status : null;
+                ym.init.XML({
+                    method: 'POST',
+                    uri: token._j.URLS.Development_Server_ + typeUrl,
+                    async: false,
+                    xmldata: _data,
+                    done: function (res) {
+                        try {
+                            ym.init.RegCode(token._j.successfull).test(res.statusCode.status) ? (() => {
+                                setTimeout(() => {
+                                    it.loading = false;
+                                    it.UpdateTableAndVisible = false;
+                                }, 500)
+                                location.href = token._j.URLS.Development_Server_ + res.path;
                             })() : (() => {
                                 throw "收集到错误：\n\n" + res.statusCode.msg;
                             })();

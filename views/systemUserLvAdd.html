@@ -23,7 +23,7 @@
         v-loading.fullscreen.lock="loading">
         <el-container>
             <el-main>
-                <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
+                <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="200px" class="demo-ruleForm">
                     <el-form-item label="会员名称" prop="memberRuleName">
                         <el-input v-model="ruleForm.memberRuleName" class="w400"></el-input>
                     </el-form-item>
@@ -88,6 +88,11 @@
                         <el-switch v-model="ruleForm.isSecret" active-text="营销会员">
                         </el-switch>
                     </el-form-item>
+
+                    <el-form-item label="密钥（自动生成）" prop="secretKey" v-show="ruleForm.isSecret == 1 ? true : false">
+                        <el-input v-model="ruleForm.secretKey" class="w400" :disabled="true"></el-input>
+                    </el-form-item>
+
                     <el-form-item label="会员图片">
                         <template v-model="ruleForm.memberPicUrl">
                             <small>列表图片</small>

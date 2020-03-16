@@ -94,7 +94,7 @@
                     <el-table :data="tableData" stripe style="width: 100%" border>
                         <el-table-column prop="machineNumber" label="设备编号"></el-table-column>
                         <el-table-column prop="adminName" label="绑定商户"></el-table-column>
-                        <el-table-column prop="machineAddrDesc" label="设备地址" show-overflow-tooltip="true"></el-table-column>
+                        <el-table-column prop="machineAddrDesc" label="设备地址" show-overflow-tooltip=true></el-table-column>
                         <el-table-column label="设备类型">
                             <template slot-scope="scope">
                                 <div slot="reference" class="name-wrapper">
@@ -106,7 +106,7 @@
                             </template>
                         </el-table-column>
 
-                        <el-table-column prop="machineSn" label="设备SN号"></el-table-column>
+                        <el-table-column prop="machineSn" label="设备SN号" show-overflow-tooltip=true></el-table-column>
                         <el-table-column prop="machineScenePicUrl" label="设备场景图片">
                             <template slot-scope="scope">
                                 <el-popover trigger="hover" placement="top" v-show="scope.row.machineScenePicUrl != 'null'">
